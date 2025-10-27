@@ -72,3 +72,45 @@ main {
     border: 1px solid rgb(255, 255, 255, 0.2);
     color: #00e987;
 }
+
+/*Navigation icons*/
+
+.overview::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: "\f201";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    padding-right: 0.8em;
+}
+
+.expenses::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: "\f4c0";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    padding-right: 0.8em;
+}
+
+.income::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: "\f4d3";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    padding-right: 0.8em;
+}
+
+.logout::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: "\f2f5";
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    padding-right: 0.8em;
+}
