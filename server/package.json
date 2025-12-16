@@ -1,0 +1,30 @@
+{
+  "name": "finora",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A personal finance tracking and management app built with vanilla JavaScript, HTML, and CSS, featuring a Node.js backend with Express.js for server-side logic, and a MongoDB database.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladislavAndonov/Finora.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VladislavAndonov/Finora/issues"
+  },
+  "homepage": "https://github.com/VladislavAndonov/Finora#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.1",
+    "nodemon": "^3.1.11"
+  }
+}
