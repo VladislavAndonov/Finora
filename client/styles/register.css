@@ -9,7 +9,7 @@ body {
     display: flex;
     justify-content: flex-end;
 
-    height: calc(100vh - 8em);
+    height: calc(100dvh - 8rem);
 }
 
 .register-form {
@@ -17,52 +17,49 @@ body {
     flex: 0 1 680px;
     flex-direction: column;
 
-    padding: 4em;
+    padding: 4rem;
 
     color: var(--text-primary);
     border: 1px solid var(--border-primary);
     border-radius: 2em;
+
+    gap: 2rem;
+
     background-color: var(
     --bg-primary)
 }
 
 .register-form h2 {
-    font-size: 2rem;
-    font-weight: 600;
-
-    margin-bottom: 2em;
+    margin-bottom: 1rem;
 }
 
 .register-form fieldset {
     display: flex;
     flex-direction: column;
 
-    margin-bottom: 2rem;
-
     border: none;
 }
 
 .register-form input {
-    padding: 0.5rem;
+    padding: 0.4rem 0.8rem;
 
     border: none;
-    border-radius: 0.6rem;
+    border-radius: 0.4rem;
     outline: 1px solid var(--border-primary);
     background: transparent;
 }
 
 .register-form input:focus {
-    border: none;
     outline: 2px solid var(--primary);
 }
 
 .register-form label {
+    padding: 0.2rem 0.5rem;
+
     color: var(--text-secondary);
 }
 
 .register-form .buttons {
-    font-size: 1.2rem;
-
     display: flex;
     align-items: center;
 
@@ -70,17 +67,25 @@ body {
 
     color: var(--text-secondary);
 
-    gap: 1.5rem;
+    gap: 1.4rem;
 }
 
 .register-form .sign-up-button {
     font-size: 1.2rem;
     font-weight: bold;
 
-    padding: 1rem 4rem;
+    padding: 0.8rem 3rem;
 
     color: var(--text-primary);
     border: none;
     border-radius: 2rem;
     background-color: var(--primary);
+}
+
+.register-form .sign-in-button {
+    font-size: 1.2em;
+
+    color: var(--primary);
+    border: none;
+    background-color: transparent;
 }
