@@ -1,0 +1,13 @@
+/* Global Styles */
+
+@import url(reset.css);
+@import url(variables.css);
+@import url(typography.css);
+
+/* Pages Styles */
+
+@import url(login.css);
+@import url(register.css);
+
+@import url(
+dashboard.css)

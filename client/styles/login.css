@@ -1,59 +1,91 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    font: 14px/1.5 Helvetica, sans-serif;
-}
-
-button,
-textarea,
-input {
-    font: inherit;
-}
-
 body {
-    padding: 4em;
+    padding: 4rem;
+
     background: url(../public/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-form {
-    margin: 0 auto;
-    padding: 4em;
-    max-width: 600px;
-    color: #fff;
-    border: 1px solid rgb(255, 255, 255, 0.2);
-    border-radius: 1em;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+.login-wrapper {
+    display: flex;
+
+    height: calc(100dvh - 8rem);
 }
 
-form h2 {
-    font-size: 2em;
-    text-align: center;
-    margin-bottom: 1em;
+.login-form {
+    display: flex;
+    flex: 0 1 680px;
+    flex-direction: column;
+
+    padding: 4rem;
+
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 2rem;
+
+    gap: 2rem;
+
+    background-color: var(
+    --bg-primary)
 }
 
-fieldset {
-    border: none;
+.login-form h2 {
+    margin-bottom: 1rem;
+}
+
+.login-form fieldset {
     display: flex;
     flex-direction: column;
-    margin-bottom: 2em;
+
+    border: none;
 }
 
-fieldset input {
+.login-form input {
+    padding: 0.4rem 0.8rem;
+
+    color: var(--text-primary);
+    border: none;
+    border-radius: 0.4rem;
+    outline: 1px solid var(--border-primary);
     background: transparent;
-    padding: 0.2em;
-    border: 1px solid rgb(255, 255, 255, 0.2);
-    border-radius: 0.5em;
 }
 
-form button {
-    width: 100%;
-    padding: 0.2em;
-    background-color: #00e987;
-    border-radius: 0.5em;
+.login-form input:focus {
+    outline: 2px solid var(--primary);
+}
+
+.login-form label {
+    padding: 0.2rem 0.5rem;
+
+    color: var(--text-secondary);
+}
+
+.login-form .buttons {
+    display: flex;
+    align-items: center;
+
+    margin-top: auto;
+
+    color: var(--text-secondary);
+
+    gap: 1.4rem;
+}
+
+.login-form .sign-in-button {
+    font-size: 1.2em;
+    font-weight: bold;
+
+    padding: 0.8rem 3rem;
+
+    color: var(--text-primary);
+    border: none;
+    border-radius: 2rem;
+    background-color: var(--primary);
+}
+
+.login-form .sign-up-button {
+    font-size: 1.2em;
+
+    color: var(--primary);
+    border: none;
+    background-color: transparent;
 }

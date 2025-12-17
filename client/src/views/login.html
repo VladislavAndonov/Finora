@@ -5,25 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
     <link rel="stylesheet" href="../../styles/login.css">
 </head>
 
 <body>
-    <form class="login-form" action="#">
-        <h2>Login</h2>
+    <div class="login-wrapper">
 
-        <fieldset>
-            <label for="email">Email</label>
-            <input type="email" name="email">
-        </fieldset>
+        <form class="login-form" action="#">
+            <h2>Sign in</h2>
 
-        <fieldset>
-            <label for="password">Password</label>
-            <input type="password" name="password">
-        </fieldset>
+            <fieldset>
+                <label for="email">Email</label>
+                <input type="email" name="email">
+            </fieldset>
 
-        <button>Submit</button>
-    </form>
+            <fieldset>
+                <label for="password">Password</label>
+                <input type="password" name="password">
+            </fieldset>
+
+            <div class="buttons">
+                <button class="sign-in-button">Sign in</button>
+                <p>Or</p>
+                <button class="sign-up-button">Sign up</button>
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>
