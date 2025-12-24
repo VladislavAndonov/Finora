@@ -1,15 +1,15 @@
-import { Router, urlencoded } from "express";
+import { Router } from "express";
+import authController from "./controllers/authController.js";
 
 const routes = Router();
 
-routes.use(urlencoded({ extended: false }))
-
+routes.use(authController);
 
 routes.get("/", (req, res) => {
     res.send("Hello from homepage")
 });
 
-routes.get("/login", (req, res) => {
+routes.get("/auth/login", (req, res) => {
     res.send(`
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,7 @@ routes.get("/login", (req, res) => {
 <body>
     <div class="login-wrapper">
 
-        <form class="login-form" action="/login" method="POST">
+        <form class="login-form" action="/auth/login" method="POST">
             <h2>Sign in</h2>
 
             <fieldset>
@@ -53,13 +53,59 @@ routes.get("/login", (req, res) => {
 `)
 });
 
-routes.post("/login", (req, res) => {
-    const { email, password } = req.body;
+routes.get("/auth/register", (req, res) => {
+    res.send(`
+<!DOCTYPE html>
+<html lang="en">
 
-    console.log(email, password);
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
+    <link rel="stylesheet" href="../../styles/register.css">
+</head>
 
-    res.redirect("/")
+<body>
+    <div class="register-wrapper">
 
+        <form class="register-form" action="#">
+            <h2>Sign up now</h2>
+
+            <fieldset>
+                <label for="first-name">Username</label>
+                <input type="first-name" name="first-name">
+            </fieldset>
+
+
+            <fieldset>
+                <label for="email">Email</label>
+                <input type="email" name="email">
+            </fieldset>
+
+            <fieldset>
+                <label for="password">Password</label>
+                <input type="password" name="password">
+            </fieldset>
+
+            <fieldset>
+                <label for="re-password">Confirm Password</label>
+                <input type="password" name="re-password">
+            </fieldset>
+
+            <div class="buttons">
+                <button class="sign-up-button">Sign up</button>
+                <p>Or</p>
+                <button class="sign-in-button">Sign in</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
+`)
 })
 
 
