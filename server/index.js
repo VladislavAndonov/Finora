@@ -4,7 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose"
 
 try {
-    await mongoose.connect("mongodb://localhost:27017", { dbName: "Finora" });
+    await mongoose.connect("mongodb://localhost:27017", { dbName: "finora" });
     console.log("Connected to DB");
 } catch (err) {
     console.log("Cannot connect to DB");

@@ -1,22 +1,20 @@
 import { Router } from "express";
-import authService from "../service/authService.js";
+import authService from "../services/authService.js";
 
 const authController = Router();
 
 authController.post("/auth/register", async (req, res) => {
-    const user = authService.register(username, email, password);
-
     const { username, email, password } = req.body
 
-    console.log(username, email, password);
-})
+    authService.register(username, email, password);
 
-
+    res.redirect("/");
+});
 
 authController.post("/auth/login", async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password);
-    hashFunc(password);
+
+    authService.login(email, password);
 
     res.redirect("/");
 });
