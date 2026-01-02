@@ -2,9 +2,11 @@ import express, { urlencoded } from 'express';
 import routes from "./routes.js";
 import cors from "cors";
 import mongoose from "mongoose"
+import config from './config/config.js';
+
 
 try {
-    await mongoose.connect("mongodb://localhost:27017", { dbName: "finora" });
+    await mongoose.connect(config.dbURL, { dbName: "finora" });
     console.log("Connected to DB");
 } catch (err) {
     console.log("Cannot connect to DB");
