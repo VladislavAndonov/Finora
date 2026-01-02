@@ -1,10 +1,7 @@
 import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-
-dotenv.config({ path: './config/.env' });
-const privateKey = process.env.JWT_SECRET;
+import config from "../config/config.js";
 
 
 const authService = {
@@ -30,6 +27,12 @@ const authService = {
         }
 
         return buildAuthResponse(user);
+    },
+
+    async logout() {
+        // TODO: Invalidate Token;
+
+        return true;
     }
 }
 
@@ -39,7 +42,7 @@ async function buildAuthResponse(user) {
         email: user.email,
     };
 
-    const token = await jwt.sign(payload, privateKey, { expiresIn: "2h" }, async (err, token) => {
+    const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: "2h" }, async (err, token) => {
         if (err) {
             throw new Error(err.message);
         };
