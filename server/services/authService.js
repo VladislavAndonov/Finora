@@ -1,28 +1,55 @@
-import { User } from "../models/User.js"
+import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import config from "../config/config.js";
 
-const saltRounds = 10;
-
-const hashPass = (password) => {
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-        bcrypt.hash(password, salt, function (err, hash) {
-            console.log(hash);
-            // TODO: Store pass in DB.
-        });
-    });
-};
 
 const authService = {
     async register(username, email, password) {
-        // Check if user exist
+        const user = await User.findOne({ email });
+        if (user) {
+            throw new Error("This email has already been used")
+        }
 
-        hashPass(password);
+        const createdUser = await User.create({ username, email, password });
+        return buildAuthResponse(createdUser);
+    },
 
-        return User.create({ username, email, password });
+    async login(email, password) {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error("No such user found");
+        }
 
+        const isPassValid = await bcrypt.compare(password, user.password);
+        if (!isPassValid) {
+            throw new Error("Invalid credentials");
+        }
 
+        return buildAuthResponse(user);
+    },
+
+    async logout() {
+        // TODO: Invalidate Token;
+
+        return true;
     }
 }
 
+async function buildAuthResponse(user) {
+    const payload = {
+        _id: user._id,
+        email: user.email,
+    };
 
-export default authService
+    const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: "2h" }, async (err, token) => {
+        if (err) {
+            throw new Error(err.message);
+        };
+        return token;
+    });
+
+    return { ...payload, accessToken: token }
+}
+
+export default authService;

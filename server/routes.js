@@ -71,12 +71,12 @@ routes.get("/auth/register", (req, res) => {
 <body>
     <div class="register-wrapper">
 
-        <form class="register-form" action="#">
+        <form class="register-form" action="/auth/register" method="POST">
             <h2>Sign up now</h2>
 
             <fieldset>
-                <label for="first-name">Username</label>
-                <input type="first-name" name="first-name">
+                <label for="username">Username</label>
+                <input type="username" name="username">
             </fieldset>
 
 
