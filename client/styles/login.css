@@ -70,22 +70,35 @@ body {
     gap: 1.4rem;
 }
 
-.login-form .sign-in-button {
+.sign-in-button {
     font-size: 1.2em;
     font-weight: bold;
 
     padding: 0.8rem 3rem;
 
+    transition: ease-in-out 0.2s;
+
     color: var(--text-primary);
     border: none;
-    border-radius: 2rem;
+    border-radius: 1rem;
     background-color: var(--primary);
 }
 
-.login-form .sign-up-button {
+.sign-in-button:hover {
+    cursor: pointer;
+
+    border-radius: 2rem;
+}
+
+.sign-up-button {
     font-size: 1.2em;
 
     color: var(--primary);
     border: none;
     background-color: transparent;
+}
+
+.sign-up-button:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
