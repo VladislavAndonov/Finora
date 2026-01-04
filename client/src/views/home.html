@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="../../styles/reset.css">
+    <link rel="stylesheet" href="../../styles/variables.css">
+    <link rel="stylesheet" href="../../styles/typography.css">
+    <link rel="stylesheet" href="../../styles/index.css">
+    <link rel="stylesheet" href="../../styles/home.css">
+</head>
+
+<body>
+    <div class="flex-container">
+        <aside>
+            <div class="profile-details">
+                <img class="profile-picture" src="../../public/images/profile-pic.jpg" alt="profile picture">
+                <p class="profile-name">Boicho Ognyanov</p>
+            </div>
+
+            <ul class="main-nav">
+                <li><a class="homeLink current" href="/">Home</a></li>
+                <li><a class="expensesLink" href="/expenses">Expenses</a></li>
+                <li><a class="incomeLink" href="/income">Income</a></li>
+                <li><a class="calendarLink" href="/calendar">Calendar</a></li>
+                <li><a class="logoutBtn" href="javascript:void(0)">Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="home-header">
+                <h2>Home</h2>
+            </header>
+            <section class="bento">
+                <article class="budgets">Budgets</article>
+                <article class="line-graph">Line graph</article>
+                <article class="transaction-list">Transaction list</article>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
