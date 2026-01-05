@@ -1,0 +1,33 @@
+.home-header h2 {
+    margin-bottom: 1rem;
+
+    color: var(--text-primary);
+}
+
+.bento {
+    display: grid;
+    flex-grow: 1;
+
+    grid-template-columns: 7fr 5fr;
+    gap: 1rem;
+}
+
+.bento article {
+    padding: 1rem;
+
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 0.5rem;
+    background-color: var(--bg-primary);
+}
+
+.bento .budgets {
+}
+
+.bento .transaction-list {
+    grid-row: 1 / 8;
+}
+
+.bento .line-graph {
+    grid-row: 2 / 8
+}
