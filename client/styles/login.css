@@ -1,11 +1,11 @@
-body {
+.login {
     padding: 4rem;
 
     background: url(../public/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.login-wrapper {
+.login-layout {
     display: flex;
 
     height: calc(100dvh - 8rem);
@@ -70,7 +70,7 @@ body {
     gap: 1.4rem;
 }
 
-.sign-in-button {
+.login-form .sign-in-button {
     font-size: 1.2em;
     font-weight: bold;
 
@@ -84,13 +84,13 @@ body {
     background-color: var(--primary);
 }
 
-.sign-in-button:hover {
+.login-form .sign-in-button:hover {
     cursor: pointer;
 
     border-radius: 2rem;
 }
 
-.sign-up-button {
+.login-form .sign-up-button {
     font-size: 1.2em;
 
     color: var(--primary);
@@ -98,7 +98,7 @@ body {
     background-color: transparent;
 }
 
-.sign-up-button:hover {
+.login-form .sign-up-button:hover {
     cursor: pointer;
     text-decoration: underline;
 }
