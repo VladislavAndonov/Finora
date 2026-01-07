@@ -1,3 +1,33 @@
+const root = document.querySelector(".main-content");
+
+export function calendarPage() {
+    root.innerHTML = `
+    <div class="calendar-wrapper">
+        <header class="calendar-header">
+            <i class="fa-solid fa-angle-left prev" onclick=showPrevMonth()></i>
+            <h3 class="current-date"></h3>
+            <i class="fa-solid fa-angle-right next" onclick=showNextMonth()></i>
+        </header>
+
+        <div class="calendar-body">
+
+            <ul class="weekdays">
+                <li>Mon</li>
+                <li>Tue</li>
+                <li>Wed</li>
+                <li>Thu</li>
+                <li>Fri</li>
+                <li>Sat</li>
+                <li>Sun</li>
+            </ul>
+
+            <ul class="dates"></ul>
+        </div>
+    </div>`
+}
+
+
+/*
 let currDate = new Date();
 
 let [date, month, year] = [
@@ -28,7 +58,7 @@ const updateMonth = () => {
     // const lastWeekday = new Date(year, month, monthLastDate).getDay()
     // const prevMonthLastDate = new Date(year, month, 0).getDate()
 
-    monthStartPosition = (firstWeekday + 6) % 7 + 1
+    let monthStartPosition = (firstWeekday + 6) % 7 + 1
 
     let buffer = "";
 
@@ -87,3 +117,5 @@ const showNextMonth = () => {
 const highlightToday = () => {
     // TODO: Create a function to highlight today's date
 }
+
+*/

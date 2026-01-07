@@ -1,11 +1,11 @@
-body {
+.register {
     padding: 4em;
 
     background: url(../public/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.register-wrapper {
+.register-layout {
     display: flex;
     justify-content: flex-end;
 
@@ -70,7 +70,7 @@ body {
     gap: 1.4rem;
 }
 
-.sign-up-button {
+.register-form .sign-up-button {
     font-size: 1.2rem;
     font-weight: bold;
 
@@ -84,13 +84,13 @@ body {
     background-color: var(--primary);
 }
 
-.sign-up-button:hover {
+.register-form .sign-up-button:hover {
     cursor: pointer;
 
     border-radius: 2rem;
 }
 
-.sign-in-button {
+.register-form .sign-in-button {
     font-size: 1.2em;
 
     color: var(--primary);
@@ -98,7 +98,7 @@ body {
     background-color: transparent;
 }
 
-.sign-in-button:hover {
+.register-form .sign-in-button:hover {
     cursor: pointer;
     text-decoration: underline;
 }
