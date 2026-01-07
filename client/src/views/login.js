@@ -1,31 +1,33 @@
-const root = document.querySelector("body");
+import { html, render } from 'https://esm.run/lit-html@1';
 
-export function loginPage() {
-    root.innerHTML = `
-    <body>
-        <div class="login">
-            <div class="login-layout">
-                <form class="login-form" action="/login" method="POST">
-                    <h2>Sign in</h2>
+const root = document.querySelector(".app");
 
-                    <fieldset>
-                        <label for="email">Email</label>
-                        <input type="email" name="email">
-                    </fieldset>
+const loginTemplate = () =>
+    html`
+    <section class=login>
+        <div class="login-layout">
+            <form class="login-form" action="/login" method="POST">
+                <h2>Sign in</h2>
 
-                    <fieldset>
-                        <label for="password">Password</label>
-                        <input type="password" name="password">
-                    </fieldset>
+                <fieldset>
+                    <label for="email">Email</label>
+                    <input type="email" name="email">
+                </fieldset>
 
-                    <div class="buttons">
-                        <button class="sign-in-button">Sign in</button>
-                        <p>Or</p>
-                        <button class="sign-up-button">Sign up</button>
-                    </div>
-                </form>
-            </div>
+                <fieldset>
+                    <label for="password">Password</label>
+                    <input type="password" name="password">
+                </fieldset>
+
+                <div class="buttons">
+                    <button class="sign-in-button">Sign in</button>
+                    <p>Or</p>
+                    <button class="sign-up-button">Sign up</button>
+                </div>
+            </form>
         </div>
-    </body>
-`
+    </section>`;
+
+export async function loginPage() {
+    render(loginTemplate(), root);
 }
