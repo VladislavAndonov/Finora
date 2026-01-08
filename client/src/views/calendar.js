@@ -2,14 +2,28 @@ import { html, render } from 'https://esm.run/lit-html@1';
 import { appLayout } from './common/appLayout.js';
 
 const root = document.querySelector(".app");
+const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
 
-const calendarTemplate = (showPrevMonth, showNextMonth) =>
+const calendarTemplate = (currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate) =>
     html`
     <div class="calendar-wrapper">
         <header class="calendar-header">
-            <i class="fa-solid fa-angle-left prev" @click={showPrevMonth()}></i>
-            <h3 class="current-date"></h3>
-            <i class="fa-solid fa-angle-right next" @click={showNextMonth()}></i>
+            <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
+            <h3 class=current-date>${months[currDate.getMonth()]} ${currDate.getFullYear()}</h3>
+            <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
         </header>
 
         <div class="calendar-body">
@@ -23,102 +37,57 @@ const calendarTemplate = (showPrevMonth, showNextMonth) =>
                 <li>Sat</li>
                 <li>Sun</li>
             </ul>
-
-            <ul class="dates"></ul>
+                
+            <ul class="dates" @click=${selectDate}>
+                ${datesTemplate} 
+            </ul>
         </div>
     </div>`;
 
-export async function calendarPage() {
-    render(appLayout(calendarTemplate()), root);
 
+export async function calendarPage() {
     let currDate = new Date();
 
-    let [date, month, year] = [
-        currDate.getDate(),
-        currDate.getMonth(),
-        currDate.getFullYear()
-    ]
-
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
-
-
-    const updateMonth = () => {
-        const firstWeekday = new Date(year, month).getDay()
-        const monthLastDate = new Date(year, month + 1, 0).getDate()
-        // const lastWeekday = new Date(year, month, monthLastDate).getDay()
-        // const prevMonthLastDate = new Date(year, month, 0).getDate()
-
-        let monthStartPosition = (firstWeekday + 6) % 7 + 1
-
-        let buffer = "";
-
-        for (let i = 1; i <= monthLastDate; i++) {
-            buffer += `<li class="grid-item-${i}">${i}</li>`
-            document.querySelector(".dates").innerHTML = buffer
-        }
-
-        document.querySelector(".grid-item-1").style.gridColumn = monthStartPosition
-
-
-    }
-
-    updateMonth()
-
-    const renderMonth = () => {
-        document.querySelector(".current-date").textContent = `${months[month]} ${year}`
-    }
-
-    renderMonth()
-
-
     const showPrevMonth = () => {
-        const prevArrow = document.querySelector(".prev")
-        prevArrow.addEventListener(onclick, (() => {
-            month = --month
-
-            if (month < 0) {
-                currDate = new Date(year, month, date)
-                year = currDate.getFullYear()
-                month = currDate.getMonth()
-            }
-
-            renderMonth()
-            updateMonth()
-        })());
+        currDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, 1);
+        updateMonth()
     }
-
 
     const showNextMonth = () => {
-        const prevArrow = document.querySelector(".next")
-        prevArrow.addEventListener(onclick, (() => {
-            month = ++month
+        currDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 1);
+        updateMonth()
+    }
 
-            if (month > 11) {
-                currDate = new Date(year, month, date)
-                year = currDate.getFullYear()
-                month = currDate.getMonth()
+    const selectDate = (e) => {
+        // TODO: Create logic for selection
+        if (e.target.tagName === 'LI') {
+            console.log(`Clicked on ${e.target.textContent}`);
+        }
+    }
+
+    const updateMonth = () => {
+        const firstWeekday = currDate.getDay();
+        const monthLastDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate();
+
+        // Convert weekday (0-6, Sun-Sat) to 1-7 position (Mon-Sun)
+        let monthStartPosition = (firstWeekday + 6) % 7 + 1
+
+        const datesTemplate = [];
+
+        for (let i = 1; i <= monthLastDate; i++) {
+            // TODO: Highlight today's date
+            // Check if today match with currDate.year, month and date
+
+            if (i === 1) {
+                datesTemplate.push(html`
+            <li class="grid-item-${i}" style="grid-column: ${monthStartPosition}"</li>`)
+            } else {
+                datesTemplate.push(html`
+            <li class="grid-item-${i}">${i}</li>`)
             }
+        };
 
-            renderMonth()
-            updateMonth()
-        })());
+        render(appLayout(calendarTemplate(currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate)), root);
     }
-
-    const highlightToday = () => {
-        // TODO: Create a function to highlight today's date
-    }
-
+    updateMonth();
 }

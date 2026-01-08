@@ -6,7 +6,7 @@ const loginTemplate = () =>
     html`
     <section class=login>
         <div class="login-layout">
-            <form class="login-form" action="/login" method="POST">
+            <form class="login-form" action="/auth/login" method="POST">
                 <h2>Sign in</h2>
 
                 <fieldset>
