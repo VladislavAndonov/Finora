@@ -65,8 +65,25 @@ export async function calendarPage() {
         }
     }
 
-    const updateMonth = () => {
-        const firstWeekday = currDate.getDay();
+    const renderDates = (datesTemplate, monthLastDate, monthStartPosition) => {
+        for (let i = 1; i <= monthLastDate; i++) {
+            let isToday = false;
+            if (today.getFullYear() === currDate.getFullYear() && today.getMonth() === currDate.getMonth() && today.getDate() === i) {
+                isToday = true;
+            }
+
+            if (i === 1) {
+                datesTemplate.push(html`
+            <li class="grid-item-${i}" style="grid-column: ${monthStartPosition} ${isToday ? "today" : ""}">${i}</li>`)
+            } else {
+                datesTemplate.push(html`
+            <li class="grid-item-${i} ${isToday ? "today" : ""}">${i}</li>`)
+            }
+        };
+    }
+
+    const updateMonth = (ctx) => {
+        const firstWeekday = new Date(currDate.getFullYear(), currDate.getMonth(), 1).getDay();
         const monthLastDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate();
 
         // Convert weekday (0-6, Sun-Sat) to 1-7 position (Mon-Sun)
@@ -74,20 +91,8 @@ export async function calendarPage() {
 
         const datesTemplate = [];
 
-        for (let i = 1; i <= monthLastDate; i++) {
-            // TODO: Highlight today's date
-            // Check if today match with currDate.year, month and date
-
-            if (i === 1) {
-                datesTemplate.push(html`
-            <li class="grid-item-${i}" style="grid-column: ${monthStartPosition}"</li>`)
-            } else {
-                datesTemplate.push(html`
-            <li class="grid-item-${i}">${i}</li>`)
-            }
-        };
-
-        render(appLayout(calendarTemplate(currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate)), root);
+        renderDates(datesTemplate, monthLastDate, monthStartPosition)
+        ctx.render(calendarTemplate(currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate));
     }
     updateMonth();
 }
