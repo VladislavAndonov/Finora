@@ -1,7 +1,5 @@
-import { html, render } from 'https://esm.run/lit-html@1';
-import { appLayout } from './common/appLayout.js';
+import { html } from 'https://esm.run/lit-html@1';
 
-const root = document.querySelector(".app");
 const months = [
     "January",
     "February",
@@ -45,21 +43,23 @@ const calendarTemplate = (currDate, datesTemplate, showPrevMonth, showNextMonth,
     </div>`;
 
 
-export async function calendarPage() {
+export async function calendarView(ctx) {
+    const today = new Date();
     let currDate = new Date();
 
     const showPrevMonth = () => {
         currDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, 1);
-        updateMonth()
+        updateMonth(ctx)
     }
 
     const showNextMonth = () => {
         currDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 1);
-        updateMonth()
+        updateMonth(ctx)
     }
 
     const selectDate = (e) => {
-        // TODO: Create logic for selection
+        // TODO: Logic for selection and displaying transactions
+
         if (e.target.tagName === 'LI') {
             console.log(`Clicked on ${e.target.textContent}`);
         }
@@ -94,5 +94,6 @@ export async function calendarPage() {
         renderDates(datesTemplate, monthLastDate, monthStartPosition)
         ctx.render(calendarTemplate(currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate));
     }
-    updateMonth();
+
+    updateMonth(ctx);
 }

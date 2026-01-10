@@ -1,33 +1,28 @@
-import { html, render } from 'https://esm.run/lit-html@1';
+import { html } from 'https://esm.run/lit-html@1';
 
-const root = document.querySelector(".app");
+export const loginView = (ctx) =>
+    ctx.render(html`
+        <section class=login>
+            <div class="login-layout">
+                <form class="login-form" action="/auth/login" method="POST">
+                    <h2>Sign in</h2>
 
-const loginTemplate = () =>
-    html`
-    <section class=login>
-        <div class="login-layout">
-            <form class="login-form" action="/auth/login" method="POST">
-                <h2>Sign in</h2>
+                    <fieldset>
+                        <label for="email">Email</label>
+                        <input type="email" name="email">
+                    </fieldset>
 
-                <fieldset>
-                    <label for="email">Email</label>
-                    <input type="email" name="email">
-                </fieldset>
+                    <fieldset>
+                        <label for="password">Password</label>
+                        <input type="password" name="password">
+                    </fieldset>
 
-                <fieldset>
-                    <label for="password">Password</label>
-                    <input type="password" name="password">
-                </fieldset>
-
-                <div class="buttons">
-                    <button class="sign-in-button">Sign in</button>
-                    <p>Or</p>
-                    <button class="sign-up-button">Sign up</button>
-                </div>
-            </form>
-        </div>
-    </section>`;
-
-export async function loginPage() {
-    render(loginTemplate(), root);
-}
+                    <div class="buttons">
+                        <button class="sign-in-button">Sign in</button>
+                        <p>Or</p>
+                        <button class="sign-up-button">Sign up</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    `);
