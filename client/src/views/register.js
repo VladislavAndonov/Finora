@@ -1,9 +1,8 @@
-const root = document.querySelector("body");
+import { html } from 'https://esm.run/lit-html@1';
 
-export function registerPage() {
-    root.innerHTML = `
-    <body>
-        <div class="register">
+export const registerView = (ctx) =>
+    ctx.render(html`
+        <section class="register">
             <div class="register-layout">
                 <form class="register-form" action="/auth/register" method="POST">
                     <h2>Sign up now</h2>
@@ -36,6 +35,5 @@ export function registerPage() {
                     </div>
                 </form>
             </div>
-        </div>
-    </body>`
-}
+        </section>
+    `);

@@ -57,5 +57,14 @@
 }
 
 .dates li:hover {
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-primary);
+}
+
+.dates li.today {
+    background-color: var(--bg-lighter);
+}
+
+.dates .selected {
+    border: 4px solid var(
+    --primary)
 }

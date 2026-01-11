@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+
+    height: 100vh;
+
+    background-color: var(--bg-primary);
+}
+
+.main-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    margin: 2rem 1rem 2rem 0;
+    padding: 4rem 1rem 1rem;
+
+    border-radius: 0 0.5rem 0.5rem 0;
+    background-color: var(--bg-darker);
+}
+
+.sidebar {
+    flex: 0 0 240px;
+
+    margin: 4rem 1rem;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    text-align: center;
+
+    color: var(--text-primary);
+}
+
+.main-nav {
+    margin-top: 4rem;
+}
+
+.main-nav a {
+    font-size: 1.2rem;
+
+    display: block;
+
+    width: 100%;
+    padding: 0.8rem 2rem;
+
+    color: var(--text-secondary);
+    border-radius: 0.5rem;
+}
+
+.main-nav a:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-darker);
+}
+
+.main-nav a.selected {
+    color: var(--text-primary);
+    outline: 1px solid var(--border-primary);
+    background-color: var(--bg-secondary);
+}

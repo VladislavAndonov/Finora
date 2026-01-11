@@ -1,11 +1,10 @@
-const root = document.querySelector("body");
+import { html } from 'https://esm.run/lit-html@1';
 
-export function loginPage() {
-    root.innerHTML = `
-    <body>
-        <div class="login">
+export const loginView = (ctx) =>
+    ctx.render(html`
+        <section class=login>
             <div class="login-layout">
-                <form class="login-form" action="/login" method="POST">
+                <form class="login-form" action="/auth/login" method="POST">
                     <h2>Sign in</h2>
 
                     <fieldset>
@@ -25,7 +24,5 @@ export function loginPage() {
                     </div>
                 </form>
             </div>
-        </div>
-    </body>
-`
-}
+        </section>
+    `);

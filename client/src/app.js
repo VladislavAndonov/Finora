@@ -1,15 +1,17 @@
-import page from "//unpkg.com/page/page.mjs"
-import { calendarPage } from "./views/calendar.js";
-import { homePage } from "./views/home.js"
-import { loginPage } from "./views/login.js";
-import { notFoundPage } from "./views/notFound.js";
-import { registerPage } from "./views/register.js";
+import page from "//unpkg.com/page/page.mjs";
 
-page("/", homePage);
-page("/index.html", "/");
-page("/calendar", calendarPage);
-page("/auth/login", loginPage);
-page("/auth/register", registerPage);
-page("*", notFoundPage)
+import { withAppShell, withoutShell } from "./middlewares/render.js"
+import { homeView } from "./views/home.js";
+import { loginView } from "./views/login.js";
+import { registerView } from "./views/register.js";
+import { notFoundView } from "./views/notFound.js";
+import { calendarView } from "./views/calendar.js";
+
+
+page("/", withAppShell, homeView);
+page("/auth/login", withoutShell, loginView);
+page("/auth/register", withoutShell, registerView);
+page("/calendar", withAppShell, calendarView)
+page("*", withoutShell, notFoundView)
 
 page();
