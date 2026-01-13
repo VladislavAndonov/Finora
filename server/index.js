@@ -1,4 +1,4 @@
-import express, { urlencoded } from 'express';
+import express from 'express';
 import routes from "./routes.js";
 import cors from "cors";
 import mongoose from "mongoose"
@@ -15,10 +15,10 @@ try {
 const app = express();
 const port = 3000;
 
-app.use(urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cors());
 app.use(routes);
 
 app.listen(port, () => {
-    console.log(`Server is listening on port http://localhost:${port}`);
+    console.log(`Server listening on port http://localhost:${port}`);
 });

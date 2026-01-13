@@ -32,6 +32,12 @@
     margin-bottom: 1rem;
 }
 
+.login .err-message p {
+    font-weight: 600;
+
+    color: var(--error);
+}
+
 .login-form fieldset {
     display: flex;
     flex-direction: column;
@@ -90,7 +96,7 @@
     border-radius: 2rem;
 }
 
-.login-form .sign-up-button {
+.login-form .sign-up-link {
     font-size: 1.2em;
 
     color: var(--primary);
@@ -98,7 +104,7 @@
     background-color: transparent;
 }
 
-.login-form .sign-up-button:hover {
+.login-form .sign-up-link:hover {
     cursor: pointer;
     text-decoration: underline;
 }

@@ -33,6 +33,12 @@
     margin-bottom: 1rem;
 }
 
+.register .err-message p {
+    font-weight: 600;
+
+    color: var(--error);
+}
+
 .register-form fieldset {
     display: flex;
     flex-direction: column;
@@ -43,6 +49,7 @@
 .register-form input {
     padding: 0.4rem 0.8rem;
 
+    color: var(--text-primary);
     border: none;
     border-radius: 0.4rem;
     outline: 1px solid var(--border-primary);
@@ -90,7 +97,7 @@
     border-radius: 2rem;
 }
 
-.register-form .sign-in-button {
+.register-form .sign-in-link {
     font-size: 1.2em;
 
     color: var(--primary);
@@ -98,7 +105,7 @@
     background-color: transparent;
 }
 
-.register-form .sign-in-button:hover {
+.register-form .sign-in-link:hover {
     cursor: pointer;
     text-decoration: underline;
 }

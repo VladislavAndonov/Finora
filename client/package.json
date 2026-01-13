@@ -3,8 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "scripts": {
+    "start": "lite-server"
+  },
   "dependencies": {
     "lit-html": "^3.3.2",
     "page": "^1.3.7"
+  },
+  "devDependencies": {
+    "lite-server": "^2.6.1"
   }
 }

@@ -9,9 +9,10 @@ import { calendarView } from "./views/calendar.js";
 
 
 page("/", withAppShell, homeView);
+page("/index.html", "/");
 page("/auth/login", withoutShell, loginView);
 page("/auth/register", withoutShell, registerView);
-page("/calendar", withAppShell, calendarView)
-page("*", withoutShell, notFoundView)
+page("/calendar", withAppShell, calendarView);
+page("*", withoutShell, notFoundView);
 
 page();

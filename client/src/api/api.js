@@ -9,8 +9,8 @@ async function request(url, options) {
             throw new Error(`Response status: ${response.status}`);
         }
         try {
-            const result = await response.json();
-            return result;
+            const data = await response.json();
+            return data;
         } catch (err) {
             return response;
         }
@@ -53,7 +53,7 @@ export async function del(url) {
 }
 
 export async function login(email, password) {
-    const result = post(host + "/auth/login", { email, password });
+    const result = await post(settings.host + "/auth/login", { email, password });
 
     sessionStorage.setItem("email", result.email);
     sessionStorage.setItem("authToken", result.accessToken);
@@ -62,8 +62,8 @@ export async function login(email, password) {
     return result;
 }
 
-export async function register(email, password) {
-    const result = post(host + "/auth/register", { email, password });
+export async function register(username, email, password) {
+    const result = await post(settings.host + "/auth/register", { username, email, password });
 
     sessionStorage.setItem("email", result.email);
     sessionStorage.setItem("authToken", result.accessToken);
@@ -73,7 +73,7 @@ export async function register(email, password) {
 }
 
 export async function logout() {
-    const result = get(host + "/auth/logout");
+    const result = get(settings.host + "/auth/logout");
 
     sessionStorage.removeItem("email");
     sessionStorage.removeItem("authToken");
