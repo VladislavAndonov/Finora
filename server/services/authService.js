@@ -1,6 +1,7 @@
-import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+import { User } from "../models/User.js";
 import config from "../config/config.js";
 
 
@@ -36,18 +37,13 @@ const authService = {
     }
 }
 
-async function buildAuthResponse(user) {
+function buildAuthResponse(user) {
     const payload = {
         _id: user._id,
         email: user.email,
     };
 
-    const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: "2h" }, async (err, token) => {
-        if (err) {
-            throw new Error(err.message);
-        };
-        return token;
-    });
+    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "2h" });
 
     return { ...payload, accessToken: token }
 }

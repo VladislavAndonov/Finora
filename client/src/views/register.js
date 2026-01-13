@@ -43,7 +43,7 @@ export const registerTemplate = (onSubmit, errMessage) =>
         </section>
     `;
 
-export async function registerView(ctx, onSubmit) {
+export async function registerView(ctx) {
     ctx.render(registerTemplate(onSubmit));
 
     async function onSubmit(event) {
@@ -61,7 +61,7 @@ export async function registerView(ctx, onSubmit) {
             return ctx.render(registerTemplate(onSubmit, "Passwords should match!"));
         }
 
-        await register(email, password);
+        await register(username, email, password);
 
         ctx.page.redirect("/");
     }
