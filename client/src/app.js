@@ -6,13 +6,20 @@ import { loginView } from "./views/login.js";
 import { registerView } from "./views/register.js";
 import { notFoundView } from "./views/notFound.js";
 import { calendarView } from "./views/calendar.js";
+import { logout } from "./api/data.js";
 
 
 page("/", withAppShell, homeView);
 page("/index.html", "/");
+page("/calendar", withAppShell, calendarView);
+
 page("/auth/login", withoutShell, loginView);
 page("/auth/register", withoutShell, registerView);
-page("/calendar", withAppShell, calendarView);
+page("/auth/logout", async () => {
+    await logout();
+    page.redirect("/auth/login");
+});
+
 page("*", withoutShell, notFoundView);
 
 page();
