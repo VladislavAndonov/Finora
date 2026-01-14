@@ -13,6 +13,8 @@ const authService = {
         }
 
         const createdUser = await User.create({ username, email, password });
+
+        console.log("User register successfully");
         return buildAuthResponse(createdUser);
     },
 
@@ -23,16 +25,17 @@ const authService = {
         }
 
         const isPassValid = await bcrypt.compare(password, user.password);
+
         if (!isPassValid) {
             throw new Error("Invalid credentials");
         }
 
+        console.log("Successful login");
         return buildAuthResponse(user);
     },
 
     async logout() {
-        // TODO: Invalidate Token;
-
+        // Invalidate token
         return true;
     }
 }
@@ -41,11 +44,12 @@ function buildAuthResponse(user) {
     const payload = {
         _id: user._id,
         email: user.email,
+        username: user.username
     };
 
-    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "2h" });
+    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "30m" });
 
-    return { ...payload, accessToken: token }
+    return { payload, token }
 }
 
 export default authService;
