@@ -1,6 +1,5 @@
 import page from "//unpkg.com/page/page.mjs";
 
-import { withAppShell, withoutShell } from "./middlewares/render.js"
 import { homeView } from "./views/home.js";
 import { loginView } from "./views/login.js";
 import { registerView } from "./views/register.js";
