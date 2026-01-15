@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authService from "../services/authService.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const authController = Router();
 
@@ -12,8 +13,8 @@ authController.post("/register", async (req, res) => {
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 30
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 15
         });
 
         res.json(result.payload);
@@ -31,8 +32,8 @@ authController.post("/login", async (req, res) => {
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "strict",
-            maxAge: 1000 * 60 * 30
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 15
         });
 
         res.json(result.payload);
@@ -47,12 +48,16 @@ authController.get("/logout", async (req, res) => {
     res.clearCookie('accessToken', {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict'
+        sameSite: 'lax'
     });
 
     res.status(204).end();
 })
 
+authController.get("/me", authMiddleware, (req, res) => {
+    const { _id, email, username } = req.user
+    res.json({ _id, email, username });
+});
 
 
 export default authController
