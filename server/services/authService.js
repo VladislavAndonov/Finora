@@ -14,7 +14,6 @@ const authService = {
 
         const createdUser = await User.create({ username, email, password });
 
-        console.log("User register successfully");
         return buildAuthResponse(createdUser);
     },
 
@@ -30,7 +29,6 @@ const authService = {
             throw new Error("Invalid credentials");
         }
 
-        console.log("Successful login");
         return buildAuthResponse(user);
     },
 
@@ -47,7 +45,7 @@ function buildAuthResponse(user) {
         username: user.username
     };
 
-    const token = jwt.sign(user._id, config.jwtSecret, { expiresIn: "30m" });
+    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "15m" });
 
     return { payload, token }
 }
