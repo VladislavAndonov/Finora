@@ -23,4 +23,5 @@ page("/auth/logout", async () => {
 
 page("*", withoutShell, notFoundView);
 
-page();
+verifySession();
+page.start();

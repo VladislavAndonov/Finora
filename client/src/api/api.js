@@ -76,9 +76,15 @@ export async function register(username, email, password) {
 export async function logout() {
     const result = get(settings.host + "/auth/logout");
 
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("email");
-    sessionStorage.removeItem("username");
+    clearAuth();
+}
 
-    return result
+export async function verifySession() {
+    try {
+        const user = await get("/auth/me");
+
+        setAuth(user);
+    } catch {
+        clearAuth();
+    }
 }
