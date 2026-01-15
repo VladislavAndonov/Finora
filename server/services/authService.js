@@ -47,7 +47,7 @@ function buildAuthResponse(user) {
         username: user.username
     };
 
-    const token = jwt.sign(payload, config.jwtSecret, { expiresIn: "30m" });
+    const token = jwt.sign(user._id, config.jwtSecret, { expiresIn: "30m" });
 
     return { payload, token }
 }
