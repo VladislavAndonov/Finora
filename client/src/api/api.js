@@ -1,33 +1,37 @@
+import { clearAuth, setAuth } from '../state/auth.js';
+import page from '//unpkg.com/page/page.mjs';
+
 export const settings = {
     host: ""
 }
 
 async function request(url, options) {
+    const response = await fetch(settings.host + url, options);
+    if (response.status === 401) {
+        clearAuth();
+        page.redirect("/auth/login");
+        throw new Error("Unauthorized");
+    }
+
+    if (!response.ok) {
+        throw new Error("Request failed");
+    }
+
     try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-        try {
-            const data = await response.json();
-            return data;
-        } catch (err) {
-            return response;
-        }
+        const data = await response.json();
+        return data;
     } catch (err) {
-        console.log(err.message)
+        return response;
     }
 }
 
 function getOptions(method = "get", body) {
     const options = {
         method,
+        credentials: "include",
         headers: {}
     }
-    const token = sessionStorage.getItem("authToken");
-    if (token != null) {
-        options.headers["X-Authorization"] = token;
-    }
+
     if (body) {
         options.headers["Content-Type"] = "application/json";
         options.body = JSON.stringify(body);
@@ -37,47 +41,47 @@ function getOptions(method = "get", body) {
 }
 
 export async function get(url) {
-    return await request(url, getOptions());
+    return request(url, getOptions());
 }
 
 export async function post(url, data) {
-    return await request(url, getOptions("post", data));
+    return request(url, getOptions("post", data));
 }
 
 export async function put(url, data) {
-    return await request(url, getOptions("put", data));
+    return request(url, getOptions("put", data));
 }
 
 export async function del(url) {
-    return await request(url, getOptions("delete"));
+    return request(url, getOptions("delete"));
 }
 
 export async function login(email, password) {
-    const result = await post(settings.host + "/auth/login", { email, password });
+    const user = await post("/auth/login", { email, password });
 
-    sessionStorage.setItem("email", result.email);
-    sessionStorage.setItem("authToken", result.accessToken);
-    sessionStorage.setItem("userId", result._id);
-
-    return result;
+    setAuth(user);
+    return user;
 }
 
 export async function register(username, email, password) {
-    const result = await post(settings.host + "/auth/register", { username, email, password });
+    const user = await post("/auth/register", { username, email, password });
 
-    sessionStorage.setItem("email", result.email);
-    sessionStorage.setItem("authToken", result.accessToken);
-    sessionStorage.setItem("userId", result._id);
-
-    return result;
+    setAuth(user);
+    return user;
 }
 
 export async function logout() {
-    const result = get(settings.host + "/auth/logout");
+    await get("/auth/logout");
 
-    sessionStorage.removeItem("email");
-    sessionStorage.removeItem("authToken");
-    sessionStorage.removeItem("userId")
+    clearAuth();
+}
 
-    return result
+export async function verifySession() {
+    try {
+        const user = await get("/auth/me");
+
+        setAuth(user);
+    } catch {
+        clearAuth();
+    }
 }

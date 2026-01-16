@@ -3,6 +3,7 @@ import routes from "./routes.js";
 import cors from "cors";
 import mongoose from "mongoose"
 import config from './config/config.js';
+import cookieParser from 'cookie-parser';
 
 
 try {
@@ -16,7 +17,11 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5000",
+    credentials: true
+}));
+app.use(cookieParser())
 app.use(routes);
 
 app.listen(port, () => {
