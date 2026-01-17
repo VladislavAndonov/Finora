@@ -7,10 +7,8 @@ const routes = Router();
 
 routes.use("/auth", authController);
 
-routes.use("/transactions", transactionController);
-
 routes.use(authMiddleware);
 
-
+routes.use("/transactions", transactionController);
 
 export default routes

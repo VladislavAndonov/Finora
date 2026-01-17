@@ -14,7 +14,7 @@ authController.post("/register", async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "lax",
-            maxAge: 1000 * 60 * 15
+            maxAge: 1000 * 60 * 30
         });
 
         res.json(result.payload);
@@ -33,7 +33,7 @@ authController.post("/login", async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "lax",
-            maxAge: 1000 * 60 * 15
+            maxAge: 1000 * 60 * 30
         });
 
         res.json(result.payload);
