@@ -9,19 +9,21 @@ const navLinks = [
 ];
 
 export const appLayout = (content, ctx) => {
+    const username = sessionStorage.getItem("username");
+
     return html`
         <div class="container">
-            ${sidebar(ctx.path)}
+            ${sidebar(ctx.path, username)}
             <main class="main-content">
                 ${content}
             </main>
         </div>`;
 }
 
-const sidebar = (currPath) =>
+const sidebar = (currPath, username) =>
     html`
     <aside class=sidebar>
-        <p class="profile-name">John Doe</p>
+        <p class="profile-name">${username}</p>
         <ul class="main-nav">
             ${renderLinks(currPath)}
         </ul>
