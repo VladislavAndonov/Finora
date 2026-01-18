@@ -8,11 +8,11 @@ export const register = api.register;
 export const logout = api.logout;
 export const verifySession = api.verifySession;
 
-export async function getTransactions() {
+export async function getAll() {
     return await api.get("/transactions");
 }
 
-export async function getLatestTransactions() {
+export async function getLatest() {
     return await api.get("/transactions/latest");
 }
 

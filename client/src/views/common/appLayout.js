@@ -2,8 +2,7 @@ import { html } from 'https://esm.run/lit-html@1';
 
 const navLinks = [
     { label: "Home", path: "/" },
-    { label: "Expenses", path: "/expenses" },
-    { label: "Income", path: "/income" },
+    { label: "Transactions", path: "/transactions" },
     { label: "Calendar", path: "/calendar" },
     { label: "Logout", path: "/auth/logout" },
 ];
