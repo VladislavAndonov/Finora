@@ -8,20 +8,45 @@ export const register = api.register;
 export const logout = api.logout;
 export const verifySession = api.verifySession;
 
-export async function getAll() {
-    return await api.get("/transactions");
-}
+export async function getTransactions(filters = {}, options = {}) {
+    const params = new URLSearchParams();
+    const {
+        type,
+        year,
+        month,
+        date,
+    } = filters;
 
-export async function getLatest() {
-    return await api.get("/transactions/latest");
-}
+    const {
+        sort = "date",
+        order = "desc",
+        limit = 100
+    } = options;
 
-export async function getExpenses() {
-    return await api.get("/transactions/expenses");
-}
+    // Filters
+    if (type) {
+        params.append("type", type);
+    }
+    if (year && month) {
+        params.append("year", year);
+        params.append("month", month);
+    }
+    if (date) {
+        params.append("date", date);
+    }
 
-export async function getIncome() {
-    return await api.get("/transactions/income");
+    // Query options
+    params.append("sort", sort);
+    params.append("order", order);
+    params.append("limit", limit)
+
+    const queryString = params.toString();
+
+    if (queryString) {
+        return api.get(`/transactions/?${queryString}`)
+    } else {
+        return api.get("/transactions")
+    }
 }
 
 export async function getTransactionById(id) {
