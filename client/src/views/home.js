@@ -1,6 +1,8 @@
 import { html } from 'https://esm.run/lit-html@1';
-import { getExpenses, getIncome, getAll } from '../api/data.js';
+import { getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
+
+const queryOptions = { limit: 10 }
 
 const homeTemplate = (filters, transactions) =>
     html`
@@ -22,20 +24,20 @@ const homeTemplate = (filters, transactions) =>
 
 
 export async function homeView(ctx) {
-    let transactions = await getAll();
+    let transactions = await getTransactions({}, queryOptions);
 
     const showAll = async () => {
-        transactions = await getAll();
+        transactions = await getTransactions({}, queryOptions);
         setActive("All");
         updateTransactions(transactions);
     };
     const showExpenses = async () => {
-        transactions = await getExpenses();
+        transactions = await getTransactions({ type: "expenses" }, queryOptions);
         setActive("Expenses");
         updateTransactions(transactions);
     };
     const showIncome = async () => {
-        transactions = await getIncome();
+        transactions = await getTransactions({ type: "income" }, queryOptions);
         setActive("Income");
         updateTransactions(transactions);
     };
