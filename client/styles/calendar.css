@@ -99,3 +99,8 @@
     outline: 4px solid var(
     --primary)
 }
+
+.dates .has-transactions {
+    color: var(
+    --primary-light)
+}

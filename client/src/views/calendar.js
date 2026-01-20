@@ -17,13 +17,13 @@ const months = [
     "December"
 ];
 
-const calendarTemplate = (currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate, transactions) =>
+const calendarTemplate = (currentDate, dateTemplate, showPrevMonth, showNextMonth, selectDate, transactions) =>
     html`
     <div class="calendar">
         <div class="calendar-wrapper">
             <header class="calendar-header">
                 <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                <h3 class=current-date>${months[currDate.getMonth()]} ${currDate.getFullYear()}</h3>
+                <h3 class=current-date>${months[currentDate.getMonth()]} ${currentDate.getFullYear()}</h3>
                 <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
             </header>
 
@@ -40,7 +40,7 @@ const calendarTemplate = (currDate, datesTemplate, showPrevMonth, showNextMonth,
                 </ul>
 
                 <ul class="dates" @click=${selectDate}>
-                    ${datesTemplate}
+                    ${dateTemplate}
                 </ul>
             </div>
         </div>
@@ -51,63 +51,106 @@ const calendarTemplate = (currDate, datesTemplate, showPrevMonth, showNextMonth,
 
 
 export async function calendarView(ctx) {
-    const today = new Date();
-    let selectedDate = today;
-    let currDate = new Date();
-    let transactions = await getTransactions({ year: selectedDate.getFullYear(), month: selectedDate.getMonth(), date: selectedDate.getDate() }, {});
-
-    const showPrevMonth = () => {
-        currDate = new Date(currDate.getFullYear(), currDate.getMonth() - 1, 1);
-        updateMonth(ctx)
+    const state = {
+        today: new Date(),
+        currentDate: new Date(),
+        selectedDate: new Date(),
+        monthTransactions: [],
+        selectedDateTransactions: []
     }
 
-    const showNextMonth = () => {
-        currDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 1);
-        updateMonth(ctx)
+    state.monthTransactions = await getTransactions({ year: state.currentDate.getFullYear(), month: state.currentDate.getMonth() });
+    state.selectedDateTransactions = await getTransactions({ year: state.selectedDate.getFullYear(), month: state.selectedDate.getMonth(), date: state.selectedDate.getDate() });
+
+    const showPrevMonth = async () => {
+        state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
+        state.monthTransactions = await getTransactions({ year: state.currentDate.getFullYear(), month: state.currentDate.getMonth() });
+
+        updateCalendar(ctx)
+    }
+
+    const showNextMonth = async () => {
+        state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1, 1);
+        state.monthTransactions = await getTransactions({ year: state.currentDate.getFullYear(), month: state.currentDate.getMonth() });
+
+        updateCalendar(ctx)
     }
 
     const selectDate = async (e) => {
         if (e.target.tagName === 'LI') {
-            selectedDate = new Date(currDate.getFullYear(), currDate.getMonth(), e.target.textContent);
+            const day = Number(e.target.dataset.day);
+            state.selectedDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth(), day);
+
+            state.selectedDateTransactions = await getTransactions({ year: state.selectedDate.getFullYear(), month: state.selectedDate.getMonth(), date: state.selectedDate.getDate() });
+
+            updateCalendar(ctx)
         }
-        transactions = await getTransactions({ year: selectedDate.getFullYear(), month: selectedDate.getMonth(), date: selectedDate.getDate() }, {});
-
-        updateMonth(ctx, transactions)
     }
 
-    const renderDates = (datesTemplate, monthLastDate, monthStartPosition) => {
-        for (let i = 1; i <= monthLastDate; i++) {
-            let isToday = false;
-            let isSelected = false;
-            if (today.getFullYear() === currDate.getFullYear() && today.getMonth() === currDate.getMonth() && today.getDate() === i) {
-                isToday = true;
-            }
-            if (selectedDate.getFullYear() === currDate.getFullYear() && selectedDate.getMonth() === currDate.getMonth() && selectedDate.getDate() === i) {
-                isSelected = true
-            }
-            if (i === 1) {
-                datesTemplate.push(html`
-            <li class="grid-item-${i} ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}" style="grid-column: ${monthStartPosition}">${i}</li>`)
-            } else {
-                datesTemplate.push(html`
-            <li class="grid-item-${i} ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}">${i}</li>`)
-            }
-        };
-    }
+    // Builds an array of date objects to render them later. Each one contains properties like isToday, isSelected etc.
+    const buildDates = (state) => {
+        const todayYear = state.today.getFullYear();
+        const todayMonth = state.today.getMonth();
+        const todayDay = state.today.getDate();
 
-    const updateMonth = (ctx) => {
-        const firstWeekday = new Date(currDate.getFullYear(), currDate.getMonth(), 1).getDay();
-        const monthLastDate = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate();
+        const currentYear = state.currentDate.getFullYear();
+        const currentMonth = state.currentDate.getMonth();
 
+        const selectedYear = state.selectedDate.getFullYear();
+        const selectedMonth = state.selectedDate.getMonth();
+        const selectedDay = state.selectedDate.getDate();
+
+        const firstWeekday = new Date(currentYear, currentMonth, 1).getDay();
+        const monthLastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
         // Convert weekday (0-6, Sun-Sat) to 1-7 position (Mon-Sun)
-        let monthStartPosition = (firstWeekday + 6) % 7 + 1
+        const startColumn = (firstWeekday + 6) % 7 + 1
 
+        const dates = [];
 
-        const datesTemplate = [];
+        // Add unique days that has any transactions into a set
+        const transactionDays = new Set();
 
-        renderDates(datesTemplate, monthLastDate, monthStartPosition)
-        ctx.render(calendarTemplate(currDate, datesTemplate, showPrevMonth, showNextMonth, selectDate, transactions));
+        for (let i = 0; i < state.monthTransactions.length; i++) {
+            const day = new Date(state.monthTransactions[i].date).getDate();
+            transactionDays.add(day)
+        }
+
+        for (let day = 1; day <= monthLastDate; day++) {
+            let dateObj = {
+                day: day,
+                isToday: false,
+                isSelected: false,
+                hasTransactions: false,
+                startColumn: null
+            }
+
+            if (todayYear === currentYear && todayMonth === currentMonth && todayDay === day) {
+                dateObj.isToday = true;
+            }
+            if (selectedYear === currentYear && selectedMonth === currentMonth && selectedDay === day) {
+                dateObj.isSelected = true;
+            }
+
+            if (transactionDays.has(day)) {
+                dateObj.hasTransactions = true;
+            }
+
+            if (day === 1) {
+                dateObj.startColumn = startColumn;
+            }
+            dates.push(dateObj)
+        };
+        return dates
     }
 
-    updateMonth(ctx);
+    function renderDate(dates) {
+        return dates.map((d) => html`<li class="${d.startColumn ? `grid-item-${d.startColumn} ` : ""}${d.isToday ? "today " : ""}${d.isSelected ? "selected " : ""}${d.hasTransactions ? "has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>`)
+    }
+
+    const updateCalendar = () => {
+        const dates = buildDates(state);
+        ctx.render(calendarTemplate(state.currentDate, renderDate(dates), showPrevMonth, showNextMonth, selectDate, state.selectedDateTransactions));
+    }
+
+    updateCalendar(ctx);
 }
