@@ -18,8 +18,6 @@ export async function getTransactions(filters = {}, options = {}) {
     } = filters;
 
     const {
-        sort = "date",
-        order = "desc",
         limit = 100
     } = options;
 
@@ -27,8 +25,10 @@ export async function getTransactions(filters = {}, options = {}) {
     if (type) {
         params.append("type", type);
     }
-    if (year && month) {
+    if (year) {
         params.append("year", year);
+    }
+    if (month || month !== undefined) {
         params.append("month", month);
     }
     if (date) {
@@ -36,8 +36,6 @@ export async function getTransactions(filters = {}, options = {}) {
     }
 
     // Query options
-    params.append("sort", sort);
-    params.append("order", order);
     params.append("limit", limit)
 
     const queryString = params.toString();
