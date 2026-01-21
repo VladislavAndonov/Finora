@@ -10,8 +10,6 @@
     padding: 2rem;
 
     color: var(--text-primary);
-    border: 1px, solid, var(--border-primary);
-    border-radius: 0.5rem;
 }
 
 .calendar-wrapper {
@@ -22,13 +20,12 @@
 
 .calendar-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
 
     padding: 0.5rem 2rem;
 
     border-bottom: 1px solid var(--text-secondary);
-    border-radius: 0.1rem;
 }
 
 .current-date {
@@ -37,7 +34,7 @@
 
 .prev,
 .next {
-    font-size: 20px;
+    font-size: 1.5rem;
     color: var(
     --text-secondary)
 }
@@ -58,17 +55,15 @@
 
     text-align: center;
 
-    color: var(--text-secondary);
+    color: var(--text-muted);
 
     grid-template-columns: repeat(7, 1fr);
 }
 
 .dates {
-    font-weight: 600;
-
     display: grid;
 
-    color: var(--text-primary);
+    color: var(--text-secondary);
 
     grid-template-columns: repeat(7, 1fr);
     grid-row-start: 1;
@@ -101,6 +96,7 @@
 }
 
 .dates .has-transactions {
-    color: var(
-    --primary-light)
+    font-weight: 700;
+
+    color: var(--text-primary);
 }

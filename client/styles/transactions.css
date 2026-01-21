@@ -1,0 +1,19 @@
+.transactions {
+    display: flex;
+    flex-direction: column;
+}
+
+.transactions-wrapper {
+    min-width: 800px;
+    margin: 0 auto;
+}
+
+.transactions-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    padding: 0.5rem 2rem;
+
+    border-bottom: 1px solid var(--text-secondary);
+}
