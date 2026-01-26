@@ -49,6 +49,8 @@ transactionController.get("/", async (req, res) => {
 transactionController.get("/:id", async (req, res) => {
     const transaction = await transactionService.getOne(req.params.id);
 
+    // TODO: Add validations? (if user is not an owner)
+
     res.json(transaction);
 })
 
@@ -64,7 +66,12 @@ transactionController.post("/", async (req, res) => {
 });
 
 transactionController.put("/:id", async (req, res) => {
-    const transaction = await transactionService.update(req.params.id, req.body)
+    const ownerId = req.user._id;
+    const { title, type, amount, date, category } = req.body
+
+    const transaction = await transactionService.update({ title, ownerId, type, amount, date, category });
+
+    // TODO: Copy the validations from create
 
     res.json(transaction);
 })

@@ -51,11 +51,11 @@ export async function getTransactionById(id) {
     return await api.get("/transactions/" + id);
 }
 
-export async function addTransaction(data) {
-    return await api.post("/transactions/", data);
+export async function addTransaction({ title, type, amount, date = new Date(), category = "general" }) {
+    return await api.post("/transactions/", { title, type, amount, date, category });
 }
 
-export async function editTransaction(data) {
+export async function editTransaction(id, data) {
     return await api.put("/transactions/" + id, data);
 }
 
