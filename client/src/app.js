@@ -8,10 +8,12 @@ import { calendarView } from "./views/calendar.js";
 import { withAppShell, withoutShell } from "./middlewares/render.js"
 import { authGuard, guestGuard } from "./middlewares/guards.js";
 import { logout, verifySession } from "./api/data.js";
+import { transactionsView } from "./views/transactions.js";
 
 page("/", authGuard, withAppShell, homeView);
 page("/index.html", "/");
 page("/calendar", authGuard, withAppShell, calendarView);
+page("/transactions", authGuard, withAppShell, transactionsView);
 
 page("/auth/login", guestGuard, withoutShell, loginView);
 page("/auth/register", guestGuard, withoutShell, registerView);

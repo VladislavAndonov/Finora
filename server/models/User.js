@@ -17,7 +17,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    balance: { type: Number, default: 0 }
+    balance: { type: Number, default: null }
 });
 
 userSchema.pre("save", async function () {

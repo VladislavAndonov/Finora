@@ -2,26 +2,27 @@ import { html } from 'https://esm.run/lit-html@1';
 
 const navLinks = [
     { label: "Home", path: "/" },
-    { label: "Expenses", path: "/expenses" },
-    { label: "Income", path: "/income" },
+    { label: "Transactions", path: "/transactions" },
     { label: "Calendar", path: "/calendar" },
     { label: "Logout", path: "/auth/logout" },
 ];
 
 export const appLayout = (content, ctx) => {
+    const username = sessionStorage.getItem("username");
+
     return html`
         <div class="container">
-            ${sidebar(ctx.path)}
+            ${sidebar(ctx.path, username)}
             <main class="main-content">
                 ${content}
             </main>
         </div>`;
 }
 
-const sidebar = (currPath) =>
+const sidebar = (currPath, username) =>
     html`
     <aside class=sidebar>
-        <p class="profile-name">John Doe</p>
+        <p class="profile-name">${username}</p>
         <ul class="main-nav">
             ${renderLinks(currPath)}
         </ul>
