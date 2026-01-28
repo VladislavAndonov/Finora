@@ -60,8 +60,6 @@ transactionController.post("/", async (req, res) => {
 
     const transaction = await transactionService.create({ title, ownerId, type, amount, date, category });
 
-    // TODO: Add validations
-
     res.json(transaction);
 });
 
@@ -69,9 +67,7 @@ transactionController.put("/:id", async (req, res) => {
     const ownerId = req.user._id;
     const { title, type, amount, date, category } = req.body
 
-    const transaction = await transactionService.update({ title, ownerId, type, amount, date, category });
-
-    // TODO: Copy the validations from create
+    const transaction = await transactionService.update(req.params.id, { title, ownerId, type, amount, date, category });
 
     res.json(transaction);
 })
