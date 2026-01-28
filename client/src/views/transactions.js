@@ -1,33 +1,19 @@
 import { html } from 'https://esm.run/lit-html@1';
 import { getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
+import { getMonthAndYearLabel } from '../utils/dateUtils.js';
 
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
-
-const transactionsTemplate = (transactions, currentDate, showPrevMonth, showNextMonth) =>
+const transactionsTemplate = ({ transactions, currentDate, showPrevMonth, showNextMonth, filters }) =>
     html`<div class="transactions">
             <div class="transactions-wrapper">
                 <header class="transactions-header">
                     <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                    <h3 class=current-date>${months[currentDate.getMonth()]} ${currentDate.getFullYear()}</h3>
+                    <h3 class=current-date>${getMonthAndYearLabel(currentDate)}</h3>
                     <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
                 </header>
-                <div class=transaction-list>
-                    ${transactions.length ? transactionList(transactions) : html`<p>No transactions for ${months[currentDate.getMonth()]}</p>`}
-                </div>
+                <section class=transaction-list>
+                    ${transactionList(filters, transactions)}
+                </section>
             </div>
         </div>`;
 
@@ -42,6 +28,51 @@ export const transactionsView = async (ctx) => {
         month: state.currentDate.getMonth()
     });
 
+    const showAllTransactions = async () => {
+        state.monthTransactions = await getTransactions({
+            year: state.currentDate.getFullYear(),
+            month: state.currentDate.getMonth()
+        });
+        setActive("All");
+        update();
+    };
+
+    const showExpenses = async () => {
+        state.monthTransactions = await getTransactions({
+            year: state.currentDate.getFullYear(),
+            month: state.currentDate.getMonth(),
+            type: "expenses"
+        });
+        setActive("Expenses");
+        update();
+    };
+
+    const showIncome = async () => {
+        state.monthTransactions = await getTransactions({
+            year: state.currentDate.getFullYear(),
+            month: state.currentDate.getMonth(),
+            type: "income"
+        });
+        setActive("Income");
+        update();
+    };
+
+    const filters = [
+        { label: "All", onClick: showAllTransactions, active: true },
+        { label: "Expenses", onClick: showExpenses, active: false },
+        { label: "Income", onClick: showIncome, active: false }
+    ];
+
+    const setActive = (label) => {
+        filters.forEach(f => {
+            if (f.label === label) {
+                f.active = true;
+            } else {
+                f.active = false;
+            }
+        });
+    };
+
     const showPrevMonth = async () => {
         state.currentDate = new Date(
             state.currentDate.getFullYear(),
@@ -53,7 +84,7 @@ export const transactionsView = async (ctx) => {
             month: state.currentDate.getMonth()
         });
 
-        update(ctx)
+        update()
     }
 
     const showNextMonth = async () => {
@@ -67,12 +98,12 @@ export const transactionsView = async (ctx) => {
             month: state.currentDate.getMonth()
         });
 
-        update(ctx)
+        update()
     }
 
     const update = () => {
-        ctx.render(transactionsTemplate(state.monthTransactions, state.currentDate, showPrevMonth, showNextMonth));
+        ctx.render(transactionsTemplate({ transactions: state.monthTransactions, currentDate: state.currentDate, showPrevMonth, showNextMonth, filters }));
     }
 
-    update()
+    update();
 }

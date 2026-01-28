@@ -1,29 +1,15 @@
 import { html } from 'https://esm.run/lit-html@1';
 import { transactionList } from './common/transactionList.js';
 import { getTransactions } from '../api/data.js';
+import { getMonthAndYearLabel } from '../utils/dateUtils.js';
 
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
-
-const calendarTemplate = (currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates) =>
+const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates, filters }) =>
     html`
     <div class="calendar">
         <div class="calendar-wrapper">
             <header class="calendar-header">
                 <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                <h3 class=current-date>${months[currentDate.getMonth()]} ${currentDate.getFullYear()}</h3>
+                <h3 class=current-date>${getMonthAndYearLabel(currentDate)}</h3>
                 <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
             </header>
 
@@ -44,9 +30,9 @@ const calendarTemplate = (currentDate, transactions, showPrevMonth, showNextMont
                 </ul>
             </div>
         </div>
-        <div class=transaction-list>
-            ${transactionList(transactions)}
-        </div>
+        <section class=transaction-list>
+            ${transactionList(filters, transactions)}
+        </section>
     </div>`;
 
 
@@ -63,11 +49,60 @@ export async function calendarView(ctx) {
         year: state.currentDate.getFullYear(),
         month: state.currentDate.getMonth()
     });
+
     state.selectedDateTransactions = await getTransactions({
         year: state.selectedDate.getFullYear(),
         month: state.selectedDate.getMonth(),
         date: state.selectedDate.getDate()
     });
+
+    const showAllTransactions = async () => {
+        state.selectedDateTransactions = await getTransactions({
+            year: state.selectedDate.getFullYear(),
+            month: state.selectedDate.getMonth(),
+            date: state.selectedDate.getDate()
+        });
+        setActive("All");
+        update();
+    };
+
+    const showExpenses = async () => {
+        state.selectedDateTransactions = await getTransactions({
+            year: state.selectedDate.getFullYear(),
+            month: state.selectedDate.getMonth(),
+            date: state.selectedDate.getDate(),
+            type: "expenses"
+        });
+        setActive("Expenses");
+        update();
+    };
+
+    const showIncome = async () => {
+        state.selectedDateTransactions = await getTransactions({
+            year: state.selectedDate.getFullYear(),
+            month: state.selectedDate.getMonth(),
+            date: state.selectedDate.getDate(),
+            type: "income"
+        });
+        setActive("Income");
+        update();
+    };
+
+    const filters = [
+        { label: "All", onClick: showAllTransactions, active: true },
+        { label: "Expenses", onClick: showExpenses, active: false },
+        { label: "Income", onClick: showIncome, active: false }
+    ];
+
+    const setActive = (label) => {
+        filters.forEach(f => {
+            if (f.label === label) {
+                f.active = true;
+            } else {
+                f.active = false;
+            }
+        });
+    };
 
     const showPrevMonth = async () => {
         state.currentDate = new Date(
@@ -112,6 +147,7 @@ export async function calendarView(ctx) {
                 date: state.selectedDate.getDate()
             });
 
+            setActive("All");
             update()
         }
     }
@@ -185,13 +221,15 @@ export async function calendarView(ctx) {
     const update = () => {
         const dates = buildDates();
 
-        ctx.render(calendarTemplate(
-            state.currentDate,
-            state.selectedDateTransactions,
+        ctx.render(calendarTemplate({
+            currentDate: state.currentDate,
+            transactions: state.selectedDateTransactions,
             showPrevMonth,
             showNextMonth,
             selectDate,
-            renderDate(dates)
+            dates: renderDate(dates),
+            filters
+        }
         ));
     }
 

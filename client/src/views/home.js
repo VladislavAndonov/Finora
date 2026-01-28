@@ -4,46 +4,41 @@ import { transactionList } from './common/transactionList.js';
 
 const queryOptions = { limit: 10 }
 
-const homeTemplate = (filters, transactions) =>
+const homeTemplate = ({ filters, transactions }) =>
     html`
     <header class="home-header">
         <h2>Home</h2>
     </header>
-    <section class="bento">
-        <article class="budgets"></article>
-        <article class="line-graph"></article>
-        <article class="transaction-list">
-            <div class="toggle-radio">
-                ${filters.map((f) => html`<input type="radio" name="transactions" .checked=${f.active} id=${f.label.toLowerCase()} @change=${f.onClick}>
-                                        <label for=${f.label.toLowerCase()}>${f.label}</label>`)}
-            </div >
-        ${transactionList(transactions)}
-        </article >
-    </section >
-    `;
+    <div class="bento">
+        <section class="budgets"></section>
+        <section class="line-graph"></section>
+        <section class="transaction-list">
+            ${transactionList(filters, transactions)}
+        </section >
+    </div >`;
 
 
 export async function homeView(ctx) {
     let transactions = await getTransactions({}, queryOptions);
 
-    const showAll = async () => {
+    const showAllTransactions = async () => {
         transactions = await getTransactions({}, queryOptions);
         setActive("All");
-        updateTransactions(transactions);
+        update();
     };
     const showExpenses = async () => {
         transactions = await getTransactions({ type: "expenses" }, queryOptions);
         setActive("Expenses");
-        updateTransactions(transactions);
+        update();
     };
     const showIncome = async () => {
         transactions = await getTransactions({ type: "income" }, queryOptions);
         setActive("Income");
-        updateTransactions(transactions);
+        update();
     };
 
     const filters = [
-        { label: "All", onClick: showAll, active: true },
+        { label: "All", onClick: showAllTransactions, active: true },
         { label: "Expenses", onClick: showExpenses, active: false },
         { label: "Income", onClick: showIncome, active: false }
     ];
@@ -58,9 +53,9 @@ export async function homeView(ctx) {
         });
     };
 
-    const updateTransactions = (trs) => {
-        ctx.render(homeTemplate(filters, trs));
+    const update = () => {
+        ctx.render(homeTemplate({ filters, transactions }));
     }
 
-    ctx.render(homeTemplate(filters, transactions));
+    update()
 }
