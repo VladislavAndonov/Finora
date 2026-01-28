@@ -12,6 +12,10 @@ const addTransactionTemplate = (onSubmit) =>
 
 export const addTransactionView = (ctx) => {
 
+    const now = utcToLocal(new Date());
+    const defaultType = "expenses";
+
+    ctx.render(addTransactionTemplate({ onSubmit, transaction: { date: now, type: defaultType }, submitLabel: 'Add Transaction' }));
 
     async function onSubmit(event) {
         event.preventDefault();

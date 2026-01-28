@@ -13,7 +13,11 @@ const editTransactionTemplate = ({ onSubmit, errMessage, transaction }) =>
 
 export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id
-    const transaction = await getTransactionById(tId)
+    const result = await getTransactionById(tId)
+
+    const transaction = { ...result, date: utcToLocal(result.date) }
+
+    ctx.render(editTransactionTemplate({ onSubmit, onDelete, transaction, submitLabel: 'Edit Transaction' }));
 
     async function onSubmit(event) {
         event.preventDefault();
