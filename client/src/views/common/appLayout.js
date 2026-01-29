@@ -1,5 +1,6 @@
 import { html } from 'https://esm.run/lit-html@1';
 import { modalTemplate } from './modal.js';
+import { navigate } from '../../utils/navigation.js';
 
 export const appLayout = (
     content,
@@ -15,9 +16,9 @@ export const appLayout = (
         <aside class="sidebar">
             <p class="username">${username}</p>
             <nav class="main-nav">
-                <a href="/" class=${currentPath === "/" ? "active" : ""}>Home</a>
-                <a href="/transactions" class=${currentPath === "/transactions" ? "active" : ""}>Transactions</a>
-                <a href="/calendar" class=${currentPath === "/calendar" ? "active" : ""}>Calendar</a>
+                <a @click=${() => navigate("/")} class=${currentPath === "/" ? "active" : ""}>Home</a>
+                <a @click=${() => navigate("/transactions")} class=${currentPath === "/transactions" ? "active" : ""}>Transactions</a>
+                <a @click=${() => navigate("/calendar")} class=${currentPath === "/calendar" ? "active" : ""}>Calendar</a>
                 <a @click=${onLogoutClick}>Logout</a>
             </nav>
         </aside>
