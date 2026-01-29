@@ -41,7 +41,7 @@ export async function getTransactions(filters = {}, options = {}) {
     const queryString = params.toString();
 
     if (queryString) {
-        return api.get(`/transactions/?${queryString}`)
+        return api.get(`/transactions?${queryString}`)
     } else {
         return api.get("/transactions")
     }

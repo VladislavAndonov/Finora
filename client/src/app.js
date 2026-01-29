@@ -7,7 +7,6 @@ import { notFoundView } from "./views/notFound.js";
 import { calendarView } from "./views/calendar.js";
 import { withAppShell, withoutShell } from "./middlewares/render.js"
 import { authGuard, guestGuard } from "./middlewares/guards.js";
-import { verifySession } from "./api/data.js";
 import { transactionsView } from "./views/transactions.js";
 import { addTransactionView } from "./views/addTransaction.js";
 import { editTransactionView } from "./views/editTransaction.js";
@@ -24,5 +23,4 @@ page("/auth/register", guestGuard, withoutShell, registerView);
 
 page("*", withoutShell, notFoundView);
 
-verifySession();
 page.start();

@@ -1,3 +1,4 @@
+import page from "//unpkg.com/page/page.mjs";
 import { html } from 'https://esm.run/lit-html@1';
 import { register } from '../api/data.js';
 
@@ -34,9 +35,9 @@ export const registerTemplate = (onSubmit, errMessage) =>
                     </div>
 
                     <div class="buttons">
-                        <button class="sign-up-button">Sign up</button>
+                        <button class="sign-up-btn">Sign up</button>
                         <p>Or</p>
-                        <a class="sign-in-link" href="/auth/login">Sign in</a>
+                        <button type="button" class="sign-in-btn" @click=${() => page.redirect("/auth/login")}>Sign in</button>
                     </div>
                 </form>
             </div>
