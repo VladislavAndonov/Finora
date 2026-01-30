@@ -62,3 +62,7 @@ export async function editTransaction(id, data) {
 export async function deleteTransaction(id) {
     return await api.del("/transactions/" + id);
 }
+
+export async function getUserBalance() {
+    return await api.get("/balance")
+}

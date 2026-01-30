@@ -1,25 +1,32 @@
 import { html } from 'https://esm.run/lit-html@1';
-import { getTransactions } from '../api/data.js';
+import { getTransactions, getUserBalance } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 
 const queryOptions = { limit: 10 }
 
-const homeTemplate = ({ filters, transactions }) =>
+const homeTemplate = ({ filters, transactions, balance }) =>
     html`
     <header class="home-header">
         <h2>Home</h2>
     </header>
-    <div class="bento">
-        <section class="budgets"></section>
+    <section class="home-layout">
+        <section class="finance-overview">
+            <div class="balance">
+                Balance: €${balance}
+            </div>
+            <div class="monthly-goal">
+            </div>
+        </section>
         <section class="line-graph"></section>
         <section class="transaction-list">
             ${transactionList(filters, transactions)}
         </section >
-    </div >`;
+    </section >`;
 
 
 export async function homeView(ctx) {
     let transactions = await getTransactions({}, queryOptions);
+    const balance = await getUserBalance();
 
     const showAllTransactions = async () => {
         transactions = await getTransactions({}, queryOptions);
@@ -54,7 +61,7 @@ export async function homeView(ctx) {
     };
 
     const update = () => {
-        ctx.render(homeTemplate({ filters, transactions }));
+        ctx.render(homeTemplate({ filters, transactions, balance }));
     }
 
     update()

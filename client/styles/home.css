@@ -4,7 +4,7 @@
     color: var(--text-primary);
 }
 
-.bento {
+.home-layout {
     display: grid;
     flex-grow: 1;
 
@@ -12,7 +12,7 @@
     gap: 1rem;
 }
 
-.bento article {
+.home-layout section {
     padding: 1rem;
 
     color: var(--text-primary);
@@ -21,13 +21,13 @@
     background-color: var(--bg-primary);
 }
 
-.bento .budgets {
+.finance-overview {
 }
 
-.bento .transaction-list {
+.home-layout .transaction-list {
     grid-row: 1 / 8;
 }
 
-.bento .line-graph {
+.home-layout .line-graph {
     grid-row: 2 / 8
 }
