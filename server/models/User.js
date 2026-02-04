@@ -9,11 +9,11 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
     username: {
         type: String,
-        required: [true, "Username is required"],
+        required: [true, "Username is required."],
         unique: true,
         trim: true,
-        minlength: [3, "Username must be at least 3 characters"],
-        maxlength: [14, "Username should be maximum of 14 characters"]
+        minlength: [3, "Username must be at least 3 characters."],
+        maxlength: [14, "Username must be 14 characters or fewer."]
     },
     email: {
         type: String,
@@ -25,23 +25,23 @@ const userSchema = new Schema({
             validator: function (value) {
                 EMAIL_REGEX.test(value)
             },
-            message: "This is not a valid email format"
+            message: "Email format is invalid."
         },
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: [true, "Password is required."],
         select: false,
     },
     monthlyGoal: {
         type: Number,
-        min: [10, "Monthly goal should be at least 10"],
-        max: [999999.99, "Monthly goal should be maximum of 999,999.99"],
+        min: [10, "Monthly goal must be at least 10."],
+        max: [999999.99, "Monthly goal must be maximum of 999,999.99."],
         validate: {
             validator: (value) => {
                 return Number.isInteger(value * 100);
             },
-            message: "Monthly goal can have at most two decimals places"
+            message: "Monthly goal can have at most two decimals places."
         },
         default: null
     }
