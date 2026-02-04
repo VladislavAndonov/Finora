@@ -7,10 +7,10 @@ const { Schema } = mongoose;
 const transactionSchema = new Schema({
     title: {
         type: String,
-        required: [true, "Title is required"],
+        required: [true, "Title is required."],
         trim: true,
-        minlength: [3, "Title must be at least 3 characters"],
-        maxlength: [20, "Title must be maximum of 20 characters"],
+        minlength: [3, "Title must be at least 3 characters."],
+        maxlength: [20, "Title must be 20 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,21 +22,21 @@ const transactionSchema = new Schema({
         type: String,
         enum: {
             values: ["expenses", "income"],
-            message: "Type can be either expenses or income"
+            message: "Type can be either expenses or income."
         },
-        required: [true, "Type is required"],
+        required: [true, "Type is required."],
         index: true,
     },
     amount: {
         type: Number,
-        required: [true, "Amount is required"],
-        min: [0.01, "Amount should be at least 0.01"],
-        max: [999999.99, "Amount should be maximum of 999,999.99"],
+        required: [true, "Amount is required."],
+        min: [0.01, "Amount must be at least 0.01."],
+        max: [999999.99, "Amount must be a maximum of 999,999.99."],
         validate: {
             validator: (value) => {
                 return Number.isInteger(value * 100);
             },
-            message: "Amount can have at most two decimals places"
+            message: "Amount can have at most two decimals places."
         }
     },
     date: {
@@ -48,8 +48,8 @@ const transactionSchema = new Schema({
         type: String,
         trim: true,
         lowercase: true,
-        minlength: [3, "Category must be at least 3 characters"],
-        maxlength: [14, "Category must be maximum of 14 characters"],
+        minlength: [3, "Category must be at least 3 characters."],
+        maxlength: [14, "Category must be 14 characters or fewer."],
     },
 }, { timestamps: true })
 

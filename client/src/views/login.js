@@ -11,7 +11,7 @@ export const loginTemplate = (onSubmit, errMessage) =>
 
                     <fieldset>
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" autocomplete="on">
+                        <input type="text" name="email" id="email" autocomplete="on">
                     </fieldset>
 
                     <fieldset>
@@ -45,7 +45,7 @@ export async function loginView(ctx) {
         const password = formData.get("password").trim();
 
         if (email === "" || password === "") {
-            return ctx.render(loginTemplate(onSubmit, "All fields are required!"));
+            return ctx.render(loginTemplate(onSubmit, "All fields are required."));
         }
 
         await login(email, password);
