@@ -17,7 +17,43 @@ const homeTemplate = ({ filters, transactions, balance }) =>
             <div class="monthly-goal">
             </div>
         </section>
-        <section class="line-graph"></section>
+        <section class="line-graph">
+            <table class="charts-css area show-labels show-primary-axis show-data-axes show-data-on-hover budget-chart">
+                <caption>Monthly Budget Overview</caption>
+
+                <thead>
+                    <tr>
+                    <th scope="col">Month</th>
+                    <th scope="col">Income</th>
+                    <th scope="col">Expenses</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                    <th scope="row">Jan</th>
+                    <td style="--start: 0.6; --size: 0.75;"><span class="data"> $7.5K </span></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Feb</th>
+                    <td style="--start: 0.75; --size: 0.78;"><span class="data"> $7.8K </span></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Mar</th>
+                    <td style="--start: 0.78; --size: 0.6;"><span class="data"> $6K </span></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">Apr</th>
+                    <td style="--start: 0.6; --size: 0.82;"><span class="data"> $8.2K </span></td>
+                    </tr>
+                    <tr>
+                    <th scope="row">May</th>
+                    <td style="--start: 0.82; --size: 0.85;"><span class="data"> $8.5K </span></td>
+                    </tr>
+                </tbody>
+                </table>
+
+            </section>
         <section class="transaction-list">
             ${transactionList(filters, transactions)}
         </section >

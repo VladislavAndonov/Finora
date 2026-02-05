@@ -31,3 +31,23 @@
 .home-layout .line-graph {
     grid-row: 2 / 8
 }
+
+.budget-chart {
+    font-family: system-ui, sans-serif;
+
+    max-width: 700px;
+    margin: 2rem auto;
+}
+
+.budget-chart tr:nth-child(odd) {
+    --color: var(--primary-light);
+}
+
+.budget-chart tr:nth-child(even) {
+    --color: var(--primary);
+}
+
+.charts-css.line {
+    --line-size: 3px;
+    --point-size: 6px;
+}
