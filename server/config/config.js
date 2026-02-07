@@ -1,18 +1,13 @@
-import dotenv from "dotenv";
+if (process.env.NODE_ENV !== 'production') {
+    await import('dotenv/config');
+}
 
-dotenv.config({ path: './config/.env' });
-
-
-const dbURL = process.env.DB_CONNECTION_STRING;
-const jwtSecret = process.env.JWT_SECRET;
-const saltRounds = 10;
-
-if (!dbURL || !jwtSecret) {
-    throw new Error("Missing enviroment variables")
+const config = {
+    port: process.env.PORT || 3000,
+    dbURL: process.env.DB_CONNECTION_STRING,
+    jwtSecret: process.env.JWT_SECRET,
+    clientOrigin: process.env.CLIENT_ORIGIN,
+    saltRounds: 10
 };
 
-export default {
-    dbURL,
-    jwtSecret,
-    saltRounds
-}
+export default config;
