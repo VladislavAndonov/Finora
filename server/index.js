@@ -12,15 +12,6 @@ const PORT = process.env.PORT || 3000
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-try {
-    await mongoose.connect(config.dbURL, { dbName: "finora" });
-    console.log("Connected to DB");
-} catch (err) {
-    console.log("Cannot connect to DB", err);
-    process.exit(1)
-}
-
-
 const app = express();
 
 app.use(express.json());
@@ -42,6 +33,14 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+mongoose.connect(process.env.DB_CONNECTION_STRING)
+    .then(() => console.log('Mongo connected'))
+    .catch(err => {
+        console.error('Mongo connection error:', err.message);
+    });
+
+app.get('/health', (_, res) => res.send('ok'));
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server listening on ${PORT}`);
 });
