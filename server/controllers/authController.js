@@ -13,7 +13,7 @@ authController.post("/register", async (req, res) => {
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 1000 * 60 * 30
         });
 
@@ -32,7 +32,7 @@ authController.post("/login", async (req, res) => {
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 1000 * 60 * 30
         });
 
@@ -48,7 +48,7 @@ authController.get("/logout", async (req, res) => {
     res.clearCookie('accessToken', {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax'
+        sameSite: 'none',
     });
 
     res.status(204).end();

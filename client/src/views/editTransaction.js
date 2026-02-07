@@ -1,4 +1,5 @@
-import { html } from 'https://esm.run/lit-html@1';
+import { html } from "lit-html";
+
 import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';

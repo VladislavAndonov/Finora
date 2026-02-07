@@ -1,5 +1,6 @@
-import page from "//unpkg.com/page/page.mjs";
-import { html } from 'https://esm.run/lit-html@1';
+import page from "page";
+import { html } from "lit-html";
+
 import { register } from '../api/data.js';
 import { emailValidator } from "../utils/emailValidator.js";
 

@@ -1,29 +1,39 @@
 import express from 'express';
-import routes from "./routes.js";
-import cors from "cors";
 import mongoose from "mongoose"
-import config from './config/config.js';
 import cookieParser from 'cookie-parser';
+import cors from "cors";
 
+import routes from "./routes.js";
+import config from './config/config.js';
 
-try {
-    await mongoose.connect(config.dbURL, { dbName: "finora" });
-    console.log("Connected to DB");
-} catch (err) {
-    console.log("Cannot connect to DB");
-}
+const PORT = 3000
 
 const app = express();
-const port = 3000;
 
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:5000",
-    credentials: true
-}));
-app.use(cookieParser())
+app.use(cookieParser());
+
+app.use(
+    cors({
+        origin: [
+            "http://localhost:5173",
+            "https://finora-web.netlify.app"
+        ],
+        credentials: true
+    })
+);
+
 app.use(routes);
 
-app.listen(port, () => {
-    console.log(`Server listening on port http://localhost:${port}`);
-});
+mongoose.connect(config.dbURL, { dbName: "finora_dev" })
+    .then(() => {
+        console.log("Connected to DB");
+    })
+    .catch(err => {
+        console.error('Mongo connection error:', err.message);
+        process.exit(1);
+    });
+
+app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+})

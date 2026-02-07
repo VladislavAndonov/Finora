@@ -1,4 +1,5 @@
-import { html } from 'https://esm.run/lit-html@1';
+import { html } from "lit-html";
+
 import { navigate } from '../../utils/navigation.js';
 
 export const transactionList = (filters, transactions) =>

@@ -1,4 +1,5 @@
-import { html } from 'https://esm.run/lit-html@1';
+import { html } from "lit-html";
+
 import { transactionList } from './common/transactionList.js';
 import { getTransactions } from '../api/data.js';
 import { getMonthAndYearLabel } from '../utils/dateUtils.js';

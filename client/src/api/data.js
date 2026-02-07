@@ -1,6 +1,6 @@
 import * as api from "./api.js";
 
-const host = "http://localhost:3000";
+const host = import.meta.env.VITE_API_URL;
 api.settings.host = host;
 
 export const login = api.login;

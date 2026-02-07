@@ -1,7 +1,7 @@
 .login {
     padding: 4rem;
 
-    background: url(../public/images/login-bg.jpg) center fixed no-repeat;
+    background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 

@@ -1,4 +1,4 @@
-import page from "//unpkg.com/page/page.mjs";
+import page from "page";
 
 import { homeView } from "./views/home.js";
 import { loginView } from "./views/login.js";

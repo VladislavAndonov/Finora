@@ -1,4 +1,4 @@
-import { html } from 'https://esm.run/lit-html@1';
+import { html } from "lit-html";
 
 
 export const modalTemplate = (onConfirm, onCancel) =>

@@ -1,6 +1,7 @@
+import page from "page";
+
 import { verifySession } from "../api/data.js";
 import { isAuthenticated } from "../state/auth.js";
-import page from "//unpkg.com/page/page.mjs";
 
 export async function authGuard(ctx, next) {
     await verifySession();

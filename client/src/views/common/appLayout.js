@@ -1,4 +1,5 @@
-import { html } from 'https://esm.run/lit-html@1';
+import { html } from 'lit-html';
+
 import { modalTemplate } from './modal.js';
 import { navigate } from '../../utils/navigation.js';
 

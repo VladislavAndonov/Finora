@@ -1,7 +1,7 @@
 .register {
     padding: 4em;
 
-    background: url(../public/images/login-bg.jpg) center fixed no-repeat;
+    background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 

@@ -1,5 +1,6 @@
+import page from "page";
+
 import { clearAuth, setAuth } from '../state/auth.js';
-import page from '//unpkg.com/page/page.mjs';
 
 export const settings = {
     host: ""

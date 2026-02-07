@@ -1,5 +1,6 @@
-import page from "//unpkg.com/page/page.mjs";
-import { html } from 'https://esm.run/lit-html@1';
+import page from "page";
+import { html } from "lit-html";
+
 import { login } from "../api/data.js"
 
 export const loginTemplate = (onSubmit, errMessage) =>

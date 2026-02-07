@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from "bcrypt"
 import config from '../config/config.js';
-import { EMAIL_REGEX } from '../../validators/index.js';
+import { EMAIL_REGEX } from '../validators/email.js';
 
 
 const { Schema } = mongoose;

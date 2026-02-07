@@ -1,5 +1,5 @@
-import page from "//unpkg.com/page/page.mjs";
-import { render } from 'https://esm.run/lit-html@1';
+import page from "page";
+import { render } from "lit-html";
 
 import { appLayout } from '../views/common/appLayout.js';
 import { logout } from "../api/api.js";

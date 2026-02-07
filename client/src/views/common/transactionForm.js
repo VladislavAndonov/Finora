@@ -1,5 +1,5 @@
-import { html } from 'https://esm.run/lit-html@1';
-import page from "//unpkg.com/page/page.mjs";
+import page from "page";
+import { html } from "lit-html";
 
 export const transactionForm = ({ onSubmit, onDelete, transaction, submitLabel, errMessage }) =>
     html`<div class="transaction-layout" style="color: #fff">

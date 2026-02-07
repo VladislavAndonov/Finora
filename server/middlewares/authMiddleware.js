@@ -17,7 +17,7 @@ export const authMiddleware = (req, res, next) => {
         res.clearCookie('accessToken', {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax'
+            sameSite: 'none',
         });
         res.status(401).end();
     }
