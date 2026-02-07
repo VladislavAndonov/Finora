@@ -13,16 +13,19 @@ async function request(url, options) {
         throw new Error("Unauthorized");
     }
 
+    if (response.status === 404) {
+        throw new Error("Not Found")
+    }
+
     if (!response.ok) {
         throw new Error("Request failed");
     }
 
-    try {
-        const data = await response.json();
-        return data;
-    } catch (err) {
-        return response;
+    if (response.status === 204) {
+        return null
     }
+
+    return response.json();
 }
 
 function getOptions(method = "get", body) {

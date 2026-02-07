@@ -1,37 +1,35 @@
 import { html } from 'https://esm.run/lit-html@1';
+import { modalTemplate } from './modal.js';
+import { navigate } from '../../utils/navigation.js';
 
-const navLinks = [
-    { label: "Home", path: "/" },
-    { label: "Transactions", path: "/transactions" },
-    { label: "Calendar", path: "/calendar" },
-    { label: "Logout", path: "/auth/logout" },
-];
+export const appLayout = (
+    content,
+    username,
+    currentPath,
+    logoutModalOpen,
+    onLogoutClick,
+    onConfirmLogout,
+    onCancelLogout,
+    onAddTransaction
+) => html`
+    <div class="container">
+        <aside class="sidebar">
+            <p class="username">${username}</p>
+            <nav class="main-nav">
+                <a @click=${() => navigate("/")} class=${currentPath === "/" ? "active" : ""}>Home</a>
+                <a @click=${() => navigate("/transactions")} class=${currentPath === "/transactions" ? "active" : ""}>Transactions</a>
+                <a @click=${() => navigate("/calendar")} class=${currentPath === "/calendar" ? "active" : ""}>Calendar</a>
+                <a @click=${onLogoutClick}>Logout</a>
+            </nav>
+        </aside>
 
-export const appLayout = (content, ctx) => {
-    const username = sessionStorage.getItem("username");
+        <main class="main-content">
+            ${content}
+            ${currentPath !== "/transactions/add" && !currentPath.startsWith("/transactions/edit/") ? html`<button @click=${onAddTransaction} class="add-transaction-btn" title="Add Transaction">+</button>` : ""} 
+        </main>
 
-    return html`
-        <div class="container">
-            ${sidebar(ctx.path, username)}
-            <main class="main-content">
-                ${content}
-            </main>
-        </div>`;
-}
-
-const sidebar = (currPath, username) =>
-    html`
-    <aside class=sidebar>
-        <p class="profile-name">${username}</p>
-        <ul class="main-nav">
-            ${renderLinks(currPath)}
-        </ul>
-    </aside>`;
-
-
-const renderLinks = (currPath) => {
-    const links = [];
-    navLinks.forEach((link) => links.push(html`<li><a class="${link.label.toLowerCase()}Link ${link.path === currPath ? "selected" : ""}" href="${link.path}">${link.label}</a></li>`));
-
-    return links
-};
+        ${logoutModalOpen
+        ? modalTemplate(onConfirmLogout, onCancelLogout)
+        : ""}
+    </div>
+`;

@@ -1,4 +1,5 @@
 import { html } from 'https://esm.run/lit-html@1';
+import { navigate } from '../../utils/navigation.js';
 
 export const transactionList = (filters, transactions) =>
     html`
@@ -7,5 +8,5 @@ export const transactionList = (filters, transactions) =>
                                     <label for=${f.label.toLowerCase()}>${f.label}</label>`)}
         </div >
         <ul>
-            ${transactions.length ? transactions.map((trs) => html`<li>${trs.title}, ${trs.amount}</li>`) : html``}
+            ${transactions.length ? transactions.map((trs) => html`<li><a class="transaction" @click=${() => navigate(`/transactions/edit/${trs._id}`)}>${trs.title}, ${trs.amount}</a></li>`) : html``}
         </ul>`;

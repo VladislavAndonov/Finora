@@ -1,12 +1,12 @@
 import { html } from 'https://esm.run/lit-html@1';
 import page from "//unpkg.com/page/page.mjs";
 
-export const transactionForm = ({ onSubmit, onDelete, errMessage, transaction, submitLabel }) =>
+export const transactionForm = ({ onSubmit, onDelete, transaction, submitLabel, errMessage }) =>
     html`<div class="transaction-layout" style="color: #fff">
             <form class="transaction-form" @submit=${onSubmit}>
                 <fieldset>
                     <label for="title">Title</label>
-                    <input type="text" name="title" id="title" required value=${transaction?.title ?? ""}>
+                    <input type="text" name="title" id="title" value=${transaction?.title ?? ""}>
                 </fieldset>
 
                 <fieldset>
@@ -19,7 +19,7 @@ export const transactionForm = ({ onSubmit, onDelete, errMessage, transaction, s
 
                 <fieldset>
                     <label for="amount">Amount</label>
-                    <input type="number" name="amount" id="amount" required value=${transaction?.amount ?? ""}>
+                    <input type="number" name="amount" id="amount" value=${transaction?.amount ?? ""}>
                 </fieldset>
 
                 <fieldset>
@@ -29,7 +29,7 @@ export const transactionForm = ({ onSubmit, onDelete, errMessage, transaction, s
 
                 <fieldset>
                     <label for="category">Category</label>
-                    <input type="category" name="category" id="category" value=${transaction?.category ?? ""}>
+                    <input type="text" name="category" id="category" value=${transaction?.category ?? ""}>
                 </fieldset>
 
                 <div class="err-message">

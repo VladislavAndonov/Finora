@@ -1,5 +1,7 @@
+import page from "//unpkg.com/page/page.mjs";
 import { html } from 'https://esm.run/lit-html@1';
 import { register } from '../api/data.js';
+import { emailValidator } from "../utils/emailValidator.js";
 
 export const registerTemplate = (onSubmit, errMessage) =>
     html`
@@ -10,13 +12,12 @@ export const registerTemplate = (onSubmit, errMessage) =>
 
                     <fieldset>
                         <label for="username">Username</label>
-                        <input type="username" name="username" id="username" autocomplete="on">
+                        <input type="text" name="username" id="username" autocomplete="on">
                     </fieldset>
-
 
                     <fieldset>
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" autocomplete="on">
+                        <input type="text" name="email" id="email" autocomplete="on"">
                     </fieldset>
 
                     <fieldset>
@@ -34,9 +35,9 @@ export const registerTemplate = (onSubmit, errMessage) =>
                     </div>
 
                     <div class="buttons">
-                        <button class="sign-up-button">Sign up</button>
+                        <button class="sign-up-btn">Sign up</button>
                         <p>Or</p>
-                        <a class="sign-in-link" href="/auth/login">Sign in</a>
+                        <button type="button" class="sign-in-btn" @click=${() => page.redirect("/auth/login")}>Sign in</button>
                     </div>
                 </form>
             </div>
@@ -55,10 +56,22 @@ export async function registerView(ctx) {
         const rePassword = formData.get("rePassword").trim();
 
         if (username === "" || email === "" || password === "" || rePassword === "") {
-            return ctx.render(registerTemplate(onSubmit, "All fields are required!"));
+            return ctx.render(registerTemplate(onSubmit, "All fields are required"));
+        }
+        if (username.length < 3) {
+            return ctx.render(registerTemplate(onSubmit, "Username must be at least 3 characters."));
+        }
+        if (username.length > 14) {
+            return ctx.render(registerTemplate(onSubmit, "Username must be 14 characters or fewer."));
+        }
+        if (!emailValidator(email)) {
+            return ctx.render(registerTemplate(onSubmit, "Email format is invalid."));
         }
         if (password !== rePassword) {
             return ctx.render(registerTemplate(onSubmit, "Passwords should match!"));
+        }
+        if (password.length < 6) {
+            return ctx.render(registerTemplate(onSubmit, "Password must be at least 6 characters."));
         }
 
         await register(username, email, password);

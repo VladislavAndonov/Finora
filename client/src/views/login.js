@@ -1,3 +1,4 @@
+import page from "//unpkg.com/page/page.mjs";
 import { html } from 'https://esm.run/lit-html@1';
 import { login } from "../api/data.js"
 
@@ -10,7 +11,7 @@ export const loginTemplate = (onSubmit, errMessage) =>
 
                     <fieldset>
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" autocomplete="on">
+                        <input type="text" name="email" id="email" autocomplete="on">
                     </fieldset>
 
                     <fieldset>
@@ -23,9 +24,9 @@ export const loginTemplate = (onSubmit, errMessage) =>
                     </div>
 
                     <div class="buttons">
-                        <button class="sign-in-button">Sign in</button>
+                        <button class="sign-in-btn">Sign in</button>
                         <p>Or</p>
-                        <a class="sign-up-link" href="/auth/register">Sign up</a>
+                        <button type="button" class="sign-up-btn" @click=${() => page.redirect("/auth/register")}>Sign up</button>
                     </div>
 
                     
@@ -44,7 +45,7 @@ export async function loginView(ctx) {
         const password = formData.get("password").trim();
 
         if (email === "" || password === "") {
-            return ctx.render(loginTemplate(onSubmit, "All fields are required!"));
+            return ctx.render(loginTemplate(onSubmit, "All fields are required."));
         }
 
         await login(email, password);
