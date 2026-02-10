@@ -25,7 +25,7 @@ app.use(
 
 app.use(routes);
 
-mongoose.connect(config.dbURL, { dbName: "finora_dev" })
+mongoose.connect(config.dbURL, { dbName: "finora" }) // Change DB in production
     .then(() => {
         console.log("Connected to DB");
     })

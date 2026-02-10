@@ -8,6 +8,7 @@
     "build": "vite build --mode production"
   },
   "dependencies": {
+    "chart.js": "^4.5.1",
     "lit-html": "^3.3.2",
     "page": "^1.11.6"
   },

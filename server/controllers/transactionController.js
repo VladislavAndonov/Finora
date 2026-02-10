@@ -5,31 +5,48 @@ const transactionController = Router();
 
 transactionController.get("/", async (req, res) => {
     const userId = req.user._id;
-    const { type, year, month, date, limit } = req.query;
+    const { type, year, month, date, startDate, endDate, limit } = req.query;
 
     const filter = {
         ownerId: userId
     }
 
-    if (date && year && month) {
-        const parsedYear = Number(year);
-        const parsedMonth = Number(month);
-        const parsedDate = Number(date)
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate)
 
-        const start = new Date(Date.UTC(parsedYear, parsedMonth, parsedDate));
-        const end = new Date(Date.UTC(parsedYear, parsedMonth, parsedDate + 1));
+        end.setUTCDate(end.getUTCDate() + 1);
 
         filter.date = {
             $gte: start,
             $lt: end
         };
+    }
 
-    } else if (year && month) {
+    if (year && month) {
         const parsedYear = Number(year);
         const parsedMonth = Number(month);
 
-        const start = new Date(Date.UTC(parsedYear, parsedMonth));
-        const end = new Date(Date.UTC(parsedYear, parsedMonth + 1));
+        if (isNaN(parsedYear) || isNaN(parsedMonth)) {
+            return res.status(400).json({ message: "Invalid year or month" });
+        }
+
+        let start;
+        let end;
+
+        if (date) {
+            const parsedDate = Number(date)
+
+            if (isNaN(parsedDate)) {
+                return res.status(400).json({ message: "Invalid date" });
+            }
+
+            start = new Date(Date.UTC(parsedYear, parsedMonth, parsedDate));
+            end = new Date(Date.UTC(parsedYear, parsedMonth, parsedDate + 1));
+        } else {
+            start = new Date(Date.UTC(parsedYear, parsedMonth));
+            end = new Date(Date.UTC(parsedYear, parsedMonth + 1));
+        }
 
         filter.date = {
             $gte: start,
@@ -41,7 +58,7 @@ transactionController.get("/", async (req, res) => {
         filter.type = type;
     }
 
-    const transactions = (await transactionService.getTransactions(filter, limit));
+    const transactions = await transactionService.getTransactions(filter, limit);
 
     res.json(transactions);
 });

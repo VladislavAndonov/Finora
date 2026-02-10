@@ -15,6 +15,8 @@ export async function getTransactions(filters = {}, options = {}) {
         year,
         month,
         date,
+        startDate,
+        endDate
     } = filters;
 
     const {
@@ -33,6 +35,10 @@ export async function getTransactions(filters = {}, options = {}) {
     }
     if (date) {
         params.append("date", date);
+    }
+    if (startDate && endDate) {
+        params.append("startDate", startDate)
+        params.append("endDate", endDate)
     }
 
     // Query options
