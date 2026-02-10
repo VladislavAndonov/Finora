@@ -1,0 +1,69 @@
+# Version control
+.git
+.gitignore
+
+# Frontend
+client
+client/**
+
+# Vite logs files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Dependency directories
+node_modules
+**/node_modules
+jspm_packages
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variable files
+.env
+.env.*
+!.env.example
+
+# Builds & caches
+dist
+build
+coverage
+.cache
+.tmp
+.vite
+.next
+**/.vitepress/dist
+**/.vitepress/cache
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Tests & docs
+tests
+__tests__
+docs
