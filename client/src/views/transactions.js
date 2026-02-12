@@ -1,3 +1,5 @@
+import "../../styles/transactions.css"
+
 import { html } from "lit-html";
 
 import { getTransactions } from '../api/data.js';

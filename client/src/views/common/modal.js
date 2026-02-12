@@ -1,3 +1,5 @@
+import "../../../styles/modal.css"
+
 import { html } from "lit-html";
 
 

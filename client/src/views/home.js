@@ -1,3 +1,5 @@
+import "../../styles/home.css"
+
 import { html } from "lit-html";
 
 import { getTransactions, getUserBalance } from '../api/data.js';

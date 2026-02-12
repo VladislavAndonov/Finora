@@ -1,8 +1,10 @@
-import page from "page";
+import "../../styles/register.css"
+
 import { html } from "lit-html";
 
 import { register } from '../api/data.js';
 import { emailValidator } from "../utils/emailValidator.js";
+import { navigate } from "../utils/navigation.js";
 
 export const registerTemplate = (onSubmit, errMessage) =>
     html`

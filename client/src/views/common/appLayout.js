@@ -1,3 +1,5 @@
+import "../../../styles/layout.css"
+
 import { html } from 'lit-html';
 
 import { modalTemplate } from './modal.js';
