@@ -7,14 +7,17 @@ import { navigate } from "../utils/navigation.js";
 
 export const loginTemplate = (onSubmit, errMessage) =>
     html`
-        <section class=login>
-            <div class="login-layout">
+        <div class="login-view">
+            <div class="login-view-layout">
+
                 <form class="login-form" @submit=${onSubmit}>
-                    <h2>Sign in</h2>
+                    <header class="login-header">
+                        <h2 class="login-title">Sign in</h2>
+                    </header>
 
                     <fieldset>
                         <label for="email">Email</label>
-                        <input type="text" name="email" id="email" autocomplete="on">
+                        <input type="text" name="email" id="email" inputmode="email" autocomplete="email">
                     </fieldset>
 
                     <fieldset>
@@ -22,20 +25,19 @@ export const loginTemplate = (onSubmit, errMessage) =>
                         <input type="password" name="password" id="password">
                     </fieldset>
                     
-                    <div class="err-message">
+                    <div class="login-form-error">
                         <p>${errMessage}</p>
                     </div>
 
-                    <div class="buttons">
-                        <button class="sign-in-btn">Sign in</button>
-                        <p>Or</p>
-                        <button type="button" class="sign-up-btn" @click=${() => page.redirect("/auth/register")}>Sign up</button>
+                    <div class="login-form-buttons">
+                        <button type="submit" class="login-sign-in">Sign in</button>
+                        <span>Or</span>
+                        <button type="button" class="login-sign-up" @click=${() => navigate("/auth/register")}>Sign up</button>
                     </div>
-
-                    
                 </form>
+                
             </div>
-        </section>
+        </div>
     `;
 
 export async function loginView(ctx) {

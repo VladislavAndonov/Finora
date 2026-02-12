@@ -7,18 +7,42 @@ import { transactionList } from './common/transactionList.js';
 import { getMonthAndYearLabel } from '../utils/dateUtils.js';
 
 const transactionsTemplate = ({ transactions, currentDate, showPrevMonth, showNextMonth, filters }) =>
-    html`<div class="transactions">
-            <div class="transactions-wrapper">
-                <header class="transactions-header">
-                    <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                    <h3 class=current-date>${getMonthAndYearLabel(currentDate)}</h3>
-                    <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
+    html`
+    <div class="transactions-view">
+        <header class="transactions-view-header">
+            <h2 class="transactions-view-title">Transactions</h2>
+        </header>
+
+        <div class="transactions-view-layout">
+
+            <section class="transactions-list">
+                <header class="transactions-list-header">
+                     <button
+                        class="transactions-list-nav transactions-list-nav-prev"
+                        @click=${showPrevMonth}
+                        aria-label="Previous month">
+                        <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
+                    </button>
+                    <h3 class="transactions-list-current-month">${getMonthAndYearLabel(currentDate)}</h3>
+                    <button
+                        class="transactions-list-nav transactions-list-nav-next"
+                        @click=${showNextMonth}
+                        aria-label="Next month">
+                        <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
+                    </button>
                 </header>
-                <section class=transaction-list>
+
+                <div class="transactions-list-body">
                     ${transactionList(filters, transactions)}
-                </section>
-            </div>
-        </div>`;
+                </div>
+            </section>
+
+            <section class="transactions-chart">
+                <canvas id="transactions-chart-canvas"></canvas>
+            </section>
+
+        </div>
+    </div>`;
 
 export const transactionsView = async (ctx) => {
     const state = {

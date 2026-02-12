@@ -1,19 +1,40 @@
-.transactions {
+.transactions-view-layout {
     display: flex;
-    flex-direction: column;
 }
 
-.transactions-wrapper {
-    min-width: 800px;
-    margin: 0 auto;
+.transactions-view-title {
+    margin-bottom: 1rem;
 }
 
-.transactions-header {
+.transactions-list {
+    flex: 1
+}
+
+.transactions-list-header {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
 
     padding: 0.5rem 2rem;
 
-    border-bottom: 1px solid var(--text-secondary);
+    border-radius: 2rem;
+    background-color: var(--bg-primary);
+}
+
+.transactions-list-nav {
+    font-size: 1.5rem;
+
+    color: var(--text-secondary);
+    border: none;
+    background-color: transparent;
+}
+
+.transactions-list-nav:hover {
+    cursor: pointer;
+
+    color: var(--text-primary);
+}
+
+.transactions-chart {
+    flex: 1;
 }

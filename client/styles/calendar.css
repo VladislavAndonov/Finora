@@ -1,19 +1,13 @@
-.calendar {
+.calendar-view-title {
+    margin-bottom: 1rem;
+}
+
+.calendar-view-layout {
     display: flex;
-
-    gap: 1rem;
 }
 
-.transaction-list {
-    flex: 1;
-
-    padding: 2rem;
-
-    color: var(--text-primary);
-}
-
-.calendar-wrapper {
-    flex: 1;
+.calendar {
+    flex: 1
 
     /* max-width: 600px; */
 }
@@ -25,28 +19,31 @@
 
     padding: 0.5rem 2rem;
 
-    border-bottom: 1px solid var(--text-secondary);
+    /* border: 1px solid var(--text-secondary); */
+
+    border-radius: 2rem;
+    background-color: var(--bg-primary);
 }
 
-.current-date {
+.calendar-current-month {
     color: var(--text-primary);
 }
 
-.prev,
-.next {
+.calendar-nav {
     font-size: 1.5rem;
-    color: var(
-    --text-secondary)
+
+    color: var(--text-secondary);
+    border: none;
+    background-color: transparent;
 }
 
-.prev:hover,
-.next:hover {
+.calendar-nav:hover {
     cursor: pointer;
 
     color: var(--text-primary);
 }
 
-.weekdays {
+.calendar-weekdays {
     font-weight: 600;
 
     display: grid;
@@ -60,7 +57,7 @@
     grid-template-columns: repeat(7, 1fr);
 }
 
-.dates {
+.calendar-dates {
     display: grid;
 
     color: var(--text-secondary);
@@ -70,7 +67,7 @@
     gap: 5px;
 }
 
-.dates li {
+.calendar-date {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,23 +77,31 @@
     aspect-ratio: 1 / 1;
 }
 
-.dates li:hover {
+.calendar-date:hover {
     cursor: pointer;
 
     background-color: var(--bg-primary);
 }
 
-.dates li.today {
+.calendar-date.today {
     background-color: var(--bg-lighter);
 }
 
-.dates .selected {
+.calendar-date.selected {
     outline: 4px solid var(
     --primary)
 }
 
-.dates .has-transactions {
+.calendar-date.has-transactions {
     font-weight: 700;
+
+    color: var(--text-primary);
+}
+
+.calendar-transaction-list {
+    flex: 1;
+
+    padding: 2rem;
 
     color: var(--text-primary);
 }

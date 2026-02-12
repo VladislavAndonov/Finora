@@ -4,12 +4,15 @@ import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
-const editTransactionTemplate = ({ onSubmit, onDelete, transaction, submitLabel }) =>
-    html`<div>
-            <header>
-                <h3 style="color: #fff">Edit Transaction</h3>
-            </header>
-            ${transactionForm({ onSubmit, onDelete, transaction, submitLabel })}
+const editTransactionTemplate = ({ onSubmit, onDelete, transaction, submitLabel, errMessage }) =>
+    html`<div class="edit-transaction">
+            <div class="add-transaction-layout">
+                <header class="edit-transaction-header">
+                    <h2 class="edit-transaction-title">Edit Transaction</h2>
+                </header>
+                
+                ${transactionForm({ onSubmit, onDelete, transaction, submitLabel, errMessage })}
+            </div>
         </div>`
 
 
@@ -21,7 +24,7 @@ export const editTransactionView = async (ctx) => {
 
     ctx.render(editTransactionTemplate({ onSubmit, onDelete, transaction, submitLabel: 'Edit Transaction' }));
 
-    const renderForm = (ctx, errMessage = {}) => {
+    const renderForm = (ctx, errMessage) => {
         ctx.render(editTransactionTemplate({
             onSubmit,
             transaction,

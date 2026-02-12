@@ -1,3 +1,5 @@
+import "../../styles/calendar.css"
+
 import { html } from "lit-html";
 
 import { transactionList } from './common/transactionList.js';
@@ -6,34 +8,50 @@ import { getMonthAndYearLabel } from '../utils/dateUtils.js';
 
 const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates, filters }) =>
     html`
-    <div class="calendar">
-        <div class="calendar-wrapper">
-            <header class="calendar-header">
-                <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                <h3 class=current-date>${getMonthAndYearLabel(currentDate)}</h3>
-                <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
-            </header>
+    <div class="calendar-view">
+        <header class="calendar-view-header">
+            <h2 class="calendar-view-title">Calendar</h2>
+        </header>
 
-            <div class="calendar-body">
+        <div class="calendar-view-layout">
+            <section class="calendar">
+                <header class="calendar-header">
+                    <button
+                        class="calendar-nav calendar-nav-prev"
+                        @click=${showPrevMonth}
+                        aria-label="Previous month">
+                        <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
+                    </button>
+                    <h3 class="calendar-current-month">${getMonthAndYearLabel(currentDate)}</h3>
+                    <button
+                        class="calendar-nav calendar-nav-next"
+                        @click=${showNextMonth}
+                        aria-label="Next month">
+                        <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
+                    </button>
+                </header>
 
-                <ul class="weekdays">
-                    <li>Mon</li>
-                    <li>Tue</li>
-                    <li>Wed</li>
-                    <li>Thu</li>
-                    <li>Fri</li>
-                    <li>Sat</li>
-                    <li>Sun</li>
-                </ul>
+                <div class="calendar-body">
+                    <ul class="calendar-weekdays">
+                        <li>Mon</li>
+                        <li>Tue</li>
+                        <li>Wed</li>
+                        <li>Thu</li>
+                        <li>Fri</li>
+                        <li>Sat</li>
+                        <li>Sun</li>
+                    </ul>
 
-                <ul class="dates" @click=${selectDate}>
-                    ${dates}
-                </ul>
-            </div>
+                    <ul class="calendar-dates" @click=${selectDate}>
+                        ${dates}
+                    </ul>
+                </div>
+            </section>
+
+            <section class="calendar-transaction-list">
+                ${transactionList(filters, transactions)}
+            </section>
         </div>
-        <section class=transaction-list>
-            ${transactionList(filters, transactions)}
-        </section>
     </div>`;
 
 
@@ -215,7 +233,7 @@ export async function calendarView(ctx) {
 
     function renderDate(dates) {
         return dates.map((d) => html`
-            <li class="${d.startColumn ? `grid-item-${d.startColumn} ` : ""}${d.isToday ? "today " : ""}${d.isSelected ? "selected " : ""}${d.hasTransactions ? "has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
+            <li class="calendar-date ${d.startColumn ? `grid-item-${d.startColumn} ` : ""}${d.isToday ? "today " : ""}${d.isSelected ? "selected " : ""}${d.hasTransactions ? "has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
         `);
     }
 

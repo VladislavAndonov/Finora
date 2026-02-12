@@ -8,19 +8,22 @@ import { navigate } from "../utils/navigation.js";
 
 export const registerTemplate = (onSubmit, errMessage) =>
     html`
-        <section class="register">
-            <div class="register-layout">
+        <div class="register-view">
+            <div class="register-view-layout">
+
                 <form class="register-form" @submit=${onSubmit}>
-                    <h2>Sign up now</h2>
+                    <header class="register-header">
+                        <h2 class="register-title">Sign up</h2>
+                    </header>
 
                     <fieldset>
                         <label for="username">Username</label>
-                        <input type="text" name="username" id="username" autocomplete="on">
+                        <input type="text" name="username" id="username" autocomplete="username">
                     </fieldset>
 
                     <fieldset>
                         <label for="email">Email</label>
-                        <input type="text" name="email" id="email" autocomplete="on"">
+                        <input type="text" name="email" id="email" inputmode="email" autocomplete="email">
                     </fieldset>
 
                     <fieldset>
@@ -29,22 +32,22 @@ export const registerTemplate = (onSubmit, errMessage) =>
                     </fieldset>
 
                     <fieldset>
-                        <label for="rePassword">Confirm Password</label>
-                        <input type="password" name="rePassword" id="rePassword">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" name="confirmPassword" id="confirmPassword">
                     </fieldset>
 
-                    <div class="err-message">
+                    <div class="register-form-error">
                         <p>${errMessage}</p>
                     </div>
 
-                    <div class="buttons">
-                        <button class="sign-up-btn">Sign up</button>
-                        <p>Or</p>
-                        <button type="button" class="sign-in-btn" @click=${() => page.redirect("/auth/login")}>Sign in</button>
+                    <div class="register-form-buttons">
+                        <button type="submit" class="register-sign-up">Sign up</button>
+                        <span>Or</span>
+                        <button type="button" class="register-sign-in" @click=${() => navigate("/auth/login")}>Sign in</button>
                     </div>
                 </form>
             </div>
-        </section>
+        </div>
     `;
 
 export async function registerView(ctx) {
@@ -56,9 +59,9 @@ export async function registerView(ctx) {
         const username = formData.get("username").trim()
         const email = formData.get("email").trim()
         const password = formData.get("password").trim();
-        const rePassword = formData.get("rePassword").trim();
+        const confirmPassword = formData.get("confirmPassword").trim();
 
-        if (username === "" || email === "" || password === "" || rePassword === "") {
+        if (username === "" || email === "" || password === "" || confirmPassword === "") {
             return ctx.render(registerTemplate(onSubmit, "All fields are required"));
         }
         if (username.length < 3) {
@@ -70,7 +73,7 @@ export async function registerView(ctx) {
         if (!emailValidator(email)) {
             return ctx.render(registerTemplate(onSubmit, "Email format is invalid."));
         }
-        if (password !== rePassword) {
+        if (password !== confirmPassword) {
             return ctx.render(registerTemplate(onSubmit, "Passwords should match!"));
         }
         if (password.length < 6) {

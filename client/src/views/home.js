@@ -10,24 +10,29 @@ let graphInstance = null;
 
 const homeTemplate = ({ filters, transactions, balance }) =>
     html`
-    <header class="home-header">
-        <h2>Home</h2>
-    </header>
-    <section class="home-layout">
-        <section class="finance-overview">
-            <div class="balance">
-                Balance: €${balance}
-            </div>
-            <div class="monthly-goal">
-            </div>
-        </section>
-        <section class="line-graph"> 
-            <canvas id="canvas"></canvas>
-        </section>
-        <section class="transaction-list">
-            ${transactionList(filters, transactions)}
-        </section >
-    </section >`;
+    <div class="home-view">
+        <header class="home-view-header">
+            <h2 class="home-view-title">Home</h2>
+        </header>
+
+        <div class="home-view-layout">
+            <section class="home-finance-overview">
+                <div class="home-balance">
+                    Balance: €${balance}
+                </div>
+                <div class="home-monthly-goal">
+                </div>
+            </section>
+
+            <section class="home-line-graph"> 
+                <canvas id="canvas"></canvas>
+            </section>
+
+            <section class="home-transaction-list">
+                ${transactionList(filters, transactions)}
+            </section>
+        </div >
+    </div>`;
 
 
 export async function homeView(ctx) {
@@ -130,11 +135,12 @@ export async function homeView(ctx) {
 
     function renderGraph() {
         const canvas = document.getElementById("canvas");
-        if (!canvas) return
 
-        if (!graphInstance) {
-            graphInstance = createGraph(canvas);
+        if (graphInstance) {
+            graphInstance.destroy();
         }
+
+        graphInstance = createGraph(canvas);
 
         const labels = getDatesArray()
         const balances = buildBalanceMovement()
@@ -168,11 +174,12 @@ export async function homeView(ctx) {
                     }]
                 },
                 options: {
+                    pointStyle: false,
                     responsive: true,
                     plugins: {
                         legend: {
                             display: false
-                        },
+                        }
                     }, scales: {
                         x: {
                             ticks: {
@@ -182,6 +189,7 @@ export async function homeView(ctx) {
                                     return index % 5 === 0 ? this.getLabelForValue(val) : null;
                                 }
                             }
+
                         }
                     }
                 }
@@ -195,24 +203,3 @@ export async function homeView(ctx) {
 
     update()
 }
-
-
-/*
- function computeData() {
-            const datesArray = [];
-            const balanceMovement = [];
-            const startDate = sameDayPreviousMonth();
-            const endDate = today;
-            const currentBalance = state.balance
-
-            let currentDate = new Date(startDate)
-
-            while (currentDate <= endDate) {
-                
-
-                currentDate.setDate(currentDate.getDate() + 1)
-            }
-
-            return { datesArray, balanceMovement }
-        }
-*/

@@ -1,4 +1,4 @@
-.container {
+.app-layout {
     display: flex;
 
     height: 100vh;
@@ -6,7 +6,7 @@
     background-color: var(--bg-primary);
 }
 
-.main-content {
+.app-layout-main {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -18,13 +18,13 @@
     background-color: var(--bg-darker);
 }
 
-.sidebar {
+.app-layout-sidebar {
     flex: 0 0 240px;
 
     margin: 4rem 1rem;
 }
 
-.username {
+.app-layout-username {
     font-size: 1.5rem;
     font-weight: 700;
 
@@ -33,11 +33,11 @@
     color: var(--text-primary);
 }
 
-.main-nav {
+.app-layout-nav {
     margin-top: 4rem;
 }
 
-.main-nav a {
+.app-layout-nav-link {
     font-size: 1.2rem;
 
     display: block;
@@ -51,18 +51,18 @@
     border-radius: 0.5rem;
 }
 
-.main-nav a:hover {
+.app-layout-nav-link:hover {
     color: var(--text-primary);
     background-color: var(--bg-darker);
 }
 
-.main-nav a.active {
+.app-layout-nav-link-active {
     color: var(--text-primary);
     outline: 1px solid var(--border-primary);
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-secondary) !important;
 }
 
-.add-transaction-btn {
+.app-layout-fab {
     font-size: 1.5rem;
     font-weight: 500;
 
@@ -74,7 +74,7 @@
 
     color: var(--text-primary);
     border: none;
-    border-radius: 0.6rem;
+    border-radius: 1rem;
     background-color: var(--primary);
 
     aspect-ratio: 1 / 1;

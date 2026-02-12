@@ -2,10 +2,12 @@ import { html } from "lit-html";
 
 export const notFoundView = (ctx) =>
     ctx.render(html`
-        <div style="display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center">
-            <h1>Page Not Found!</h1>
-            <a style="display: block; width: 200px; margin-top: 2rem; padding: 1rem; border: 1px solid #000; border-radius: 1rem; text-align: center" href="/">
-                Get me back Home!
+        <div style="display: flex; flex-direction: column; height: 100vh; padding-bottom: 20vh; align-items: center; justify-content: center">
+            <p>404 Not Found</p>
+            <h1 style="margin: 1rem">Oops! Page Not Found</h1>
+            <p>The page you are looking for doesn't exist. Click button bellow to go to homepage.</p>
+            <a style="display: block; background-color: var(--bg-secondary); width: 10rem; margin-top: 4rem; padding: 1rem; border-radius: 1rem; text-align: center" href="/">
+                Back to Home
             </a>
         </div>
     `);

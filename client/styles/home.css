@@ -1,18 +1,22 @@
-.home-header h2 {
-    margin-bottom: 1rem;
-
-    color: var(--text-primary);
+.home-view {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.home-layout {
+.home-view-title {
+    margin-bottom: 1rem;
+}
+
+.home-view-layout {
     display: grid;
-    flex-grow: 1;
+    flex: 1;
 
     grid-template-columns: 7fr 5fr;
     gap: 1rem;
 }
 
-.home-layout section {
+.home-view-layout section {
     padding: 1rem;
 
     color: var(--text-primary);
@@ -21,33 +25,10 @@
     background-color: var(--bg-primary);
 }
 
-.finance-overview {
-}
-
-.home-layout .transaction-list {
+.home-transaction-list {
     grid-row: 1 / 8;
 }
 
-.home-layout .line-graph {
+.home-line-graph {
     grid-row: 2 / 8
-}
-
-.budget-chart {
-    font-family: system-ui, sans-serif;
-
-    max-width: 700px;
-    margin: 2rem auto;
-}
-
-.budget-chart tr:nth-child(odd) {
-    --color: var(--primary-light);
-}
-
-.budget-chart tr:nth-child(even) {
-    --color: var(--primary);
-}
-
-.charts-css.line {
-    --line-size: 3px;
-    --point-size: 6px;
 }

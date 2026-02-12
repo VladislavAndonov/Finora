@@ -5,11 +5,14 @@ import { addTransaction } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
 const addTransactionTemplate = ({ onSubmit, transaction, submitLabel, errMessage }) =>
-    html`<div>
-            <header>
-                <h3 style="color: #fff">Add Transaction</h3>
-            </header>
-            ${transactionForm({ onSubmit, transaction, submitLabel, errMessage })}
+    html`<div class="add-transaction">
+            <div class="add-transaction-layout">
+                <header class="add-transaction-header">
+                    <h2 class="add-transaction-title">Add Transaction</h2>
+                </header>
+
+                ${transactionForm({ onSubmit, transaction, submitLabel, errMessage })}
+            </div>
         </div>`;
 
 export const addTransactionView = (ctx) => {
@@ -17,7 +20,7 @@ export const addTransactionView = (ctx) => {
     const now = utcToLocal(new Date());
     const defaultType = "expenses";
 
-    const renderForm = (ctx, errMessage = {}) => {
+    const renderForm = (ctx, errMessage) => {
         ctx.render(addTransactionTemplate({
             onSubmit,
             transaction: { date: now, type: defaultType },
@@ -31,6 +34,7 @@ export const addTransactionView = (ctx) => {
     async function onSubmit(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
+
 
         const createdTransaction = {
             title: formData.get("title").trim(),
