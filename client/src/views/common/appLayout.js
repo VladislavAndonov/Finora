@@ -5,14 +5,14 @@ import { html } from 'lit-html';
 import { modalTemplate } from './modal.js';
 import { navigate } from '../../utils/navigation.js';
 
-export const appLayout = (
+export const appLayout = ({
     content,
     username,
     currentPath,
     logoutModalOpen,
     onLogoutClick,
-    onConfirmLogout,
-    onCancelLogout,
+    onConfirm,
+    onCancel,
     onAddTransaction
 ) => html`
     <div class="container">

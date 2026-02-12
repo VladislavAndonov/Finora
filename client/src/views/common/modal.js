@@ -3,15 +3,15 @@ import "../../../styles/modal.css"
 import { html } from "lit-html";
 
 
-export const modalTemplate = (onConfirm, onCancel) =>
+export const modalTemplate = ({ message, onConfirm, onCancel }) =>
     html`<div class="modal-backdrop">
             <div class="modal-content">
-                <h4 class="modal-message">Do you really wish to logout?</h4>
+                <h4 class="modal-message">${message}</h4>
                 <div class="modal-buttons">
-                    <button class="confirm-button" @click=${onConfirm}>
+                    <button class="modal-confirm" @click=${onConfirm}>
                         Confirm
                     </button>
-                    <button class="cancel-button" @click=${onCancel}>
+                    <button class="modal-cancel" @click=${onCancel}>
                         Cancel
                     </button>
                 </div>

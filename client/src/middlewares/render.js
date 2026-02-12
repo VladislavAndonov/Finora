@@ -15,21 +15,23 @@ const uiState = {
 export function withAppShell(ctx, next) {
     const username = sessionStorage.getItem("username");
     const currentPath = ctx.path;
+    const logoutMessage = "Are you sure you want to log out?"
 
     ctx.render = (content) => {
         uiState.activeView = content;
 
         uiState.renderApp = () => {
-            render(appLayout(
-                uiState.activeView,
+            render(appLayout({
+                content: uiState.activeView,
                 username,
                 currentPath,
-                uiState.logoutModalOpen,
+                logoutModalOpen: uiState.logoutModalOpen,
+                message: logoutMessage,
                 onLogoutClick,
-                onConfirmLogout,
-                onCancelLogout,
+                onConfirm: onConfirmLogout,
+                onCancel: onCancelLogout,
                 onAddTransaction
-            ), root);
+            }), root);
         }
 
         uiState.renderApp();
