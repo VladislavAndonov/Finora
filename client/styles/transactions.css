@@ -1,13 +1,28 @@
+.transactions-view {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
 .transactions-view-layout {
     display: flex;
+    flex: 1;
+
+    gap: 1rem;
+}
+
+.transactions-view-layout section {
+    flex: 1;
+}
+
+.transactions-list {
+    border: 1px solid var(--border-primary);
+    border-radius: 0.5rem;
+    background-color: var(--bg-primary);
 }
 
 .transactions-view-title {
     margin-bottom: 1rem;
-}
-
-.transactions-list {
-    flex: 1
 }
 
 .transactions-list-header {
@@ -35,6 +50,18 @@
     color: var(--text-primary);
 }
 
-.transactions-chart {
+.transactions-charts {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.transactions-expenses-chart,
+.transactions-income-chart {
     flex: 1;
+
+    border: 1px solid var(--border-primary);
+    border-radius: 0.5rem;
+    background-color: var(--bg-primary);
 }
