@@ -4,6 +4,38 @@ import { User } from "./User.js";
 
 const { Schema } = mongoose;
 
+const expensesCategories = [
+    "housing",
+    "utilities",
+    "groceries",
+    "dining",
+    "transport",
+    "health",
+    "shopping",
+    "entertainment",
+    "education",
+    "debt",
+    "travel",
+    "insurance",
+    "kids",
+    "pets",
+    "gifts",
+    "subscriptions",
+    "other"
+]
+
+const incomeCategories = [
+    "salary",
+    "freelance",
+    "business",
+    "bonus",
+    "investment",
+    "rental",
+    "refund",
+    "gift",
+    "other"
+]
+
 const transactionSchema = new Schema({
     title: {
         type: String,
@@ -16,7 +48,6 @@ const transactionSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: User,
         required: true,
-        index: true
     },
     type: {
         type: String,
@@ -25,7 +56,6 @@ const transactionSchema = new Schema({
             message: "Type can be either expenses or income."
         },
         required: [true, "Type is required."],
-        index: true,
     },
     amount: {
         type: Number,
@@ -46,13 +76,16 @@ const transactionSchema = new Schema({
     },
     category: {
         type: String,
-        trim: true,
-        lowercase: true,
-        minlength: [3, "Category must be at least 3 characters."],
-        maxlength: [14, "Category must be 14 characters or fewer."],
+        enum: {
+            values: [...expensesCategories, ...incomeCategories],
+            message: "Invalid category."
+        },
+        required: true,
     },
 }, { timestamps: true })
 
 transactionSchema.index({ ownerId: 1, date: -1 });
+transactionSchema.index({ ownerId: 1, category: 1, date: -1 });
+transactionSchema.index({ ownerId: 1, type: 1, date: -1 });
 
 export const Transaction = mongoose.model("Transaction", transactionSchema);

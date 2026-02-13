@@ -4,14 +4,14 @@ import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
-const editTransactionTemplate = ({ onSubmit, onDelete, transaction, submitLabel, errMessage }) =>
+const editTransactionTemplate = ({ onSubmit, onDelete, transaction, submitLabel, onTypeChange, selectedType, errMessage }) =>
     html`<div class="edit-transaction">
             <div class="add-transaction-layout">
                 <header class="edit-transaction-header">
                     <h2 class="edit-transaction-title">Edit Transaction</h2>
                 </header>
                 
-                ${transactionForm({ onSubmit, onDelete, transaction, submitLabel, errMessage })}
+                ${transactionForm({ onSubmit, onDelete, transaction, submitLabel, onTypeChange, selectedType, errMessage })}
             </div>
         </div>`
 
@@ -22,16 +22,23 @@ export const editTransactionView = async (ctx) => {
 
     const transaction = { ...result, date: utcToLocal(result.date) }
 
-    ctx.render(editTransactionTemplate({ onSubmit, onDelete, transaction, submitLabel: 'Edit Transaction' }));
-
-    const renderForm = (ctx, errMessage) => {
+    const renderForm = ({ selectedType = transaction.type, errMessage } = {}) => {
         ctx.render(editTransactionTemplate({
             onSubmit,
             transaction,
             submitLabel: 'Edit Transaction',
+            onTypeChange,
+            selectedType,
             errMessage
         }));
     }
+
+    const onTypeChange = (event) => {
+        const selectedType = event.target.value;
+        renderForm({ selectedType });
+    };
+
+    renderForm()
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -44,10 +51,6 @@ export const editTransactionView = async (ctx) => {
             date: formData.get("date"),
             category: formData.get("category").trim().toLowerCase() ?? undefined
         }
-
-        await editTransaction(tId, updatedTransaction);
-
-        ctx.page.redirect("/");
 
         if (!updatedTransaction.title ||
             !updatedTransaction.type ||
@@ -71,12 +74,9 @@ export const editTransactionView = async (ctx) => {
         if (!Number.isInteger(updatedTransaction.amount * 100)) {
             return renderForm({ errMessage: "Amount can have at most two decimals places." })
         }
-        if (updatedTransaction.category.length < 3) {
-            return renderForm({ errMessage: "Category must be at least 3 characters." })
-        }
-        if (updatedTransaction.category.length > 14) {
-            return renderForm({ errMessage: "Category must be 14 characters or fewer." })
-        }
+
+        await editTransaction(tId, updatedTransaction);
+        ctx.page.redirect("/");
     }
 
     async function onDelete() {

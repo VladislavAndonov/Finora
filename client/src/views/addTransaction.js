@@ -4,14 +4,14 @@ import { transactionForm } from './common/transactionForm.js';
 import { addTransaction } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
-const addTransactionTemplate = ({ onSubmit, transaction, submitLabel, errMessage }) =>
+const addTransactionTemplate = ({ onSubmit, transaction, submitLabel, onTypeChange, selectedType, errMessage }) =>
     html`<div class="add-transaction">
             <div class="add-transaction-layout">
                 <header class="add-transaction-header">
                     <h2 class="add-transaction-title">Add Transaction</h2>
                 </header>
 
-                ${transactionForm({ onSubmit, transaction, submitLabel, errMessage })}
+                ${transactionForm({ onSubmit, transaction, submitLabel, onTypeChange, selectedType, errMessage })}
             </div>
         </div>`;
 
@@ -20,16 +20,23 @@ export const addTransactionView = (ctx) => {
     const now = utcToLocal(new Date());
     const defaultType = "expenses";
 
-    const renderForm = (ctx, errMessage) => {
+    const renderForm = ({ selectedType = defaultType, errMessage } = {}) => {
         ctx.render(addTransactionTemplate({
             onSubmit,
             transaction: { date: now, type: defaultType },
             submitLabel: 'Add Transaction',
+            onTypeChange,
+            selectedType,
             errMessage
         }));
     }
 
-    renderForm(ctx)
+    const onTypeChange = (event) => {
+        selectedType = event.target.value;
+        renderForm({ selectedType });
+    };
+
+    renderForm()
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -47,7 +54,8 @@ export const addTransactionView = (ctx) => {
         if (!createdTransaction.title ||
             !createdTransaction.type ||
             !createdTransaction.amount ||
-            !createdTransaction.date) {
+            !createdTransaction.date ||
+            !createdTransaction.category) {
             return renderForm({ errMessage: "Please fill the required fields." })
         }
 
@@ -66,12 +74,7 @@ export const addTransactionView = (ctx) => {
         if (!Number.isInteger(createdTransaction.amount * 100)) {
             return renderForm({ errMessage: "Amount can have at most two decimals places." })
         }
-        if (createdTransaction.category.length < 3) {
-            return renderForm({ errMessage: "Category must be at least 3 characters." })
-        }
-        if (createdTransaction.category.length > 14) {
-            return renderForm({ errMessage: "Category must be 14 characters or fewer." })
-        }
+
 
         await addTransaction(createdTransaction);
         ctx.page.redirect("/");
