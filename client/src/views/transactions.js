@@ -39,7 +39,7 @@ const categoriesMasterList = [
     { id: 26, name: "other", type: "income", color: "#64DD17" }
 ]
 
-const transactionsTemplate = ({ transactions, currentDate, showPrevMonth, showNextMonth, filters, state }) =>
+const transactionsTemplate = ({ transactions, showPrevMonth, showNextMonth, filters, state }) =>
     html`
     <div class="transactions-view">
         <header class="transactions-view-header">
@@ -56,7 +56,7 @@ const transactionsTemplate = ({ transactions, currentDate, showPrevMonth, showNe
                         aria-label="Previous month">
                         <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
                     </button>
-                    <h3 class="transactions-list-current-month">${getMonthAndYearLabel(currentDate)}</h3>
+                    <h4 class="transactions-list-current-month">${getMonthAndYearLabel(state.currentDate)}</h4>
                     <button
                         class="transactions-list-nav transactions-list-nav-next"
                         @click=${showNextMonth}
@@ -71,10 +71,15 @@ const transactionsTemplate = ({ transactions, currentDate, showPrevMonth, showNe
             </section>
 
             <section class="transactions-charts">
-                <div class="transactions-expenses-chart">
+                <div class="transactions-expenses-chart
+                    ${state.ui.activeTab === 'expenses' ? 'chart-active' : ''}
+                    ${state.ui.activeTab === 'income' ? 'chart-inactive' : ''}">
                     <canvas id="transactions-expenses-chart-canvas"></canvas>
                 </div>
-                <div class="transactions-income-chart">
+
+                <div class="transactions-income-chart
+                    ${state.ui.activeTab === 'income' ? 'chart-active' : ''}
+                    ${state.ui.activeTab === 'expenses' ? 'chart-inactive' : ''}">
                     <canvas id="transactions-income-chart-canvas"></canvas>
                 </div>
             </section>
@@ -94,11 +99,10 @@ export const transactionsView = async (ctx) => {
 
         ui: {
             activeTab: "all",
+            expensesGraphInstance: null,
+            incomeGraphInstance: null
         }
     };
-
-    let expensesGraphInstance = null;
-    let incomeGraphInstance = null;
 
     async function loadMonthTransactions() {
         const transactions = await getTransactions({
@@ -185,7 +189,8 @@ export const transactionsView = async (ctx) => {
         update()
     }
 
-    function buildChartData(type) {
+    function buildTransactionCategoriesData(type) {
+        const chartData = [];
         let sourceTransactions = [];
 
         if (type === "expenses") {
@@ -199,11 +204,9 @@ export const transactionsView = async (ctx) => {
                 isEmpty: true,
                 labels: ["No data"],
                 data: [1],
-                colors: ["#2e2e2e"]
+                colors: ["#252525"]
             };
         }
-
-        const chartData = [];
 
         for (const transaction of sourceTransactions) {
             const category = categoriesMasterList.find(c =>
@@ -238,25 +241,27 @@ export const transactionsView = async (ctx) => {
     function renderExpensesGraph() {
         const canvas = document.getElementById("transactions-expenses-chart-canvas");
 
-        if (!expensesGraphInstance) {
-            expensesGraphInstance = createGraph(canvas, "Expenses distribution");
+        if (!state.expensesGraphInstance) {
+            state.expensesGraphInstance = createGraph(canvas, "Expenses distribution");
         }
 
-        updateGraph(expensesGraphInstance, "expenses");
+        updateGraph(state.expensesGraphInstance, "expenses");
+        state.expensesGraphInstance.resize();
     }
 
     function renderIncomeGraph() {
         const canvas = document.getElementById("transactions-income-chart-canvas");
 
-        if (!incomeGraphInstance) {
-            incomeGraphInstance = createGraph(canvas, "Income distribution");
+        if (!state.incomeGraphInstance) {
+            state.incomeGraphInstance = createGraph(canvas, "Income distribution");
         }
 
-        updateGraph(incomeGraphInstance, "income");
+        updateGraph(state.incomeGraphInstance, "income");
+        state.incomeGraphInstance.resize();
     }
 
     function updateGraph(graph, type) {
-        const result = buildChartData(type);
+        const result = buildTransactionCategoriesData(type);
 
         graph.data.labels = result.labels;
         graph.data.datasets[0].data = result.data;
@@ -264,7 +269,8 @@ export const transactionsView = async (ctx) => {
 
         // Disable interactions if empty
         graph.options.plugins.tooltip.enabled = !result.isEmpty;
-        graph.options.events = result.isEmpty ? [] : undefined;
+        graph.options.hover.mode = result.isEmpty ? null : 'nearest';
+        graph.options.hover.animationDuration = result.isEmpty ? 0 : 400;
 
         // Update title
         graph.options.plugins.title.text = result.isEmpty
@@ -319,7 +325,6 @@ export const transactionsView = async (ctx) => {
                             }
                         },
                     },
-                    responsive: true,
                     maintainAspectRatio: false,
                     radius: "75%",
                     layout: {
@@ -332,10 +337,10 @@ export const transactionsView = async (ctx) => {
     const update = () => {
         ctx.render(transactionsTemplate({
             transactions: getDisplayedTransactions(),
-            currentDate: state.currentDate,
             showPrevMonth,
             showNextMonth,
             filters,
+            state
         }));
 
         renderExpensesGraph()
