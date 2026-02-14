@@ -31,7 +31,7 @@
 }
 
 .modal-buttons {
-    font-weight: bold;
+    font-weight: 600;
 
     display: flex;
     justify-content: space-around;
@@ -42,10 +42,10 @@
 
     transition: ease-in-out 0.2s;
 
-    color: var(--text-primary);
+    color: var(--text-inverted);
     border: none;
     border-radius: 1rem;
-    background-color: var(--primary);
+    background-color: var(--secondary);
 }
 
 .modal-confirm:hover {
@@ -61,7 +61,7 @@
 
     border: none;
     border-radius: 1rem;
-    background-color: var(--text-muted);
+    background-color: var(--secondary-muted);
 }
 
 .modal-cancel:hover {

@@ -8,8 +8,6 @@
 
 .calendar {
     flex: 1
-
-    /* max-width: 600px; */
 }
 
 .calendar-header {
@@ -19,10 +17,11 @@
 
     padding: 0.5rem 2rem;
 
-    /* border: 1px solid var(--text-secondary); */
+    border-bottom: 2px solid var(--border-primary);
 
-    border-radius: 2rem;
-    background-color: var(--bg-primary);
+    /* border-radius: 1rem; */
+
+    /* background-color: var(--bg-primary); */
 }
 
 .calendar-current-month {
@@ -44,11 +43,11 @@
 }
 
 .calendar-weekdays {
-    font-weight: 600;
+    font-weight: 500;
 
     display: grid;
 
-    margin: 5px 0;
+    margin: 0.4rem 0;
 
     text-align: center;
 
@@ -64,10 +63,12 @@
 
     grid-template-columns: repeat(7, 1fr);
     grid-row-start: 1;
-    gap: 5px;
+    gap: 0.4rem;
 }
 
 .calendar-date {
+    font-weight: 500;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -77,31 +78,34 @@
     aspect-ratio: 1 / 1;
 }
 
+.calendar-date.today {
+    font-weight: 600;
+
+    background-color: var(--primary-muted);
+}
+
 .calendar-date:hover {
     cursor: pointer;
 
     background-color: var(--bg-primary);
 }
 
-.calendar-date.today {
-    background-color: var(--bg-lighter);
-}
-
 .calendar-date.selected {
-    outline: 4px solid var(
-    --primary)
+    color: var(--text-inverted);
+    background-color: var(--secondary) !important;
 }
 
 .calendar-date.has-transactions {
-    font-weight: 700;
-
-    color: var(--text-primary);
+    outline: 2px solid #84000050;
+    outline-offset: 1px;
 }
 
 .calendar-transaction-list {
+    display: flex;
     flex: 1;
+    flex-direction: column;
 
-    padding: 2rem;
+    padding: 0 2rem;
 
     color: var(--text-primary);
 }

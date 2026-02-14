@@ -11,14 +11,10 @@
     gap: 1rem;
 }
 
-.transactions-view-layout section {
-    flex: 1;
-}
-
 .transactions-list {
-    border: 1px solid var(--border-primary);
+    flex: 1;
+
     border-radius: 0.5rem;
-    background-color: var(--bg-primary);
 }
 
 .transactions-view-title {
@@ -33,7 +29,6 @@
     padding: 0.5rem 2rem;
 
     border-radius: 2rem;
-    background-color: var(--bg-primary);
 }
 
 .transactions-list-nav {
@@ -52,6 +47,7 @@
 
 .transactions-charts {
     display: flex;
+    flex: 1;
     flex-direction: column;
 
     gap: 1rem;
@@ -61,7 +57,22 @@
 .transactions-income-chart {
     flex: 1;
 
-    border: 1px solid var(--border-primary);
+    transition: all 0.5s ease;
+
     border-radius: 0.5rem;
-    background-color: var(--bg-primary);
+}
+
+.transactions-charts .chart-active {
+    opacity: 1;
+}
+
+.transactions-charts .chart-inactive {
+    pointer-events: none;
+
+    opacity: 0.2;
+}
+
+.transactions-list-body {
+    display: flex;
+    flex-direction: column;
 }

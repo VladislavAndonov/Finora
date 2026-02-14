@@ -11,7 +11,8 @@
     flex: 1 1 auto;
     flex-direction: column;
 
-    margin: 2rem 1rem 2rem 0;
+    /* margin: 2rem 1rem 2rem 0; */
+
     padding: 4rem 1rem 1rem;
 
     border-radius: 0 0.5rem 0.5rem 0;
@@ -53,18 +54,16 @@
 
 .app-layout-nav-link:hover {
     color: var(--text-primary);
-    background-color: var(--bg-darker);
+    background-color: var(--bg-secondary);
 }
 
 .app-layout-nav-link-active {
     color: var(--text-primary);
-    outline: 1px solid var(--border-primary);
-    background-color: var(--bg-secondary) !important;
+    background-color: var(--secondary-muted) !important;
 }
 
 .app-layout-fab {
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-size: 1.6rem;
 
     position: fixed;
     right: 20px;
@@ -72,10 +71,12 @@
 
     width: 4rem;
 
-    color: var(--text-primary);
+    cursor: pointer;
+
+    color: var(--text-inverted);
     border: none;
     border-radius: 1rem;
-    background-color: var(--primary);
+    background-color: var(--secondary);
 
     aspect-ratio: 1 / 1;
 }

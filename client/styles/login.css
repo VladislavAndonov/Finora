@@ -78,7 +78,7 @@
 
 .login-sign-in {
     font-size: 1.2em;
-    font-weight: bold;
+    font-weight: 700;
 
     padding: 0.8rem 3rem;
 
@@ -98,8 +98,9 @@
 
 .login-sign-up {
     font-size: 1.2em;
+    font-weight: 500;
 
-    color: var(--primary);
+    color: var(--secondary);
     border: none;
     background-color: transparent;
 }
