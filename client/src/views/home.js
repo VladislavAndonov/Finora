@@ -1,12 +1,10 @@
 import "../../styles/home.css"
 
 import { html } from "lit-html";
+import { Chart } from "chart.js/auto";
 
 import { getTransactions, getUserBalance } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
-import { Chart } from "chart.js/auto";
-
-let graphInstance = null;
 
 const homeTemplate = ({ filters, transactions, balance }) =>
     html`
@@ -18,14 +16,15 @@ const homeTemplate = ({ filters, transactions, balance }) =>
         <div class="home-view-layout">
             <section class="home-finance-overview">
                 <div class="home-balance">
-                    Balance: €${balance}
+                    <span class="home-balance-account">Bank</span>
+                    <span class="home-balance-amount">€${balance} EUR</span>
                 </div>
                 <div class="home-monthly-goal">
                 </div>
             </section>
 
-            <section class="home-line-graph"> 
-                <canvas id="canvas"></canvas>
+            <section class="home-chart"> 
+                <canvas id="home-chart-canvas"></canvas>
             </section>
 
             <section class="home-transaction-list">
@@ -36,32 +35,48 @@ const homeTemplate = ({ filters, transactions, balance }) =>
 
 
 export async function homeView(ctx) {
-    const today = new Date()
-    const thirtyDaysAgo = new Date(today)
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-
-    const queryFilterOptions = {
-        startDate: thirtyDaysAgo.toISOString().split("T")[0],
-        endDate: today.toISOString().split("T")[0]
-    }
-
     const state = {
-        transactions: await getTransactions(queryFilterOptions),
+        today: new Date(),
+        thirtyDaysAgo: new Date(),
+        transactions: {
+            all: [],
+            expenses: [],
+            income: []
+        },
         balance: await getUserBalance(),
+        ui: {
+            activeTab: "all",
+            graphInstance: null
+        }
     }
+
+    state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
+
+    async function loadTransactions() {
+        const result = await getTransactions({
+            startDate: state.thirtyDaysAgo.toISOString().split("T")[0],
+            endDate: state.today.toISOString().split("T")[0]
+        });
+
+        state.transactions.all = result;
+        state.transactions.expenses = result.filter((t) => t.type === "expenses");
+        state.transactions.income = result.filter((t) => t.type === "income");
+    }
+
+    await loadTransactions()
 
     const showAllTransactions = async () => {
-        state.transactions = await getTransactions(queryFilterOptions);
+        state.ui.activeTab = "all";
         setActive("All");
         update();
     };
     const showExpenses = async () => {
-        state.transactions = await getTransactions({ ...queryFilterOptions, type: "expenses" });
+        state.ui.activeTab = "expenses";
         setActive("Expenses");
         update();
     };
     const showIncome = async () => {
-        state.transactions = await getTransactions({ ...queryFilterOptions, type: "income" });
+        state.ui.activeTab = "income";
         setActive("Income");
         update();
     };
@@ -82,45 +97,57 @@ export async function homeView(ctx) {
         });
     };
 
-    function getDatesArray() {
-        const datesArray = [];
-        let currentDate = new Date(thirtyDaysAgo)
-        const endDate = today;
+    function getDisplayedTransactions() {
+        if (state.ui.activeTab === "expenses") {
+            return state.transactions.expenses;
+        }
+
+        if (state.ui.activeTab === "income") {
+            return state.transactions.income;
+        }
+
+        return state.transactions.all
+    }
+
+    function buildDateLabels() {
+        const labels = [];
+        let currentDate = new Date(state.thirtyDaysAgo)
+        const endDate = state.today;
 
 
         while (currentDate <= endDate) {
-            datesArray.push(currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }))
+            labels.push(currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }))
 
             currentDate.setDate(currentDate.getDate() + 1)
         }
-        return datesArray
+        return labels
     }
 
-    function buildBalanceMovement() {
-        const balanceMovementByDate = {};
+    function buildBalanceChangesData() {
+        const chartData = {};
 
         // Group transactions by date
-        for (const transaction of state.transactions) {
+        for (const transaction of getDisplayedTransactions()) {
             const dateKey = transaction.date.split("T")[0];
             const amount =
                 transaction.type === "income"
                     ? transaction.amount
                     : -transaction.amount;
 
-            balanceMovementByDate[dateKey] =
-                (balanceMovementByDate[dateKey] || 0) + amount;
+            chartData[dateKey] =
+                (chartData[dateKey] || 0) + amount;
         }
 
         // Iterate backward through dates and build balance movement
         const balances = [];
         let currentBalance = state.balance;
 
-        let currentDate = new Date(today);
-        const endDate = thirtyDaysAgo;
+        let currentDate = new Date(state.today);
+        const endDate = state.thirtyDaysAgo;
 
         while (currentDate >= endDate) {
             const dateKey = currentDate.toISOString().split("T")[0];
-            const dailyChange = balanceMovementByDate[dateKey] || 0;
+            const dailyChange = chartData[dateKey] || 0;
 
             balances.push(currentBalance);
 
@@ -134,28 +161,40 @@ export async function homeView(ctx) {
 
 
     function renderGraph() {
-        const canvas = document.getElementById("canvas");
+        const canvas = document.getElementById("home-chart-canvas");
 
-        if (graphInstance) {
-            graphInstance.destroy();
+        if (!state.graphInstance) {
+            state.graphInstance = createGraph(canvas);
         }
 
-        graphInstance = createGraph(canvas);
-
-        const labels = getDatesArray()
-        const balances = buildBalanceMovement()
-
-        updateGraph(labels, balances)
+        updateGraph()
     }
 
-    function updateGraph(labels, balances) {
-        if (!graphInstance) return;
+    function updateGraph() {
+        const chartLabels = buildDateLabels()
+        const chartData = buildBalanceChangesData()
 
-        graphInstance.data.labels = labels;
-        graphInstance.data.datasets[0].data = balances;
-        graphInstance.update();
+        state.graphInstance.data.labels = chartLabels;
+        state.graphInstance.data.datasets[0].data = chartData;
+        state.graphInstance.update();
     }
 
+    let width, height, gradient;
+    function getGradient(ctx, chartArea) {
+        const chartWidth = chartArea.right - chartArea.left;
+        const chartHeight = chartArea.bottom - chartArea.top;
+        if (!gradient || width !== chartWidth || height !== chartHeight) {
+            // Create the gradient because this is either the first render
+            // or the size of the chart has changed
+            width = chartWidth;
+            height = chartHeight;
+            gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            gradient.addColorStop(0, "#96afff10");
+            gradient.addColorStop(1, "#96afff70");
+        }
+
+        return gradient;
+    }
 
     function createGraph(canvas) {
         return new Chart(
@@ -168,14 +207,25 @@ export async function homeView(ctx) {
                         label: 'Balance',
                         data: [],
                         fill: true,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const { ctx, chartArea } = chart;
+
+                            // chartArea is undefined on initial render
+                            if (!chartArea) {
+                                return null;
+                            }
+
+                            return getGradient(ctx, chartArea);
+                        },
+                        borderColor: '#96afff',
+                        tension: 0.1,
                     }]
                 },
                 options: {
-                    pointStyle: false,
-                    responsive: true,
+                    pointRadius: 0,
+                    pointHitRadius: 10,
+                    pointHoverRadius: 8,
                     plugins: {
                         legend: {
                             display: false
@@ -183,21 +233,33 @@ export async function homeView(ctx) {
                     }, scales: {
                         x: {
                             ticks: {
-                                autoSkip: false,
                                 callback: function (val, index) {
                                     // Hide every 5th tick label
                                     return index % 5 === 0 ? this.getLabelForValue(val) : null;
                                 }
+                            },
+                            grid: {
+                                color: "#ffffff10",
                             }
-
+                        },
+                        y: {
+                            grid: {
+                                color: "#ffffff10",
+                            },
                         }
                     }
                 }
             });
+
     }
 
     const update = () => {
-        ctx.render(homeTemplate({ filters, transactions: state.transactions, balance: state.balance }));
+        ctx.render(homeTemplate({
+            transactions: getDisplayedTransactions(),
+            balance: state.balance,
+            filters
+        }));
+
         renderGraph()
     }
 
