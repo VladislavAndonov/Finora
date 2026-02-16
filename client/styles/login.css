@@ -1,17 +1,17 @@
-.login-view {
+.login {
     padding: 4rem;
 
     background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.login-view-layout {
+.login__container {
     display: flex;
 
     height: calc(100dvh - 8rem);
 }
 
-.login-form {
+.login__form {
     display: flex;
     flex: 0 1 680px;
     flex-direction: column;
@@ -28,24 +28,24 @@
     --bg-primary)
 }
 
-.login-form-title {
+.login__form {
     margin-bottom: 1rem;
 }
 
-.login-form-error>p {
+.login__error {
     font-weight: 600;
 
     color: var(--error);
 }
 
-.login-form fieldset {
+.login__fieldset {
     display: flex;
     flex-direction: column;
 
     border: none;
 }
 
-.login-form input {
+.login__input {
     padding: 0.4rem 0.8rem;
 
     color: var(--text-primary);
@@ -55,17 +55,17 @@
     background: transparent;
 }
 
-.login-form input:focus {
+.login__input:focus {
     outline: 2px solid var(--primary);
 }
 
-.login-form label {
+.login__label {
     padding: 0.2rem 0.5rem;
 
     color: var(--text-secondary);
 }
 
-.login-form-buttons {
+.login__actions {
     display: flex;
     align-items: center;
 
@@ -76,7 +76,7 @@
     gap: 1.4rem;
 }
 
-.login-sign-in {
+.login__btn--primary {
     font-size: 1.2em;
     font-weight: 700;
 
@@ -90,13 +90,17 @@
     background-color: var(--primary);
 }
 
-.login-sign-in:hover {
+.login__btn--loading {
+    opacity: 0.5;
+}
+
+.login__btn--primary:hover {
     cursor: pointer;
 
     border-radius: 2rem;
 }
 
-.login-sign-up {
+.login__btn--secondary {
     font-size: 1.2em;
     font-weight: 500;
 
@@ -105,7 +109,7 @@
     background-color: transparent;
 }
 
-.login-sign-up:hover {
+.login__btn--secondary:hover {
     cursor: pointer;
     text-decoration: underline;
 }

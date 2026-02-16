@@ -1,18 +1,18 @@
-.register-view {
+.register {
     padding: 4em;
 
     background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.register-view-layout {
+.register__container {
     display: flex;
     justify-content: flex-end;
 
     height: calc(100dvh - 8rem);
 }
 
-.register-form {
+.register__form {
     display: flex;
     flex: 0 1 680px;
     flex-direction: column;
@@ -29,24 +29,24 @@
     --bg-primary)
 }
 
-.register-form-title {
+.register__title {
     margin-bottom: 1rem;
 }
 
-.register-form-error>p {
+.register__error {
     font-weight: 600;
 
     color: var(--error);
 }
 
-.register-form fieldset {
+.register__fieldset {
     display: flex;
     flex-direction: column;
 
     border: none;
 }
 
-.register-form input {
+.register__input {
     padding: 0.4rem 0.8rem;
 
     color: var(--text-primary);
@@ -56,17 +56,17 @@
     background: transparent;
 }
 
-.register-form input:focus {
+.register__input:focus {
     outline: 2px solid var(--primary);
 }
 
-.register-form label {
+.register__label {
     padding: 0.2rem 0.5rem;
 
     color: var(--text-secondary);
 }
 
-.register-form-buttons {
+.register__actions {
     display: flex;
     align-items: center;
 
@@ -77,7 +77,7 @@
     gap: 1.4rem;
 }
 
-.register-sign-up {
+.register__btn--primary {
     font-size: 1.2rem;
     font-weight: 700;
 
@@ -91,13 +91,17 @@
     background-color: var(--primary);
 }
 
-.register-sign-up:hover {
+.register__btn--loading {
+    opacity: 0.5;
+}
+
+.register__btn--primary:hover {
     cursor: pointer;
 
     border-radius: 2rem;
 }
 
-.register-sign-in {
+.register__btn--secondary {
     font-size: 1.2em;
     font-weight: 500;
 
@@ -106,7 +110,7 @@
     background-color: transparent;
 }
 
-.register-sign-in:hover {
+.register__btn--secondary:hover {
     cursor: pointer;
     text-decoration: underline;
 }

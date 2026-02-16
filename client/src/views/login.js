@@ -5,35 +5,34 @@ import { html } from "lit-html";
 import { login } from "../api/data.js"
 import { navigate } from "../utils/navigation.js";
 
-export const loginTemplate = (onSubmit, errMessage) =>
+export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
     html`
-        <div class="login-view">
-            <div class="login-view-layout">
+        <div class="login">
+            <div class="login__container">
 
-                <form class="login-form" @submit=${onSubmit}>
-                    <header class="login-header">
-                        <h2 class="login-title">Sign in</h2>
+                <form class="login__form" @submit=${onSubmit}>
+                    <header class="login__header">
+                        <h2 class="login__title">Sign in</h2>
                     </header>
 
-                    <fieldset>
-                        <label for="email">Email</label>
-                        <input type="text" name="email" id="email" inputmode="email" autocomplete="email">
+                    <fieldset class="login__fieldset">
+                        <label class="login__label" for="email">Email</label>
+                        <input class="login__input" type="text" name="email" id="email" inputmode="email" autocomplete="email">
                     </fieldset>
 
-                    <fieldset>
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password">
+                    <fieldset class="login__fieldset">
+                        <label class="login__label" for="password">Password</label>
+                        <input class="login__input" type="password" name="password" id="password">
                     </fieldset>
                     
-                    <div class="login-form-error">
-                        <p>${errMessage}</p>
-                    </div>
+                    ${errMessage ? html`<p class="login__error">${errMessage}</p>` : null}
 
-                    <div class="login-form-buttons">
-                        <button type="submit" class="login-sign-in">Sign in</button>
-                        <span>Or</span>
-                        <button type="button" class="login-sign-up" @click=${() => navigate("/auth/register")}>Sign up</button>
+                    <div class="login__actions">
+                        <button type="submit" class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing in..." : "Sign in"}</button>
+                        <span class="login__divider">Or</span>
+                        <button type="button" class="login__btn login__btn--secondary" @click=${() => navigate("/auth/register")}>Sign up</button>
                     </div>
+                    
                 </form>
                 
             </div>
@@ -41,20 +40,40 @@ export const loginTemplate = (onSubmit, errMessage) =>
     `;
 
 export async function loginView(ctx) {
-    ctx.render(loginTemplate(onSubmit));
+    let errMessage = null;
+    let isSubmitting = false;
+
+    function render() {
+        ctx.render(loginTemplate(onSubmit, errMessage, isSubmitting));
+    }
+
+    render()
 
     async function onSubmit(event) {
         event.preventDefault();
+
+        if (isSubmitting) return;
+
         const formData = new FormData(event.target);
         const email = formData.get("email").trim();
         const password = formData.get("password").trim();
 
-        if (email === "" || password === "") {
-            return ctx.render(loginTemplate(onSubmit, "All fields are required."));
+        if (!email || !password) {
+            errMessage = "All fields are required.";
+            return render()
         }
 
-        await login(email, password);
+        isSubmitting = true;
+        errMessage = null;
+        render();
 
-        ctx.page.redirect("/");
+        try {
+            await login(email, password);
+            ctx.page.redirect("/");
+        } catch (err) {
+            errMessage = err.message;
+            isSubmitting = false;
+            render()
+        }
     }
 }

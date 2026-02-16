@@ -4,45 +4,50 @@ import { transactionForm } from './common/transactionForm.js';
 import { addTransaction } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
-const addTransactionTemplate = ({ onSubmit, transaction, submitLabel, onTypeChange, selectedType, errMessage }) =>
+const addTransactionTemplate = ({ onSubmit, onTypeChange, transaction, state }) =>
     html`<div class="add-transaction">
-            <div class="add-transaction-layout">
-                <header class="add-transaction-header">
-                    <h2 class="add-transaction-title">Add Transaction</h2>
+            <div class="add-transaction__container">
+                <header class="add-transaction__header">
+                    <h2 class="add-transaction__title">Add Transaction</h2>
                 </header>
 
-                ${transactionForm({ onSubmit, transaction, submitLabel, onTypeChange, selectedType, errMessage })}
+                ${transactionForm({ onSubmit, onTypeChange, transaction, state })}
             </div>
         </div>`;
 
 export const addTransactionView = (ctx) => {
+    const defaultType = "expenses"
 
-    const now = utcToLocal(new Date());
-    const defaultType = "expenses";
+    let state = {
+        errMessage: null,
+        isSubmitting: false,
+        currentDate: utcToLocal(new Date()),
+        submitLabel: 'Add Transaction',
+        selectedType: defaultType
+    }
 
-    const renderForm = ({ selectedType = defaultType, errMessage } = {}) => {
+    function renderForm() {
         ctx.render(addTransactionTemplate({
             onSubmit,
-            transaction: { date: now, type: defaultType },
-            submitLabel: 'Add Transaction',
             onTypeChange,
-            selectedType,
-            errMessage
+            transaction: { date: state.currentDate, type: state.selectedType },
+            state
         }));
     }
 
-    const onTypeChange = (event) => {
-        selectedType = event.target.value;
-        renderForm({ selectedType });
-    };
-
     renderForm()
+
+    function onTypeChange(event) {
+        state.selectedType = event.target.value;
+        renderForm();
+    };
 
     async function onSubmit(event) {
         event.preventDefault();
+
+        if (state.isSubmitting) return;
+
         const formData = new FormData(event.target);
-
-
         const createdTransaction = {
             title: formData.get("title").trim(),
             type: formData.get("type"),
@@ -56,27 +61,44 @@ export const addTransactionView = (ctx) => {
             !createdTransaction.amount ||
             !createdTransaction.date ||
             !createdTransaction.category) {
-            return renderForm({ errMessage: "Please fill the required fields." })
+
+            state.errMessage = "Please fill the required fields."
+            return renderForm()
         }
 
         if (createdTransaction.title.length < 3) {
-            return renderForm({ errMessage: "Title must be at least 3 characters." })
+            state.errMessage = "Title must be at least 3 characters."
+            return renderForm();
         }
         if (createdTransaction.title.length > 20) {
-            return renderForm({ errMessage: "Title must be 20 characters or fewer." })
+            state.errMessage = "Title must be 20 characters or fewer."
+            return renderForm();
         }
         if (createdTransaction.amount < 0.01) {
-            return renderForm({ errMessage: "Amount must be at least 0.01." })
+            state.errMessage = "Amount must be at least 0.01."
+            return renderForm();
         }
         if (createdTransaction.amount > 999999.99) {
-            return renderForm({ errMessage: "Amount must be a maximum of 999,999.99." })
+            state.errMessage = "Amount must be a maximum of 999,999.99."
+            return renderForm();
         }
         if (!Number.isInteger(createdTransaction.amount * 100)) {
-            return renderForm({ errMessage: "Amount can have at most two decimals places." })
+            state.errMessage = "Amount can have at most two decimals places."
+            return renderForm();
         }
 
+        state.isSubmitting = true;
+        state.errMessage = null;
+        state.submitLabel = "Adding transaction..."
+        renderForm();
 
-        await addTransaction(createdTransaction);
-        ctx.page.redirect("/");
+        try {
+            await addTransaction(createdTransaction);
+            ctx.page.redirect("/");
+        } catch (err) {
+            state.errMessage = err.message;
+            state.isSubmitting = false;
+            renderForm()
+        }
     }
 }

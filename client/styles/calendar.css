@@ -1,16 +1,19 @@
-.calendar-view-title {
-    margin-bottom: 1rem;
-}
-
-.calendar-view-layout {
-    display: flex;
-}
-
 .calendar {
-    flex: 1
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
 
-.calendar-header {
+.calendar__content {
+    display: flex;
+    flex: 1;
+}
+
+.calendar__body {
+    flex: 1;
+}
+
+.calendar__nav-bar {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -18,17 +21,13 @@
     padding: 0.5rem 2rem;
 
     border-bottom: 2px solid var(--border-primary);
-
-    /* border-radius: 1rem; */
-
-    /* background-color: var(--bg-primary); */
 }
 
-.calendar-current-month {
+.calendar__month {
     color: var(--text-primary);
 }
 
-.calendar-nav {
+.calendar__nav-btn {
     font-size: 1.5rem;
 
     color: var(--text-secondary);
@@ -36,13 +35,13 @@
     background-color: transparent;
 }
 
-.calendar-nav:hover {
+.calendar__nav-btn:hover {
     cursor: pointer;
 
     color: var(--text-primary);
 }
 
-.calendar-weekdays {
+.calendar__weekdays {
     font-weight: 500;
 
     display: grid;
@@ -56,7 +55,7 @@
     grid-template-columns: repeat(7, 1fr);
 }
 
-.calendar-dates {
+.calendar__dates {
     display: grid;
 
     color: var(--text-secondary);
@@ -66,7 +65,7 @@
     gap: 0.4rem;
 }
 
-.calendar-date {
+.calendar__date {
     font-weight: 500;
 
     display: flex;
@@ -78,29 +77,27 @@
     aspect-ratio: 1 / 1;
 }
 
-.calendar-date.today {
-    font-weight: 600;
-
-    background-color: var(--primary-muted);
+.calendar__date--today {
+    background-color: var(--secondary-muted);
 }
 
-.calendar-date:hover {
+.calendar__date:hover {
     cursor: pointer;
 
     background-color: var(--bg-primary);
 }
 
-.calendar-date.selected {
+.calendar__date--selected {
     color: var(--text-inverted);
     background-color: var(--secondary) !important;
 }
 
-.calendar-date.has-transactions {
+.calendar__date--has-transactions {
     outline: 2px solid #84000050;
     outline-offset: 1px;
 }
 
-.calendar-transaction-list {
+.calendar__transactions {
     display: flex;
     flex: 1;
     flex-direction: column;

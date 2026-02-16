@@ -41,46 +41,32 @@ const categoriesMasterList = [
 
 const transactionsTemplate = ({ transactions, showPrevMonth, showNextMonth, filters, state }) =>
     html`
-    <div class="transactions-view">
-        <header class="transactions-view-header">
-            <h2 class="transactions-view-title">Transactions</h2>
+    <div class="transactions">
+        <header class="transactions__header">
+            <h2 class="transactions__title">Transactions</h2>
         </header>
 
-        <div class="transactions-view-layout">
+        <div class="transactions__content">
 
-            <section class="transactions-list">
-                <header class="transactions-list-header">
-                     <button
-                        class="transactions-list-nav transactions-list-nav-prev"
-                        @click=${showPrevMonth}
-                        aria-label="Previous month">
-                        <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
-                    </button>
-                    <h4 class="transactions-list-current-month">${getMonthAndYearLabel(state.currentDate)}</h4>
-                    <button
-                        class="transactions-list-nav transactions-list-nav-next"
-                        @click=${showNextMonth}
-                        aria-label="Next month">
-                        <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
-                    </button>
-                </header>
+            <div class="transactions__nav-bar">
+                <button class="transactions__nav-btn transactions__nav-btn--prev" @click=${showPrevMonth}>
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <h4 class="transactions__month">${getMonthAndYearLabel(state.currentDate)}</h4>
+                <button class="transactions__nav transactions__nav-btn--next" @click=${showNextMonth}>
+                    <i class="fa-solid fa-angle-right"></i>
+                </button>
+            </div>
+            
+            ${transactionList(filters, transactions)}
 
-                <div class="transactions-list-body">
-                    ${transactionList(filters, transactions)}
-                </div>
-            </section>
-
-            <section class="transactions-charts">
-                <div class="transactions-expenses-chart
-                    ${state.ui.activeTab === 'expenses' ? 'chart-active' : ''}
-                    ${state.ui.activeTab === 'income' ? 'chart-inactive' : ''}">
-                    <canvas id="transactions-expenses-chart-canvas"></canvas>
+            <section class="transactions__charts">
+                <div class="transactions__chart ${state.ui.activeTab === "expenses" ? "transactions__chart--active" : "transactions__chart--inactive"}">
+                    <canvas id="expenses-chart" class="transactions__canvas"></canvas>
                 </div>
 
-                <div class="transactions-income-chart
-                    ${state.ui.activeTab === 'income' ? 'chart-active' : ''}
-                    ${state.ui.activeTab === 'expenses' ? 'chart-inactive' : ''}">
-                    <canvas id="transactions-income-chart-canvas"></canvas>
+                <div class="transactions__chart ${state.ui.activeTab === "income" ? "transactions__chart--active" : "transactions__chart--inactive"}">
+                    <canvas id="income-chart" class="transactions__canvas"></canvas>
                 </div>
             </section>
 
@@ -239,7 +225,7 @@ export const transactionsView = async (ctx) => {
     }
 
     function renderExpensesGraph() {
-        const canvas = document.getElementById("transactions-expenses-chart-canvas");
+        const canvas = document.getElementById("income-chart");
 
         if (!state.expensesGraphInstance) {
             state.expensesGraphInstance = createGraph(canvas, "Expenses distribution");
@@ -250,7 +236,7 @@ export const transactionsView = async (ctx) => {
     }
 
     function renderIncomeGraph() {
-        const canvas = document.getElementById("transactions-income-chart-canvas");
+        const canvas = document.getElementById("expenses-chart");
 
         if (!state.incomeGraphInstance) {
             state.incomeGraphInstance = createGraph(canvas, "Income distribution");

@@ -6,7 +6,7 @@
     background-color: var(--bg-primary);
 }
 
-.app-layout-main {
+.app-layout__main {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -19,13 +19,13 @@
     background-color: var(--bg-darker);
 }
 
-.app-layout-sidebar {
+.app-layout__sidebar {
     flex: 0 0 240px;
 
     margin: 4rem 1rem;
 }
 
-.app-layout-username {
+.app-layout__username {
     font-size: 1.5rem;
     font-weight: 700;
 
@@ -34,14 +34,12 @@
     color: var(--text-primary);
 }
 
-.app-layout-nav {
+.app-layout__nav {
     margin-top: 4rem;
 }
 
-.app-layout-nav-link {
+.app-layout__nav-link {
     font-size: 1.2rem;
-
-    display: block;
 
     width: 100%;
     padding: 0.8rem 2rem;
@@ -49,20 +47,22 @@
     cursor: pointer;
 
     color: var(--text-secondary);
+    border: none;
     border-radius: 0.5rem;
+    background-color: var(--bg-primary);
 }
 
-.app-layout-nav-link:hover {
+.app-layout__nav-link:hover {
     color: var(--text-primary);
     background-color: var(--bg-secondary);
 }
 
-.app-layout-nav-link-active {
+.app-layout__nav-link--active {
     color: var(--text-primary);
     background-color: var(--secondary-muted) !important;
 }
 
-.app-layout-fab {
+.app-layout__fab {
     font-size: 1.6rem;
 
     position: fixed;

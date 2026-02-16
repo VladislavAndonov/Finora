@@ -8,26 +8,27 @@ import { transactionList } from './common/transactionList.js';
 
 const homeTemplate = ({ filters, transactions, balance }) =>
     html`
-    <div class="home-view">
-        <header class="home-view-header">
-            <h2 class="home-view-title">Home</h2>
+    <div class="home">
+        <header class="home__header">
+            <h2 class="home__title">Home</h2>
         </header>
 
-        <div class="home-view-layout">
-            <section class="home-finance-overview">
-                <div class="home-balance">
-                    <span class="home-balance-account">Bank</span>
-                    <span class="home-balance-amount">€${balance} EUR</span>
+        <div class="home__content">
+
+            <section class="home__finance">
+                <div class="home__balance">
+                    <span class="home__account">Bank</span>
+                    <span class="home__amount">€${balance} EUR</span>
                 </div>
-                <div class="home-monthly-goal">
+                <div class="home__monthly-goal">
                 </div>
             </section>
 
-            <section class="home-chart"> 
-                <canvas id="home-chart-canvas"></canvas>
+            <section class="home__chart"> 
+                <canvas id="balance-chart" class="home__canvas"></canvas>
             </section>
 
-            <section class="home-transaction-list">
+            <section class="home__transactions">
                 ${transactionList(filters, transactions)}
             </section>
         </div >
@@ -161,7 +162,7 @@ export async function homeView(ctx) {
 
 
     function renderGraph() {
-        const canvas = document.getElementById("home-chart-canvas");
+        const canvas = document.getElementById("balance-chart");
 
         if (!state.graphInstance) {
             state.graphInstance = createGraph(canvas);

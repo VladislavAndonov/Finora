@@ -4,46 +4,62 @@ import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
 import { utcToLocal } from '../utils/dateUtils.js';
 
-const editTransactionTemplate = ({ onSubmit, onDelete, transaction, submitLabel, onTypeChange, selectedType, errMessage }) =>
+const editTransactionTemplate = ({ onSubmit, onDelete, onTypeChange, transaction, state }) =>
     html`<div class="edit-transaction">
-            <div class="add-transaction-layout">
-                <header class="edit-transaction-header">
-                    <h2 class="edit-transaction-title">Edit Transaction</h2>
+            <div class="edit-transaction__container">
+                <header class="edit-transaction__header">
+                    <h2 class="edit-transaction__title">Edit Transaction</h2>
                 </header>
                 
-                ${transactionForm({ onSubmit, onDelete, transaction, submitLabel, onTypeChange, selectedType, errMessage })}
+                ${transactionForm({ onSubmit, onDelete, onTypeChange, transaction, state })}
             </div>
         </div>`
 
 
 export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id
-    const result = await getTransactionById(tId)
+    let transaction = null;
 
-    const transaction = { ...result, date: utcToLocal(result.date) }
+    try {
+        //TODO: Finish try catch block
+        const result = await getTransactionById(tId)
+        transaction = { ...result, date: utcToLocal(result.date) }
+    } catch (err) {
+        console.log(err.message);
+    }
 
-    const renderForm = ({ selectedType = transaction.type, errMessage } = {}) => {
+    let state = {
+        errMessage: null,
+        isSubmitting: false,
+        submitLabel: 'Edit Transaction',
+        deleteLabel: "Delete",
+        selectedType: transaction.type
+    }
+
+
+    const renderForm = () => {
         ctx.render(editTransactionTemplate({
             onSubmit,
-            transaction,
-            submitLabel: 'Edit Transaction',
+            onDelete,
             onTypeChange,
-            selectedType,
-            errMessage
+            transaction,
+            state
         }));
     }
 
-    const onTypeChange = (event) => {
-        const selectedType = event.target.value;
-        renderForm({ selectedType });
+    renderForm()
+
+    function onTypeChange(event) {
+        state.selectedType = event.target.value;
+        renderForm();
     };
 
-    renderForm()
 
     async function onSubmit(event) {
         event.preventDefault();
-        const formData = new FormData(event.target);
+        if (state.isSubmitting) return;
 
+        const formData = new FormData(event.target);
         const updatedTransaction = {
             title: formData.get("title").trim(),
             type: formData.get("type"),
@@ -56,32 +72,61 @@ export const editTransactionView = async (ctx) => {
             !updatedTransaction.type ||
             !updatedTransaction.amount ||
             !updatedTransaction.date) {
-            return renderForm({ errMessage: "Please fill the required fields." })
+
+            state.errMessage = "Please fill the required fields."
+            return renderForm()
         }
 
         if (updatedTransaction.title.length < 3) {
-            return renderForm({ errMessage: "Title must be at least 3 characters." })
+            state.errMessage = "Title must be at least 3 characters."
+            return renderForm();
         }
         if (updatedTransaction.title.length > 20) {
-            return renderForm({ errMessage: "Title must be 20 characters or fewer." })
+            state.errMessage = "Title must be 20 characters or fewer."
+            return renderForm();
         }
         if (updatedTransaction.amount < 0.01) {
-            return renderForm({ errMessage: "Amount must be at least 0.01." })
+            state.errMessage = "Amount must be at least 0.01."
+            return renderForm();
         }
         if (updatedTransaction.amount > 999999.99) {
-            return renderForm({ errMessage: "Amount must be a maximum of 999,999.99." })
+            state.errMessage = "Amount must be a maximum of 999,999.99."
+            return renderForm();
         }
         if (!Number.isInteger(updatedTransaction.amount * 100)) {
-            return renderForm({ errMessage: "Amount can have at most two decimals places." })
+            state.errMessage = "Amount can have at most two decimals places."
+            return renderForm();
         }
 
-        await editTransaction(tId, updatedTransaction);
-        ctx.page.redirect("/");
+        state.isSubmitting = true;
+        state.errMessage = null;
+        state.submitLabel = "Submitting changes..."
+        renderForm();
+
+        try {
+            await editTransaction(tId, updatedTransaction);
+            ctx.page.redirect("/");
+        } catch (err) {
+            state.errMessage = err.message;
+            state.isSubmitting = false;
+            renderForm()
+        }
     }
 
     async function onDelete() {
-        await deleteTransaction(tId);
-        ctx.page.redirect("/");
+        state.isSubmitting = true;
+        state.errMessage = null;
+        state.deleteLabel = "Deleting..."
+        renderForm();
+
+        try {
+            await deleteTransaction(tId);
+            ctx.page.redirect("/");
+        } catch (err) {
+            state.errMessage = err.message;
+            state.isSubmitting = false;
+            renderForm()
+        }
     }
 }
 

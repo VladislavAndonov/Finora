@@ -34,55 +34,72 @@ const incomeCategories = [
     "other"
 ]
 
-export const transactionForm = ({ onSubmit, onDelete, transaction, submitLabel, errMessage, onTypeChange, selectedType }) =>
+export const transactionForm = ({ onSubmit, onDelete, onTypeChange, transaction, state }) =>
     html`
-        <div class="transaction-form-container">
-            <form class="transaction-form" @submit=${onSubmit}>
-                <fieldset>
-                    <label for="title">Title</label>
-                    <input type="text" name="title" id="title" value=${transaction?.title ?? ""}>
-                </fieldset>
+        <form class="transaction-form" @submit=${onSubmit}>
 
-                <fieldset>
-                    <label for="type">Type</label>
-                    <input type="radio" name="type" .checked=${selectedType === "expenses"} id="expenses" value="expenses" @change=${onTypeChange}>
-                    <label for="expenses">Expenses</label>
-                    <input type="radio" name="type" .checked=${selectedType === "income"} id="income" value="income" @change=${onTypeChange}>
-                    <label for="income">Income</label>
-                </fieldset>
+            <!-- Title -->
+            <fieldset class="transaction-form__fieldset">
+                <label class="transaction-form__label" for="title">Title</label>
+                <input class="transaction-form__input" type="text" name="title" id="title" value=${transaction?.title ?? ""}>
+            </fieldset>
 
-                <fieldset>
-                    <label for="amount">Amount</label>
-                    <input type="number" name="amount" id="amount" value=${transaction?.amount ?? ""}>
-                </fieldset>
-
-                <fieldset>
-                    <label for="date">Date</label>
-                    <input type="datetime-local" name="date" id="date" value=${transaction?.date ?? ""}>
-                </fieldset>
-
-                <fieldset>
-                    <label for="category">Category</label>
-                    <select name="category" id="category" .value=${transaction?.category ?? ""}>
-                        <option value="">Select a category</option>
-                        ${selectedType === "expenses"
-            ? expenseCategories.map((cat) => html`<option ?selected=${transaction?.category === cat} value=${cat}>${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`)
-            : selectedType === "income"
-                ? incomeCategories.map((cat) => html`<option ?selected=${transaction?.category === cat} value=${cat}>${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>`)
-                : ""}
-                    </select>
-                </fieldset>
-
-                <div class="transaction-form-error">
-                    ${errMessage}
+            <!-- Type -->
+            <fieldset class="transaction-form__fieldset">
+                <legend class="transaction-form__label">Type</legend>
+                <div class="transaction-form__radio-group">
+                    <div class="transaction-form__radio-option">
+                        <input class="transaction-form__radio" type="radio" name="type" .checked=${state.selectedType === "expenses"} id="expenses" value="expenses" @change=${onTypeChange}>
+                        <label class="transaction-form__label" for="expenses">Expenses</label>
+                    </div>
+                    <div class="transaction-form__radio-option">
+                        <input class="transaction-form__radio" type="radio" name="type" .checked=${state.selectedType === "income"} id="income" value="income" @change=${onTypeChange}>
+                        <label class="transaction-form__label" for="income">Income</label>
+                    </div>
                 </div>
+            </fieldset>
 
-                <div class="transaction-form-buttons">
-                    <button type="submit" class="transaction-form-submit">${submitLabel}</button>
-                
-                    <button type="button" class="transaction-form-cancel" @click=${() => history.length > 1 ? history.back() : navigate("/")}>Cancel</button>
+            <!-- Amount -->
+            <fieldset class="transaction-form__fieldset">
+                <label class="transaction-form__label" for="amount">Amount</label>
+                <input class="transaction-form__input--number" type="number" name="amount" id="amount" step="0.01" value=${transaction?.amount ?? ""}>
+            </fieldset>
 
-                    ${onDelete ? html`<button type="button" class="transaction-form-delete" @click=${onDelete}>Delete Transaction</button>` : ""}
-                </div>
-            </form>
-        </div>`
+            <!-- Date -->
+            <fieldset class="transaction-form__fieldset">
+                <label class="transaction-form__label" for="date">Date</label>
+                <input class="transaction-form__input--datetime" type="datetime-local" name="date" id="date" value=${transaction?.date ?? ""}>
+            </fieldset>
+
+            <!-- Category -->
+            <fieldset class="transaction-form__fieldset">
+                <label class="transaction-form__label" for="category">Category</label>
+                <select class="transaction-form__select" name="category" id="category" value=${transaction?.category ?? ""}>
+                    <option value="">Select a category</option>
+                    ${state.selectedType === "expenses"
+            ? expenseCategories.map((cat) => html`
+                            <option ?selected=${transaction?.category === cat} value=${cat}>
+                                ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
+                        `)
+            : state.selectedType === "income"
+                ? incomeCategories.map((cat) => html`
+                            <option ?selected=${transaction?.category === cat} value=${cat}>
+                                ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </option>
+                        `)
+                : null}
+                </select>
+            </fieldset>
+
+            ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
+
+            <div class="transaction-form__actions">
+                <button type="submit" class="transaction-form__btn transaction-form__btn--primary" ?disabled=${state.isSubmitting}>${state.submitLabel}</button>
+            
+                <button type="button" class="transaction-form__btn transaction-form__btn--secondary" @click=${() => history.length > 1 ? history.back() : navigate("/")}>Cancel</button>
+
+                ${onDelete ? html`<button type="button" class="transaction-form__btn transaction-form__btn--danger" @click=${onDelete} ?disabled=${state.isSubmitting}>${state.deleteLabel}</button>` : null}
+            </div>
+        </form>
+    `;

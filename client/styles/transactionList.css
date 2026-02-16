@@ -1,16 +1,21 @@
-.transaction-filter {
-    display: inline-flex;
-    justify-content: space-evenly;
+.transaction-list__filters {
+    display: flex;
 
     border-radius: 0.6rem;
     background-color: var(--bg-primary);
 }
 
-.transaction-filter-input {
+.transaction-list__filter {
+    display: inline-flex;
+    flex: 1;
+    justify-content: space-evenly;
+}
+
+.transaction-list__radio {
     display: none;
 }
 
-.transaction-filter-label {
+.transaction-list__label {
     flex: 1;
 
     padding: 0.4rem;
@@ -23,23 +28,33 @@
     border-radius: 0.6rem;
 }
 
-.transaction-filter-label:hover {
+.transaction-list__label:hover {
     background-color: var(--bg-secondary);
 }
 
-.transaction-filter-input:checked + .transaction-filter-label {
+.transaction-list__radio:checked + .transaction-list__label {
     color: var(--text-primary);
     background-color: var(--bg-lighter);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.transaction-list-items {
+.transaction-list__items {
     padding: 1rem 0;
 }
 
-.transaction-list-item a {
+.transaction-list__item {
+    display: flex;
+    flex: 1;
+}
+
+.transaction-list__info {
+    justify-items: start;
+}
+
+.transaction-list__link {
     display: flex;
     align-items: center;
+    flex: 1;
     flex-direction: row;
     justify-content: space-between;
 
@@ -47,32 +62,36 @@
 
     cursor: pointer;
 
+    border: none;
     border-radius: 0.5rem;
+    background-color: transparent;
 }
 
-.transaction-list-item span {
+.transaction-list__title,
+.transaction-list__category,
+.transaction-list__amount {
     display: block;
 }
 
-.transaction-list-item-amount-positive {
+.transaction-list__amount--positive {
     font-size: 1.2rem;
     font-weight: 500;
 
     color: var(--positive);
 }
 
-.transaction-list-item-amount-negative {
+.transaction-list__amount--negative {
     font-size: 1.2rem;
     font-weight: 500;
 
     color: var(--negative);
 }
 
-.transaction-list-item a:hover {
+.transaction-list__link:hover {
     background-color: var(--bg-primary);
 }
 
-.transaction-list-item-category {
+.transaction-list__category {
     font-size: 0.8rem;
     color: var(
     --text-muted)

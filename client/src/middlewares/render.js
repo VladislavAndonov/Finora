@@ -69,5 +69,5 @@ function onLogoutClick() {
 }
 
 function onAddTransaction() {
-    page.redirect("/transactions/add")
+    page("/transactions/add")
 }

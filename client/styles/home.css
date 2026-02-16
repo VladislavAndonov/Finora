@@ -1,14 +1,14 @@
-.home-view {
+.home {
     display: flex;
     flex: 1;
     flex-direction: column;
 }
 
-.home-view-title {
+.home__title {
     margin-bottom: 1rem;
 }
 
-.home-view-layout {
+.home__content {
     display: grid;
     flex: 1;
 
@@ -17,7 +17,9 @@
     gap: 1rem;
 }
 
-.home-view-layout section {
+.home__finance,
+.home__chart,
+.home__transactions {
     padding: 1rem;
 
     color: var(--text-primary);
@@ -25,22 +27,24 @@
     border-radius: 0.5rem;
 }
 
-.home-transaction-list {
+.home__transactions {
     display: flex;
     flex-direction: column;
 
     grid-row: 1 / 8;
 }
 
-.home-chart {
-    grid-row: 2 / 8
+.home__chart {
+    background-color: var(--bg-secondary);
+
+    grid-row: 2 / 8;
 }
 
-.home-finance-overview {
+.home__finance {
     display: flex;
 }
 
-.home-balance {
+.home__balance {
     font-weight: 600;
 
     display: flex;
@@ -49,13 +53,14 @@
     padding: 1rem;
 
     border-radius: 0.6rem;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-lighter);
 }
 
-.home-balance span {
+.home__account,
+.home__amount {
     display: block;
 }
 
-.home-balance-account {
+.home__account {
     font-size: 1.2rem;
 }

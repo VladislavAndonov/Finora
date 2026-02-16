@@ -1,4 +1,4 @@
-.modal-backdrop {
+.modal__backdrop {
     position: fixed;
     z-index: 1;
     top: 0;
@@ -17,7 +17,7 @@
     5px)
 }
 
-.modal-content {
+.modal__content {
     padding: 2rem;
 
     color: #fff;
@@ -26,18 +26,18 @@
     background-color: var(--bg-primary);
 }
 
-.modal-message {
+.modal__message {
     margin-bottom: 3rem;
 }
 
-.modal-buttons {
+.modal__actions {
     font-weight: 600;
 
     display: flex;
     justify-content: space-around;
 }
 
-.modal-confirm {
+.modal__btn--primary {
     padding: 0.8rem 2.4rem;
 
     transition: ease-in-out 0.2s;
@@ -48,13 +48,13 @@
     background-color: var(--secondary);
 }
 
-.modal-confirm:hover {
+.modal__btn:hover {
     cursor: pointer;
 
     border-radius: 2rem;
 }
 
-.modal-cancel {
+.modal__btn--secondary {
     padding: 0.8rem 2.4rem;
 
     transition: ease-in-out 0.2s;

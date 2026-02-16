@@ -8,50 +8,51 @@ import { getMonthAndYearLabel } from '../utils/dateUtils.js';
 
 const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates, filters }) =>
     html`
-    <div class="calendar-view">
-        <header class="calendar-view-header">
-            <h2 class="calendar-view-title">Calendar</h2>
+    <div class="calendar">
+        <header class="calendar__header">
+            <h2 class="calendar__title">Calendar</h2>
         </header>
 
-        <div class="calendar-view-layout">
-            <section class="calendar">
-                <header class="calendar-header">
-                    <button
-                        class="calendar-nav calendar-nav-prev"
-                        @click=${showPrevMonth}
-                        aria-label="Previous month">
-                        <i class="fa-solid fa-angle-left" aria-hidden="true"></i>
-                    </button>
-                    <h3 class="calendar-current-month">${getMonthAndYearLabel(currentDate)}</h3>
-                    <button
-                        class="calendar-nav calendar-nav-next"
-                        @click=${showNextMonth}
-                        aria-label="Next month">
-                        <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
-                    </button>
-                </header>
+        <div class="calendar__content">
 
-                <div class="calendar-body">
-                    <ul class="calendar-weekdays">
-                        <li>Mon</li>
-                        <li>Tue</li>
-                        <li>Wed</li>
-                        <li>Thu</li>
-                        <li>Fri</li>
-                        <li>Sat</li>
-                        <li>Sun</li>
+            <div class="calendar__body">
+
+                <div class="calendar__nav-bar">
+                    <button class="calendar__nav-btn calendar__nav-btn--prev" @click=${showPrevMonth}>
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <h4 class="calendar__month">${getMonthAndYearLabel(currentDate)}</h4>
+                    <button class="calendar__nav-btn calendar__nav-btn--next" @click=${showNextMonth}>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+
+                <div class="calendar__grid">
+                    <ul class="calendar__weekdays">
+                        <li class="calendar__weekday">Mon</li>
+                        <li class="calendar__weekday">Tue</li>
+                        <li class="calendar__weekday">Wed</li>
+                        <li class="calendar__weekday">Thu</li>
+                        <li class="calendar__weekday">Fri</li>
+                        <li class="calendar__weekday">Sat</li>
+                        <li class="calendar__weekday">Sun</li>
                     </ul>
 
-                    <ul class="calendar-dates" @click=${selectDate}>
+                    <ul class="calendar__dates" @click=${selectDate}>
                         ${dates}
                     </ul>
-                </div>
-            </section>
 
-            <section class="calendar-transaction-list">
+                </div>
+           
+
+            </div>
+
+            <section class="calendar__transactions">
                 ${transactionList(filters, transactions)}
             </section>
+
         </div>
+            
     </div>`;
 
 
@@ -233,7 +234,7 @@ export async function calendarView(ctx) {
 
     function renderDate(dates) {
         return dates.map((d) => html`
-            <li class="calendar-date ${d.startColumn ? `grid-item-${d.startColumn} ` : ""}${d.isToday ? "today " : ""}${d.isSelected ? "selected " : ""}${d.hasTransactions ? "has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
+            <li class="calendar__date ${d.isToday ? "calendar__date--today " : ""}${d.isSelected ? "calendar__date--selected " : ""}${d.hasTransactions ? "calendar__date--has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
         `);
     }
 

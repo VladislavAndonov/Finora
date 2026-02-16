@@ -4,14 +4,14 @@ import { html } from "lit-html";
 
 
 export const modalTemplate = ({ message, onConfirm, onCancel }) =>
-    html`<div class="modal-backdrop">
-            <div class="modal-content">
-                <h4 class="modal-message">${message}</h4>
-                <div class="modal-buttons">
-                    <button class="modal-confirm" @click=${onConfirm}>
+    html`<div class="modal__backdrop">
+            <div class="modal__content">
+                <h4 class="modal__message">${message}</h4>
+                <div class="modal__actions">
+                    <button class="modal__btn modal__btn--primary" @click=${onConfirm}>
                         Confirm
                     </button>
-                    <button class="modal-cancel" @click=${onCancel}>
+                    <button class="modal__btn modal__btn--secondary" @click=${onCancel}>
                         Cancel
                     </button>
                 </div>

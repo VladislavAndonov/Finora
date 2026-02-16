@@ -1,27 +1,22 @@
-.transactions-view {
+.transactions {
     display: flex;
     flex: 1;
     flex-direction: column;
 }
 
-.transactions-view-layout {
+.transactions__content {
     display: flex;
     flex: 1;
+    flex-direction: column;
 
     gap: 1rem;
 }
 
-.transactions-list {
-    flex: 1;
-
-    border-radius: 0.5rem;
-}
-
-.transactions-view-title {
+.transactions__title {
     margin-bottom: 1rem;
 }
 
-.transactions-list-header {
+.transactions__nav-bar {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -31,21 +26,18 @@
     border-radius: 2rem;
 }
 
-.transactions-list-nav {
-    font-size: 1.5rem;
-
-    color: var(--text-secondary);
+.transactions__nav {
     border: none;
     background-color: transparent;
 }
 
-.transactions-list-nav:hover {
+.transactions__nav:hover {
     cursor: pointer;
 
     color: var(--text-primary);
 }
 
-.transactions-charts {
+.transactions__charts {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -53,8 +45,7 @@
     gap: 1rem;
 }
 
-.transactions-expenses-chart,
-.transactions-income-chart {
+.transactions__chart {
     flex: 1;
 
     transition: all 0.5s ease;
@@ -62,11 +53,11 @@
     border-radius: 0.5rem;
 }
 
-.transactions-charts .chart-active {
+.transactions__chart--active {
     opacity: 1;
 }
 
-.transactions-charts .chart-inactive {
+.transactions__chart--inactive {
     pointer-events: none;
 
     opacity: 0.2;
