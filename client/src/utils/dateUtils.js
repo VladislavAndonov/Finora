@@ -4,21 +4,18 @@ export function utcToLocal(localDate) {
     return convertedDate.slice(0, 16);
 }
 
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
+export function formatDate(isoString) {
+    const date = new Date(isoString)
+    const weekday = date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        timeZone: 'UTC'
+    });
 
-export function getMonthAndYearLabel(currentDate) {
-    return `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`
+    const dayAndMonth = date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC'
+    });
+
+    return `${weekday}, ${dayAndMonth}`;
 }

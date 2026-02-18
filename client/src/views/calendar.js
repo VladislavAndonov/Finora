@@ -4,27 +4,25 @@ import { html } from "lit-html";
 
 import { transactionList } from './common/transactionList.js';
 import { getTransactions } from '../api/data.js';
-import { getMonthAndYearLabel } from '../utils/dateUtils.js';
+import { formatDate } from '../utils/dateUtils.js';
 
-const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates, filters }) =>
+const calendarTemplate = ({ transactionsByDate, selectDate, dates, filters, selectMonth, monthList, state }) =>
     html`
     <div class="calendar">
         <header class="calendar__header">
-            <h2 class="calendar__title">Calendar</h2>
+            <h1 class="calendar__title">Calendar</h1>
         </header>
 
         <div class="calendar__content">
 
-            <div class="calendar__body">
-
-                <div class="calendar__nav-bar">
-                    <button class="calendar__nav-btn calendar__nav-btn--prev" @click=${showPrevMonth}>
-                        <i class="fa-solid fa-angle-left"></i>
-                    </button>
-                    <h4 class="calendar__month">${getMonthAndYearLabel(currentDate)}</h4>
-                    <button class="calendar__nav-btn calendar__nav-btn--next" @click=${showNextMonth}>
-                        <i class="fa-solid fa-angle-right"></i>
-                    </button>
+            <section class="calendar__section calendar__body">
+                <div class="calendar__month-scroll" id="month-scroll">
+                    ${monthList.map((m) => html`
+                        <button 
+                            class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                            ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
+                        </button>`)}
                 </div>
 
                 <div class="calendar__grid">
@@ -41,15 +39,13 @@ const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMo
                     <ul class="calendar__dates" @click=${selectDate}>
                         ${dates}
                     </ul>
-
                 </div>
-           
-
-            </div>
-
-            <section class="calendar__transactions">
-                ${transactionList(filters, transactions)}
             </section>
+                        
+            <section class="calendar__section calendar__transactions ${state.selectedDateTransactions.all.length !== 0 ? "calendar__transactions--active" : "calendar__transactions--hidden"}">
+                 ${transactionList(filters, transactionsByDate)}
+            </section>
+            
 
         </div>
             
@@ -61,6 +57,8 @@ export async function calendarView(ctx) {
         today: new Date(),
         currentDate: new Date(),
         selectedDate: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(),
         monthTransactions: [],
         selectedDateTransactions: {
             all: [],
@@ -82,40 +80,36 @@ export async function calendarView(ctx) {
         })
     }
 
-    state.selectedDateTransactions = await getTransactions({
-        year: state.selectedDate.getFullYear(),
-        month: state.selectedDate.getMonth(),
-        date: state.selectedDate.getDate()
-    });
+    await loadMonthTransactions()
 
-    const showAllTransactions = async () => {
-        state.selectedDateTransactions = await getTransactions({
+    async function loadSelectedDateTransactions() {
+        const transactions = await getTransactions({
             year: state.selectedDate.getFullYear(),
             month: state.selectedDate.getMonth(),
             date: state.selectedDate.getDate()
         });
+
+        state.selectedDateTransactions.all = transactions;
+        state.selectedDateTransactions.expenses = transactions.filter((t) => t.type === "expenses");
+        state.selectedDateTransactions.income = transactions.filter((t) => t.type === "income");
+    }
+
+    await loadSelectedDateTransactions()
+
+    async function showAllTransactions() {
+        state.ui.activeTab = "all"
         setActive("All");
         update();
     };
 
-    const showExpenses = async () => {
-        state.selectedDateTransactions = await getTransactions({
-            year: state.selectedDate.getFullYear(),
-            month: state.selectedDate.getMonth(),
-            date: state.selectedDate.getDate(),
-            type: "expenses"
-        });
+    async function showExpenses() {
+        state.ui.activeTab = "expenses";
         setActive("Expenses");
         update();
     };
 
-    const showIncome = async () => {
-        state.selectedDateTransactions = await getTransactions({
-            year: state.selectedDate.getFullYear(),
-            month: state.selectedDate.getMonth(),
-            date: state.selectedDate.getDate(),
-            type: "income"
-        });
+    function showIncome() {
+        state.ui.activeTab = "income";
         setActive("Income");
         update();
     };
@@ -136,31 +130,31 @@ export async function calendarView(ctx) {
         });
     };
 
-    const showPrevMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() - 1,
-            1
-        );
-        state.monthTransactions = await getTransactions({
-            year: state.currentDate.getFullYear(),
-            month: state.currentDate.getMonth()
-        });
+    function buildMonthList() {
+        const months = [];
+        let current = new Date(state.minDate.getFullYear(), state.minDate.getMonth(), 1);
+        const end = new Date(state.maxDate.getFullYear(), state.maxDate.getMonth(), 1);
 
-        update()
+        while (current <= end) {
+            months.push({
+                year: current.getFullYear(),
+                month: current.getMonth(),
+                label: current.toLocaleDateString("en-GB", {
+                    month: "long",
+                }),
+            });
+
+            current.setMonth(current.getMonth() + 1);
+        }
+        return months
     }
 
-    const showNextMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() + 1,
-            1
-        );
-        state.monthTransactions = await getTransactions({
-            year: state.currentDate.getFullYear(),
-            month: state.currentDate.getMonth()
-        });
+    async function selectMonth(year, month) {
+        state.currentDate = new Date(year, month, 1)
 
+        await loadMonthTransactions()
+        state.ui.activeTab = "all"
+        setActive("All");
         update()
     }
 
@@ -173,12 +167,8 @@ export async function calendarView(ctx) {
                 day
             );
 
-            state.selectedDateTransactions = await getTransactions({
-                year: state.selectedDate.getFullYear(),
-                month: state.selectedDate.getMonth(),
-                date: state.selectedDate.getDate()
-            });
-
+            await loadSelectedDateTransactions()
+            state.ui.activeTab = "all"
             setActive("All");
             update()
         }
@@ -283,18 +273,23 @@ export async function calendarView(ctx) {
 
     const update = () => {
         const dates = buildDates();
-
         ctx.render(calendarTemplate({
-            currentDate: state.currentDate,
-            transactions: state.selectedDateTransactions,
-            showPrevMonth,
-            showNextMonth,
+            transactionsByDate: getDisplayedTransactions(),
+            monthList: buildMonthList(),
             selectDate,
+            selectMonth,
             dates: renderDate(dates),
-            filters
-        }
-        ));
-    }
+            filters,
+            state
+        }));
+
+        // Auto-scroll on every render
+        setTimeout(() => {
+            const scroll = document.getElementById('month-scroll');
+            const active = scroll?.querySelector('.calendar__month-item--active');
+            active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 0);
+    };
 
     update();
 }

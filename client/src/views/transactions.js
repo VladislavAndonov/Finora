@@ -5,76 +5,48 @@ import { Chart } from "chart.js";
 
 import { getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
-import { getMonthAndYearLabel } from '../utils/dateUtils.js';
+import { formatDate } from '../utils/dateUtils.js';
+import { categoriesMasterList } from "../utils/categoryList.js";
 
-const categoriesMasterList = [
-    // Expenses
-    { id: 1, name: "housing", type: "expenses", color: "#2E7D32" },
-    { id: 2, name: "utilities", type: "expenses", color: "#0288D1" },
-    { id: 3, name: "groceries", type: "expenses", color: "#43A047" },
-    { id: 4, name: "dining", type: "expenses", color: "#F4511E" },
-    { id: 5, name: "transport", type: "expenses", color: "#546E7A" },
-    { id: 6, name: "health", type: "expenses", color: "#E53935" },
-    { id: 7, name: "shopping", type: "expenses", color: "#8E24AA" },
-    { id: 8, name: "entertainment", type: "expenses", color: "#FFB300" },
-    { id: 9, name: "education", type: "expenses", color: "#3949AB" },
-    { id: 10, name: "debt", type: "expenses", color: "#6D4C41" },
-    { id: 11, name: "travel", type: "expenses", color: "#00ACC1" },
-    { id: 12, name: "insurance", type: "expenses", color: "#5E35B1" },
-    { id: 13, name: "kids", type: "expenses", color: "#FF7043" },
-    { id: 14, name: "pets", type: "expenses", color: "#26A69A" },
-    { id: 15, name: "gifts", type: "expenses", color: "#EC407A" },
-    { id: 16, name: "subscriptions", type: "expenses", color: "#7CB342" },
-    { id: 17, name: "other", type: "expenses", color: "#9E9E9E" },
-
-    // Income
-    { id: 18, name: "salary", type: "income", color: "#00C853" },
-    { id: 19, name: "freelance", type: "income", color: "#00B0FF" },
-    { id: 20, name: "business", type: "income", color: "#FFD600" },
-    { id: 21, name: "bonus", type: "income", color: "#FF6D00" },
-    { id: 22, name: "investment", type: "income", color: "#00E676" },
-    { id: 23, name: "rental", type: "income", color: "#1DE9B6" },
-    { id: 24, name: "refund", type: "income", color: "#651FFF" },
-    { id: 25, name: "gift", type: "income", color: "#FF4081" },
-    { id: 26, name: "other", type: "income", color: "#64DD17" }
-]
-
-const transactionsTemplate = ({ transactions, showPrevMonth, showNextMonth, filters, state }) =>
+const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filters, state, noTransactionsMessage }) =>
     html`
     <div class="transactions">
         <header class="transactions__header">
-            <h2 class="transactions__title">Transactions</h2>
+            <h1 class="transactions__title">Transactions</h1>
         </header>
 
         <div class="transactions__content">
 
-            <div class="transactions__nav-bar">
-                <button class="transactions__nav-btn transactions__nav-btn--prev" @click=${showPrevMonth}>
-                    <i class="fa-solid fa-angle-left"></i>
-                </button>
-                <h4 class="transactions__month">${getMonthAndYearLabel(state.currentDate)}</h4>
-                <button class="transactions__nav transactions__nav-btn--next" @click=${showNextMonth}>
-                    <i class="fa-solid fa-angle-right"></i>
-                </button>
-            </div>
-            
-            ${transactionList(filters, transactions)}
-
-            <section class="transactions__charts">
-                <div class="transactions__chart ${state.ui.activeTab === "expenses" ? "transactions__chart--active" : "transactions__chart--inactive"}">
-                    <canvas id="expenses-chart" class="transactions__canvas"></canvas>
+            <section class="transactions__section transactions__body">
+                <div class="transactions__month-scroll" id="month-scroll">
+                    ${monthList.map((m) => html`
+                        <button 
+                            class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
+                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                            ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
+                        </button>`)}
                 </div>
 
-                <div class="transactions__chart ${state.ui.activeTab === "income" ? "transactions__chart--active" : "transactions__chart--inactive"}">
-                    <canvas id="income-chart" class="transactions__canvas"></canvas>
+                ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
+            </section>
+
+            <section class="transactions__section transactions__charts">
+                <div class="transactions__chart ${state.ui.activeTab === "expenses" || state.ui.activeTab === "all" ? "transactions__chart--active" : "transactions__chart--inactive"}">
+                    <canvas id="expenses-chart" class="transactions__canvas" aria-label="Expenses chart"></canvas>
+                </div>
+
+                <div class="transactions__chart ${state.ui.activeTab === "income" || state.ui.activeTab === "all" ? "transactions__chart--active" : "transactions__chart--inactive"}">
+                    <canvas id="income-chart" class="transactions__canvas" aria-label="Income chart"></canvas>
                 </div>
             </section>
 
         </div>
+        
     </div>`;
 
 export const transactionsView = async (ctx) => {
     const state = {
+        today: new Date(),
         currentDate: new Date(),
         minDate: new Date(),
         maxDate: new Date(),
@@ -140,6 +112,34 @@ export const transactionsView = async (ctx) => {
             }
         });
     };
+
+    function buildMonthList() {
+        const months = [];
+        let current = new Date(state.minDate.getFullYear(), state.minDate.getMonth(), 1);
+        const end = new Date(state.maxDate.getFullYear(), state.maxDate.getMonth(), 1);
+
+        while (current <= end) {
+            months.push({
+                year: current.getFullYear(),
+                month: current.getMonth(),
+                label: current.toLocaleDateString("en-GB", {
+                    month: "long",
+                }),
+            });
+
+            current.setMonth(current.getMonth() + 1);
+        }
+        return months
+    }
+
+    async function selectMonth(year, month) {
+        state.currentDate = new Date(year, month, 1);
+
+        await loadMonthTransactions();
+        state.ui.activeTab = "all";
+        setActive("All");
+        update();
+    }
 
     function getDisplayedTransactions() {
         const transactionsByDate = {}
@@ -219,7 +219,7 @@ export const transactionsView = async (ctx) => {
     }
 
     function renderExpensesGraph() {
-        const canvas = document.getElementById("income-chart");
+        const canvas = document.getElementById("expenses-chart");
 
         if (!state.expensesGraphInstance) {
             state.expensesGraphInstance = createGraph(canvas, "Expenses distribution");
@@ -230,7 +230,7 @@ export const transactionsView = async (ctx) => {
     }
 
     function renderIncomeGraph() {
-        const canvas = document.getElementById("expenses-chart");
+        const canvas = document.getElementById("income-chart");
 
         if (!state.incomeGraphInstance) {
             state.incomeGraphInstance = createGraph(canvas, "Income distribution");
@@ -316,15 +316,23 @@ export const transactionsView = async (ctx) => {
 
     const update = () => {
         ctx.render(transactionsTemplate({
-            transactions: getDisplayedTransactions(),
-            showPrevMonth,
-            showNextMonth,
+            transactionsByDate: getDisplayedTransactions(),
+            monthList: buildMonthList(),
+            selectMonth,
             filters,
-            state
+            state,
+            noTransactionsMessage: "No transactions this month."
         }));
 
         renderExpensesGraph()
         renderIncomeGraph()
+
+        // Auto-scroll on every render
+        setTimeout(() => {
+            const scroll = document.getElementById('month-scroll');
+            const active = scroll?.querySelector('.transactions__month-item--active');
+            active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 0);
     }
 
     update();
