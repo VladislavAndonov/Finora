@@ -8,8 +8,8 @@ export const notFoundView = (ctx) =>
             <p>404 Not Found</p>
             <h1 style="margin: 1rem">Oops! Page Not Found</h1>
             <p>The page you are looking for doesn't exist. Click button bellow to go to homepage.</p>
-            <button style="display: block; background-color: var(--bg-secondary); width: 10rem; margin-top: 4rem; padding: 1rem; border-radius: 1rem; text-align: center" @click=${() => navigate("/")}>
+            <a href="/" style="display: block; background-color: var(--bg-secondary); width: 10rem; margin-top: 4rem; padding: 1rem; border-radius: 1rem; text-align: center" @click=${navigate}>
                 Back to Home
-            </button>
+            </a>
         </div>
     `);

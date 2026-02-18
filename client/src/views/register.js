@@ -8,8 +8,8 @@ import { navigate } from "../utils/navigation.js";
 
 export const registerTemplate = (onSubmit, errMessage, isSubmitting) =>
     html`
-        <div class="register">
-            <div class="register__container">
+        <main class="register">
+            <div class="register__content">
 
                 <form class="register__form" @submit=${onSubmit}>
                     <header class="register__header">
@@ -41,13 +41,13 @@ export const registerTemplate = (onSubmit, errMessage, isSubmitting) =>
 
                     <div class="register__actions">
                         <button type="submit" class="register__btn register__btn--primary ${isSubmitting ? 'register__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing up..." : "Sign up"}</button>
-                       <span class="login__divider">Or</span>
-                        <button type="button" class="register__btn register__btn--secondary" @click=${() => navigate("/auth/login")}>Sign in</button>
+                        <span class="login__divider">Or</span>
+                        <a href="/auth/login" class="register__nav-link" @click=${navigate}>Sign in</a>
                     </div>
 
                 </form>
             </div>
-        </div>
+        </main>
     `;
 
 export async function registerView(ctx) {

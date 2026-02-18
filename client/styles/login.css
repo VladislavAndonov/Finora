@@ -1,14 +1,17 @@
 .login {
+    display: flex;
+
+    min-height: 100svh;
+    min-height: 100dvh;
     padding: 4rem;
 
     background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.login__container {
+.login__content {
     display: flex;
-
-    height: calc(100dvh - 8rem);
+    flex: 1;
 }
 
 .login__form {
@@ -100,7 +103,7 @@
     border-radius: 2rem;
 }
 
-.login__btn--secondary {
+.login__nav-link {
     font-size: 1.2em;
     font-weight: 500;
 
@@ -109,7 +112,7 @@
     background-color: transparent;
 }
 
-.login__btn--secondary:hover {
+.login__nav-link:hover {
     cursor: pointer;
     text-decoration: underline;
 }

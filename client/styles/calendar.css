@@ -4,41 +4,67 @@
     flex-direction: column;
 }
 
+.calendar__title {
+    font-size: clamp(1.2rem, 5vw, 2rem);
+
+    margin-bottom: 1rem;
+}
+
 .calendar__content {
     display: flex;
     flex: 1;
+
+    gap: 2rem;
 }
 
 .calendar__body {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+
+    min-width: 0;
 }
 
-.calendar__nav-bar {
+.calendar__month-scroll {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-
-    padding: 0.5rem 2rem;
+    overflow-x: auto;
 
     border-bottom: 2px solid var(--border-primary);
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
 
-.calendar__month {
-    color: var(--text-primary);
+.calendar__month-scroll::-webkit-scrollbar {
+    display: none;
 }
 
-.calendar__nav-btn {
-    font-size: 1.5rem;
+.calendar__month-item {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    justify-content: center;
 
-    color: var(--text-secondary);
-    border: none;
-    background-color: transparent;
-}
+    padding: 0 1.5rem;
 
-.calendar__nav-btn:hover {
     cursor: pointer;
+    transition: color 0.5s ease, border-color 0.5s ease;
+
+    color: var(--text-muted);
+    border: none;
+    border-bottom: 4px solid transparent;
+    background: transparent;
+}
+
+.calendar__month-item--active {
+    font-weight: 700;
 
     color: var(--text-primary);
+    border-bottom: 4px solid var(--text-primary);
+}
+
+.calendar__year-label {
+    font-size: 0.7rem;
 }
 
 .calendar__weekdays {
@@ -58,7 +84,7 @@
 .calendar__dates {
     display: grid;
 
-    color: var(--text-secondary);
+    color: var(--text-primary);
 
     grid-template-columns: repeat(7, 1fr);
     grid-row-start: 1;
@@ -102,7 +128,17 @@
     flex: 1;
     flex-direction: column;
 
-    padding: 0 2rem;
+    transition: all 0.3s ease;
 
     color: var(--text-primary);
+}
+
+.calendar__transactions--hidden {
+    pointer-events: none;
+
+    opacity: 0;
+}
+
+.calendar__transactions--active {
+    opacity: 1;
 }

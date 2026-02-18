@@ -1,9 +1,13 @@
 .transaction-form__radio-group {
     display: inline-flex;
+    flex: 1;
     justify-content: space-evenly;
 
-    border-radius: 0.6rem;
-    background-color: var(--bg-primary);
+/*
+border-radius: 0.6rem;
+    background-color: var(
+--bg-primary);
+*/
 }
 
 .transaction-form__radio {
@@ -25,4 +29,10 @@
 
 .transaction-form__label:hover {
     background-color: var(--bg-secondary);
+}
+
+.transaction-form__radio:checked + .transaction-form__label {
+    color: var(--text-primary);
+    background-color: var(--bg-lighter);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }

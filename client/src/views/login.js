@@ -7,8 +7,8 @@ import { navigate } from "../utils/navigation.js";
 
 export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
     html`
-        <div class="login">
-            <div class="login__container">
+        <main class="login">
+            <div class="login__content">
 
                 <form class="login__form" @submit=${onSubmit}>
                     <header class="login__header">
@@ -30,13 +30,12 @@ export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
                     <div class="login__actions">
                         <button type="submit" class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing in..." : "Sign in"}</button>
                         <span class="login__divider">Or</span>
-                        <button type="button" class="login__btn login__btn--secondary" @click=${() => navigate("/auth/register")}>Sign up</button>
+                        <a href="/auth/register" class="login__nav-link" @click=${navigate}>Sign up</a>
                     </div>
-                    
                 </form>
                 
             </div>
-        </div>
+        </main>
     `;
 
 export async function loginView(ctx) {

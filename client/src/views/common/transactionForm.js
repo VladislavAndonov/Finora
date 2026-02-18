@@ -1,6 +1,6 @@
+import "../../../styles/transactionForm.css"
 import { html } from "lit-html";
 
-import { navigate } from "../../utils/navigation";
 
 const expenseCategories = [
     "housing",
@@ -97,7 +97,7 @@ export const transactionForm = ({ onSubmit, onDelete, onTypeChange, transaction,
             <div class="transaction-form__actions">
                 <button type="submit" class="transaction-form__btn transaction-form__btn--primary" ?disabled=${state.isSubmitting}>${state.submitLabel}</button>
             
-                <button type="button" class="transaction-form__btn transaction-form__btn--secondary" @click=${() => history.length > 1 ? history.back() : navigate("/")}>Cancel</button>
+                <button type="button" class="transaction-form__btn transaction-form__btn--secondary" @click=${() => history.back()}>Cancel</button>
 
                 ${onDelete ? html`<button type="button" class="transaction-form__btn transaction-form__btn--danger" @click=${onDelete} ?disabled=${state.isSubmitting}>${state.deleteLabel}</button>` : null}
             </div>

@@ -1,4 +1,5 @@
 import { html } from "lit-html";
+import page from "page";
 
 import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
@@ -6,11 +7,11 @@ import { utcToLocal } from '../utils/dateUtils.js';
 
 const editTransactionTemplate = ({ onSubmit, onDelete, onTypeChange, transaction, state }) =>
     html`<div class="edit-transaction">
-            <div class="edit-transaction__container">
-                <header class="edit-transaction__header">
-                    <h2 class="edit-transaction__title">Edit Transaction</h2>
-                </header>
-                
+            <header class="edit-transaction__header">
+                <h1 class="edit-transaction__title">Edit Transaction</h1>
+            </header>
+            
+            <div class="edit-transaction__content">
                 ${transactionForm({ onSubmit, onDelete, onTypeChange, transaction, state })}
             </div>
         </div>`

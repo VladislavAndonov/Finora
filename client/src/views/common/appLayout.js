@@ -20,24 +20,27 @@ export const appLayout = ({
         <aside class="app-layout__sidebar">
             <p class="app-layout__username">${username}</p>
             <nav class="app-layout__nav">
-                <button 
-                @click=${() => navigate("/")} 
+                <a 
+                href="/"
+                @click=${navigate}
                 class="app-layout__nav-link ${currentPath === "/" ? "app-layout__nav-link--active" : ""}">
                 <i class="fa-solid fa-home app__nav-icon"></i>
                 Home
-                </button>
-                <button 
-                    @click=${() => navigate("/transactions")} 
+                </a>
+                <a
+                    href="/transactions"
+                    @click=${navigate} 
                     class="app-layout__nav-link ${currentPath === "/transactions" ? "app-layout__nav-link--active" : ""}">
                 <i class="fa-solid fa-list app__nav-icon"></i>
                 Transactions
-                </button>
-                <button 
-                    @click=${() => navigate("/calendar")} 
+                </a>
+                <a 
+                    href="/calendar"
+                    @click=${navigate} 
                     class="app-layout__nav-link ${currentPath === "/calendar" ? "app-layout__nav-link--active" : ""}">
-                <i class="fa-solid fa-calendar app__nav-icon"></i>
+                <i class="fa-regular fa-calendar-days app__nav-icon"></i>
                 Calendar
-                </button>
+                </a>
                 <button @click=${onLogoutClick} class="app-layout__nav-link">
                 <i class="fa-solid fa-right-from-bracket app__nav-icon"></i>
                 Logout

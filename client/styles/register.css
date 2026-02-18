@@ -1,15 +1,18 @@
 .register {
-    padding: 4em;
+    display: flex;
+
+    min-height: 100svh;
+    min-height: 100dvh;
+    padding: 4rem;
 
     background: url(/images/login-bg.jpg) center fixed no-repeat;
     background-size: cover;
 }
 
-.register__container {
+.register__content {
     display: flex;
+    flex: 1;
     justify-content: flex-end;
-
-    height: calc(100dvh - 8rem);
 }
 
 .register__form {
@@ -101,7 +104,7 @@
     border-radius: 2rem;
 }
 
-.register__btn--secondary {
+.register__nav-link {
     font-size: 1.2em;
     font-weight: 500;
 
@@ -110,7 +113,7 @@
     background-color: transparent;
 }
 
-.register__btn--secondary:hover {
+.register__nav-link:hover {
     cursor: pointer;
     text-decoration: underline;
 }
