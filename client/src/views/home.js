@@ -5,17 +5,18 @@ import { Chart } from "chart.js/auto";
 
 import { getTransactions, getUserBalance } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
+import { formatDate } from "../utils/dateUtils.js";
 
-const homeTemplate = ({ filters, transactions, balance }) =>
+const homeTemplate = ({ filters, transactionsByDate, balance, noTransactionsMessage }) =>
     html`
     <div class="home">
         <header class="home__header">
-            <h2 class="home__title">Home</h2>
+            <h1 class="home__title">Home</h1>
         </header>
 
         <div class="home__content">
 
-            <section class="home__finance">
+            <section class="home__section home__finance">
                 <div class="home__balance">
                     <span class="home__account">Bank</span>
                     <span class="home__amount">€${balance} EUR</span>
@@ -24,14 +25,15 @@ const homeTemplate = ({ filters, transactions, balance }) =>
                 </div>
             </section>
 
-            <section class="home__chart"> 
-                <canvas id="balance-chart" class="home__canvas"></canvas>
+            <section class="home__section home__chart"> 
+                <canvas id="balance-chart" class="home__canvas" aria-label="Balance chart"></canvas>
             </section>
 
-            <section class="home__transactions">
-                ${transactionList(filters, transactions)}
+            <section class="home__section home__transactions">
+                ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
             </section>
-        </div >
+            
+        </div>
     </div>`;
 
 
@@ -66,17 +68,17 @@ export async function homeView(ctx) {
 
     await loadTransactions()
 
-    const showAllTransactions = async () => {
+    function showAllTransactions() {
         state.ui.activeTab = "all";
         setActive("All");
         update();
     };
-    const showExpenses = async () => {
+    function showExpenses() {
         state.ui.activeTab = "expenses";
         setActive("Expenses");
         update();
     };
-    const showIncome = async () => {
+    function showIncome() {
         state.ui.activeTab = "income";
         setActive("Income");
         update();
@@ -99,15 +101,32 @@ export async function homeView(ctx) {
     };
 
     function getDisplayedTransactions() {
-        if (state.ui.activeTab === "expenses") {
-            return state.transactions.expenses;
+        const transactionsByDate = {}
+        let transactions = []
+
+        switch (state.ui.activeTab) {
+            case "expenses":
+                transactions = state.transactions.expenses;
+                break
+            case "income":
+                transactions = state.transactions.income;
+                break
+            default:
+                transactions = state.transactions.all;
         }
 
-        if (state.ui.activeTab === "income") {
-            return state.transactions.income;
+
+        for (const transaction of transactions) {
+            const dateKey = formatDate(transaction.date)
+
+            if (transactionsByDate.hasOwnProperty(dateKey)) {
+                transactionsByDate[dateKey].push(transaction)
+            } else {
+                transactionsByDate[dateKey] = [transaction]
+            }
         }
 
-        return state.transactions.all
+        return transactionsByDate
     }
 
     function buildDateLabels() {
@@ -126,17 +145,28 @@ export async function homeView(ctx) {
 
     function buildBalanceChangesData() {
         const chartData = {};
+        let transactions = []
 
-        // Group transactions by date
-        for (const transaction of getDisplayedTransactions()) {
+        switch (state.ui.activeTab) {
+            case "expenses":
+                transactions = state.transactions.expenses;
+                break
+            case "income":
+                transactions = state.transactions.income;
+                break
+            default:
+                transactions = state.transactions.all;
+        }
+
+        for (const transaction of transactions) {
             const dateKey = transaction.date.split("T")[0];
-            const amount =
-                transaction.type === "income"
-                    ? transaction.amount
-                    : -transaction.amount;
+            const amount = transaction.type === "income" ? transaction.amount : -transaction.amount;
 
-            chartData[dateKey] =
-                (chartData[dateKey] || 0) + amount;
+            if (chartData.hasOwnProperty(dateKey)) {
+                chartData[dateKey] += amount
+            } else {
+                chartData[dateKey] = amount
+            }
         }
 
         // Iterate backward through dates and build balance movement
@@ -256,9 +286,10 @@ export async function homeView(ctx) {
 
     const update = () => {
         ctx.render(homeTemplate({
-            transactions: getDisplayedTransactions(),
+            transactionsByDate: getDisplayedTransactions(),
             balance: state.balance,
-            filters
+            filters,
+            noTransactionsMessage: "No transactions for the last 30 days."
         }));
 
         renderGraph()

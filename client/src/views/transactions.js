@@ -138,41 +138,31 @@ export const transactionsView = async (ctx) => {
     };
 
     function getDisplayedTransactions() {
-        if (state.ui.activeTab === "expenses") {
-            return state.monthTransactions.expenses;
+        const transactionsByDate = {}
+        let transactions = []
+
+        switch (state.ui.activeTab) {
+            case "expenses":
+                transactions = state.monthTransactions.expenses;
+                break
+            case "income":
+                transactions = state.monthTransactions.income;
+                break
+            default:
+                transactions = state.monthTransactions.all;
         }
 
-        if (state.ui.activeTab === "income") {
-            return state.monthTransactions.income;
+        for (const transaction of transactions) {
+            const dateKey = formatDate(transaction.date)
+
+            if (transactionsByDate.hasOwnProperty(dateKey)) {
+                transactionsByDate[dateKey].push(transaction)
+            } else {
+                transactionsByDate[dateKey] = [transaction]
+            }
         }
 
-        return state.monthTransactions.all
-    }
-
-    const showPrevMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() - 1,
-            1
-        );
-
-        await loadMonthTransactions()
-        state.ui.activeTab = "all"
-        setActive("All")
-        update()
-    }
-
-    const showNextMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() + 1,
-            1
-        );
-
-        await loadMonthTransactions()
-        state.ui.activeTab = "all"
-        setActive("All")
-        update()
+        return transactionsByDate
     }
 
     function buildTransactionCategoriesData(type) {

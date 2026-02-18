@@ -172,6 +172,37 @@ export async function calendarView(ctx) {
         }
     }
 
+    function getDisplayedTransactions() {
+        const transactionsByDate = {}
+        let transactions = []
+
+        switch (state.ui.activeTab) {
+            case "expenses":
+                transactions = state.selectedDateTransactions.expenses;
+                break
+            case "income":
+                transactions = state.selectedDateTransactions.income;
+                break
+            default:
+                transactions = state.selectedDateTransactions.all;
+        }
+
+
+        for (const transaction of transactions) {
+            const dateKey = formatDate(transaction.date)
+
+            if (transactionsByDate.hasOwnProperty(dateKey)) {
+                transactionsByDate[dateKey].push(transaction)
+            } else {
+                transactionsByDate[dateKey] = [transaction]
+            }
+        }
+
+        return transactionsByDate
+    }
+
+    getDisplayedTransactions()
+
     // Builds an array of date objects to render them later. Each one contains properties like isToday, isSelected etc.
     const buildDates = () => {
         const todayYear = state.today.getFullYear();
