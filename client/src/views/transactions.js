@@ -76,7 +76,8 @@ const transactionsTemplate = ({ transactions, showPrevMonth, showNextMonth, filt
 export const transactionsView = async (ctx) => {
     const state = {
         currentDate: new Date(),
-
+        minDate: new Date(),
+        maxDate: new Date(),
         monthTransactions: {
             all: [],
             expenses: [],
@@ -89,6 +90,9 @@ export const transactionsView = async (ctx) => {
             incomeGraphInstance: null
         }
     };
+
+    state.maxDate.setMonth(state.today.getMonth() + 7);
+    state.minDate.setMonth(state.today.getMonth() - 13)
 
     async function loadMonthTransactions() {
         const transactions = await getTransactions({

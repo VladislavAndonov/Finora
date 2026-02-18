@@ -62,13 +62,25 @@ export async function calendarView(ctx) {
         currentDate: new Date(),
         selectedDate: new Date(),
         monthTransactions: [],
-        selectedDateTransactions: []
+        selectedDateTransactions: {
+            all: [],
+            expenses: [],
+            income: []
+        },
+        ui: {
+            activeTab: "all",
+        }
     }
 
-    state.monthTransactions = await getTransactions({
-        year: state.currentDate.getFullYear(),
-        month: state.currentDate.getMonth()
-    });
+    state.maxDate.setMonth(state.today.getMonth() + 7);
+    state.minDate.setMonth(state.today.getMonth() - 13)
+
+    async function loadMonthTransactions() {
+        state.monthTransactions = await getTransactions({
+            year: state.currentDate.getFullYear(),
+            month: state.currentDate.getMonth()
+        })
+    }
 
     state.selectedDateTransactions = await getTransactions({
         year: state.selectedDate.getFullYear(),
