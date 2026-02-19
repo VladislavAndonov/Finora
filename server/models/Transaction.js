@@ -41,12 +41,16 @@ const transactionSchema = new Schema({
         type: String,
         required: [true, "Title is required."],
         trim: true,
-        minlength: [3, "Title must be at least 3 characters."],
-        maxlength: [20, "Title must be 20 characters or fewer."],
+        maxlength: [30, "Title must be 30 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: User,
+        required: true,
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Account",
         required: true,
     },
     type: {
@@ -72,7 +76,6 @@ const transactionSchema = new Schema({
     date: {
         type: Date,
         default: Date.now,
-        index: true,
     },
     category: {
         type: String,
@@ -84,8 +87,6 @@ const transactionSchema = new Schema({
     },
 }, { timestamps: true })
 
-transactionSchema.index({ ownerId: 1, date: -1 });
-transactionSchema.index({ ownerId: 1, category: 1, date: -1 });
-transactionSchema.index({ ownerId: 1, type: 1, date: -1 });
+transactionSchema.index({ accountId: 1, date: -1 });
 
 export const Transaction = mongoose.model("Transaction", transactionSchema);
