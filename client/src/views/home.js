@@ -3,11 +3,12 @@ import "../../styles/home.css"
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
 
-import { getTransactions, getUserBalance } from '../api/data.js';
+import { getAccount, getAllUserAccounts, getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 import { formatDate } from "../utils/dateUtils.js";
+import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js";
 
-const homeTemplate = ({ filters, transactionsByDate, balance, noTransactionsMessage }) =>
+const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, noTransactionsMessage }) =>
     html`
     <div class="home">
         <header class="home__header">
@@ -16,13 +17,16 @@ const homeTemplate = ({ filters, transactionsByDate, balance, noTransactionsMess
 
         <div class="home__content">
 
-            <section class="home__section home__finance">
-                <div class="home__balance">
-                    <span class="home__account">Bank</span>
-                    <span class="home__amount">€${balance} EUR</span>
-                </div>
-                <div class="home__monthly-goal">
-                </div>
+            <section class="home__section home__accounts">
+                ${accounts.map((a) => html`
+                    <button type="button"
+                        class="home__account ${a._id === state.activeAccountId ? "home__account--active" : ""}"
+                        data-id=${a._id}
+                        @click=${selectAccount}>
+                        <span class="home__account-name">${a.name}</span>
+                        <span class="home__account-balance">${a.currency}</span>
+                    </button>
+                `)}
             </section>
 
             <section class="home__section home__chart"> 
@@ -46,17 +50,39 @@ export async function homeView(ctx) {
             expenses: [],
             income: []
         },
-        balance: await getUserBalance(),
+        userAccounts: await getAllUserAccounts(),
+        activeAccountId: null,
         ui: {
             activeTab: "all",
             graphInstance: null
         }
     }
 
+    state.activeAccountId = getActiveAccountId() || state.userAccounts[0]?._id || null;
+
+    if (state.activeAccountId) {
+        await loadTransactions();
+    }
+
+    async function selectAccount(e) {
+        const accountId = e.target.dataset.id;
+
+        if (accountId === state.activeAccountId) return
+
+        setActiveAccountId(accountId)
+        state.activeAccountId = accountId
+
+        await loadTransactions();
+        update();
+    }
+
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
     async function loadTransactions() {
+        if (!state.activeAccountId) return;
+
         const result = await getTransactions({
+            acccountId: state.activeAccountId,
             startDate: state.thirtyDaysAgo.toISOString().split("T")[0],
             endDate: state.today.toISOString().split("T")[0]
         });
@@ -171,7 +197,7 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        let currentBalance = state.balance;
+        let currentBalance = state.activeAccountId?.balance;
 
         let currentDate = new Date(state.today);
         const endDate = state.thirtyDaysAgo;
@@ -287,7 +313,8 @@ export async function homeView(ctx) {
     const update = () => {
         ctx.render(homeTemplate({
             transactionsByDate: getDisplayedTransactions(),
-            balance: state.balance,
+            accounts: state.userAccounts,
+            selectAccount,
             filters,
             noTransactionsMessage: "No transactions for the last 30 days."
         }));
@@ -297,3 +324,11 @@ export async function homeView(ctx) {
 
     update()
 }
+
+
+
+/*
+
+
+
+*/

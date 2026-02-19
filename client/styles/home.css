@@ -40,11 +40,11 @@
     grid-row: 2 / 8;
 }
 
-.home__finance {
+.home__accounts {
     display: flex;
 }
 
-.home__balance {
+.home__account {
     font-weight: 600;
 
     display: flex;
@@ -56,11 +56,11 @@
     background-color: var(--bg-lighter);
 }
 
-.home__account,
-.home__amount {
+.home__account-name,
+.home__account-balance {
     display: block;
 }
 
-.home__account {
+.home__account-name {
     font-size: 1.2rem;
 }

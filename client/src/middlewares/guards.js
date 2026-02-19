@@ -1,7 +1,7 @@
 import page from "page";
 
 import { verifySession } from "../api/data.js";
-import { isAuthenticated } from "../state/auth.js";
+import { isAuthenticated } from "../state/authState.js";
 
 export async function authGuard(ctx, next) {
     await verifySession();

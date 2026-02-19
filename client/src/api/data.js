@@ -57,7 +57,7 @@ export async function getTransactionById(id) {
     return await api.get("/transactions/" + id);
 }
 
-export async function addTransaction({ title, type, amount, date = new Date(), category = "general" }) {
+export async function addTransaction({ title, type, amount, date, category }) {
     return await api.post("/transactions/", { title, type, amount, date, category });
 }
 
@@ -69,6 +69,21 @@ export async function deleteTransaction(id) {
     return await api.del("/transactions/" + id);
 }
 
-export async function getUserBalance() {
-    return await api.get("/balance")
+// Accounts
+
+export async function getAllUserAccounts(isArchived = false) {
+    const queryString = isArchived ? "?isArchived=true" : ""
+    return await api.get(`/accounts${queryString}`)
+}
+
+export async function getAccount(id) {
+    return await api.get("/accounts/" + id)
+}
+
+export async function addAccount({ name, currency }) {
+    return await api.post("/accounts", { name, currency })
+}
+
+export async function editAccount(id, { name, currency }) {
+    return await api.put("/accounts/" + id, { name, currency })
 }
