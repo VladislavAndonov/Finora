@@ -7,6 +7,7 @@ import { getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 import { formatDate } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
+import { getActiveAccountId } from "../state/sessionState.js";
 
 const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filters, state, noTransactionsMessage }) =>
     html`
@@ -25,6 +26,9 @@ const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filt
                             @click=${() => selectMonth(m.year, m.month)}>${m.label}
                             ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
                         </button>`)}
+                        <button>
+                            
+                        </button>
                 </div>
 
                 ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
@@ -50,6 +54,7 @@ export const transactionsView = async (ctx) => {
         currentDate: new Date(),
         minDate: new Date(),
         maxDate: new Date(),
+        activeAccountId: getActiveAccountId() || null,
         monthTransactions: {
             all: [],
             expenses: [],
@@ -67,7 +72,10 @@ export const transactionsView = async (ctx) => {
     state.minDate.setMonth(state.today.getMonth() - 13)
 
     async function loadMonthTransactions() {
+        if (!state.activeAccountId) return;
+
         const transactions = await getTransactions({
+            acccountId: state.activeAccountId,
             year: state.currentDate.getFullYear(),
             month: state.currentDate.getMonth()
         })

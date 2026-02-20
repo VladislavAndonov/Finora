@@ -5,6 +5,7 @@ import { html } from "lit-html";
 import { transactionList } from './common/transactionList.js';
 import { getTransactions } from '../api/data.js';
 import { formatDate } from '../utils/dateUtils.js';
+import { getActiveAccountId } from "../state/sessionState.js";
 
 const calendarTemplate = ({ transactionsByDate, selectDate, dates, filters, selectMonth, monthList, state }) =>
     html`
@@ -59,6 +60,7 @@ export async function calendarView(ctx) {
         selectedDate: new Date(),
         minDate: new Date(),
         maxDate: new Date(),
+        activeAccountId: getActiveAccountId() || null,
         monthTransactions: [],
         selectedDateTransactions: {
             all: [],
@@ -74,7 +76,10 @@ export async function calendarView(ctx) {
     state.minDate.setMonth(state.today.getMonth() - 13)
 
     async function loadMonthTransactions() {
+        if (!state.activeAccountId) return;
+
         state.monthTransactions = await getTransactions({
+            acccountId: state.activeAccountId,
             year: state.currentDate.getFullYear(),
             month: state.currentDate.getMonth()
         })
@@ -83,7 +88,10 @@ export async function calendarView(ctx) {
     await loadMonthTransactions()
 
     async function loadSelectedDateTransactions() {
+        if (!state.activeAccountId) return;
+
         const transactions = await getTransactions({
+            acccountId: state.activeAccountId,
             year: state.selectedDate.getFullYear(),
             month: state.selectedDate.getMonth(),
             date: state.selectedDate.getDate()
