@@ -2,6 +2,7 @@ import page from "page";
 
 import { verifySession } from "../api/data.js";
 import { isAuthenticated } from "../state/authState.js";
+import { ensureActiveAccount } from "./ensureActiveAccount.js";
 
 export async function authGuard(ctx, next) {
     await verifySession();
@@ -9,6 +10,8 @@ export async function authGuard(ctx, next) {
     if (!isAuthenticated()) {
         return page.redirect("/auth/login");
     }
+
+    await ensureActiveAccount();
     next();
 }
 

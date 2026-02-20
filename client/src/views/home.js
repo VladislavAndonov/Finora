@@ -51,17 +51,12 @@ export async function homeView(ctx) {
             income: []
         },
         userAccounts: await getAllUserAccounts(),
-        activeAccountId: null,
+        activeAccountId: getActiveAccountId() || null,
         ui: {
             activeTab: "all",
-            graphInstance: null
+            graphInstance: null,
+            activeModal: null
         }
-    }
-
-    state.activeAccountId = getActiveAccountId() || state.userAccounts[0]?._id || null;
-
-    if (state.activeAccountId) {
-        await loadTransactions();
     }
 
     async function selectAccount(e) {
