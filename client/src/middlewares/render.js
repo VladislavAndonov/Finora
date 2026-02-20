@@ -1,36 +1,33 @@
 import page from "page";
-import { render } from "lit-html";
+import { html, render } from "lit-html";
 
-import { appLayout } from '../views/common/appLayout.js';
 import { logout } from "../api/api.js";
+import { appLayout } from '../views/common/appLayout.js';
+import { modalTemplate } from "../views/common/modal.js";
 
 const root = document.querySelector(".app");
 
 const uiState = {
     renderApp: null,
     activeView: null,
-    logoutModalOpen: false
+    activeModal: null
 }
 
 export function withAppShell(ctx, next) {
     const username = sessionStorage.getItem("username");
     const currentPath = ctx.path;
-    const logoutMessage = "Are you sure you want to log out?"
 
-    ctx.render = (content) => {
-        uiState.activeView = content;
+    ctx.render = (viewContent) => {
+        uiState.activeView = viewContent;
 
         uiState.renderApp = () => {
             render(appLayout({
                 content: uiState.activeView,
                 username,
                 currentPath,
-                logoutModalOpen: uiState.logoutModalOpen,
-                message: logoutMessage,
                 onLogoutClick,
-                onConfirm: onConfirmLogout,
-                onCancel: onCancelLogout,
-                onAddTransaction
+                onAddTransaction,
+                modal: uiState.activeModal ? modalTemplate(uiState.activeModal) : null
             }), root);
         }
 
@@ -46,6 +43,35 @@ export function withoutShell(ctx, next) {
     next();
 }
 
+function logoutModalContent() {
+    return html`
+        <p class="modal__message">Are you sure you want to logout?</p>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--primary" @click=${onConfirmLogout}>Confirm</button>
+                <button class="modal__btn modal__btn--secondary" @click=${onCancelLogout}>Cancel</button>
+            </div>
+        `;
+}
+
+function onLogoutClick() {
+    uiState.activeModal = {
+        content: logoutModalContent(),
+        onClose: onCancelLogout
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
+    uiState.renderApp();
+}
+
+function onCancelLogout() {
+    uiState.activeModal = null;
+
+    document.removeEventListener('keydown', handleEscKey);
+
+    uiState.renderApp();
+}
+
 async function onConfirmLogout() {
     try {
         await logout();
@@ -53,19 +79,15 @@ async function onConfirmLogout() {
     } catch {
         console.log("Logout failed. Please try again");
     } finally {
-        uiState.logoutModalOpen = false;
+        uiState.activeModal = null;
         uiState.renderApp();
     }
 }
 
-function onCancelLogout() {
-    uiState.logoutModalOpen = false;
-    uiState.renderApp();
-}
-
-function onLogoutClick() {
-    uiState.logoutModalOpen = true;
-    uiState.renderApp();
+function handleEscKey(e) {
+    if (e.key === 'Escape') {
+        onCancelLogout();
+    }
 }
 
 function onAddTransaction() {
