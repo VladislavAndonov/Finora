@@ -23,9 +23,9 @@ accountController.get("/", async (req, res) => {
 
 accountController.post("/", async (req, res) => {
     const userId = req.user._id;
-    const { name, currency } = req.body
+    const { name, currency, startingBalance } = req.body
 
-    const account = await accountService.create({ name, ownerId: userId, currency })
+    const account = await accountService.create({ name, ownerId: userId, currency, startingBalance })
 
     res.json(account)
 })
