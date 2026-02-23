@@ -1,5 +1,4 @@
 import { html } from "lit-html";
-import page from "page";
 
 import { transactionForm } from './common/transactionForm.js';
 import { addTransaction } from '../api/data.js';

@@ -78,8 +78,8 @@ export async function registerView(ctx) {
             errMessage = "Username must be at least 3 characters.";
             return render()
         }
-        if (username.length > 14) {
-            errMessage = "Username must be 14 characters or fewer.";
+        if (username.length > 20) {
+            errMessage = "Username must be 20 characters or fewer.";
             return render()
         }
         if (!emailValidator(email)) {
@@ -100,7 +100,7 @@ export async function registerView(ctx) {
         render();
 
         try {
-            await register(email, password);
+            await register(username, email, password);
             ctx.page.redirect("/");
         } catch (err) {
             errMessage = err.message;

@@ -1,5 +1,4 @@
 import { html } from "lit-html";
-import page from "page";
 
 import { transactionForm } from './common/transactionForm.js';
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
@@ -15,7 +14,6 @@ const editTransactionTemplate = ({ onSubmit, onDelete, onTypeChange, transaction
                 ${transactionForm({ onSubmit, onDelete, onTypeChange, transaction, state })}
             </div>
         </div>`
-
 
 export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id

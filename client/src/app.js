@@ -15,6 +15,8 @@ import { authGuard, guestGuard } from "./middlewares/guards.js";
 import { transactionsView } from "./views/transactions.js";
 import { addTransactionView } from "./views/addTransaction.js";
 import { editTransactionView } from "./views/editTransaction.js";
+import { addAccountView } from './views/addAccount.js';
+import { editAccountView } from './views/editAccount.js';
 
 page("/", authGuard, withAppShell, homeView);
 page("/index.html", "/");
@@ -22,6 +24,9 @@ page("/calendar", authGuard, withAppShell, calendarView);
 page("/transactions", authGuard, withAppShell, transactionsView);
 page("/transactions/add", authGuard, withAppShell, addTransactionView)
 page("/transactions/edit/:id", authGuard, withAppShell, editTransactionView)
+page("/accounts/add", authGuard, withAppShell, addAccountView)
+page("/accounts/edit/:id", authGuard, withAppShell, editAccountView)
+
 
 page("/auth/login", guestGuard, withoutShell, loginView);
 page("/auth/register", guestGuard, withoutShell, registerView);

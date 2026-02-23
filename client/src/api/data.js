@@ -1,3 +1,4 @@
+import { getActiveAccountId } from "../state/sessionState.js";
 import * as api from "./api.js";
 
 const host = import.meta.env.VITE_API_URL;
@@ -22,6 +23,10 @@ export async function getTransactions(filters = {}, options = {}) {
     const {
         limit = 100
     } = options;
+
+    if (getActiveAccountId()) {
+        params.append("accountId", getActiveAccountId())
+    }
 
     // Filters
     if (type) {
@@ -58,11 +63,13 @@ export async function getTransactionById(id) {
 }
 
 export async function addTransaction({ title, type, amount, date, category }) {
-    return await api.post("/transactions/", { title, type, amount, date, category });
+    const accountId = getActiveAccountId()
+    return await api.post("/transactions/", { title, accountId, type, amount, date, category });
 }
 
-export async function editTransaction(id, data) {
-    return await api.put("/transactions/" + id, data);
+export async function editTransaction(id, { title, type, amount, date, category }) {
+    const accountId = getActiveAccountId()
+    return await api.put("/transactions/" + id, { title, accountId, type, amount, date, category });
 }
 
 export async function deleteTransaction(id) {
@@ -71,17 +78,22 @@ export async function deleteTransaction(id) {
 
 // Accounts
 
-export async function getAllUserAccounts(isArchived = false) {
-    const queryString = isArchived ? "?isArchived=true" : ""
-    return await api.get(`/accounts${queryString}`)
+export async function getAllUserAccounts(filters = {}) {
+    const { isArchived } = filters;
+
+    if (isArchived) {
+        return api.get(`/accounts?isArchived=${isArchived}`)
+    }
+
+    return api.get("/accounts")
 }
 
 export async function getAccount(id) {
     return await api.get("/accounts/" + id)
 }
 
-export async function addAccount({ name, currency }) {
-    return await api.post("/accounts", { name, currency })
+export async function addAccount({ name, currency, startingBalance }) {
+    return await api.post("/accounts", { name, currency, startingBalance })
 }
 
 export async function editAccount(id, { name, currency }) {
