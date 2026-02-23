@@ -85,6 +85,15 @@ const transactionSchema = new Schema({
         },
         required: true,
     },
+    note: {
+        type: String,
+        maxlength: [200, "Note is too long"],
+        trim: true
+    },
+    isOpeningBalance: {
+        type: Boolean,
+        default: false
+    },
 }, { timestamps: true })
 
 transactionSchema.index({ accountId: 1, date: -1 });
