@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authService from "../services/authService.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { Account } from "../models/Account.js";
 
 const authController = Router();
 
@@ -9,6 +10,13 @@ authController.post("/register", async (req, res) => {
 
     try {
         const result = await authService.register(username, email, password);
+
+        await Account.create({
+            name: "Bank",
+            currency: "EUR",
+            balance: 0,
+            ownerId: result.payload._id
+        })
 
         res.cookie("accessToken", result.token, {
             httpOnly: true,
