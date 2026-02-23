@@ -4,7 +4,7 @@ import { Account } from "../models/Account.js";
 
 const transactionService = {
     async getTransactions(filter, limit) {
-        return await Transaction.find(filter).sort({ "date": "desc" }).limit(limit).explain("executionStats");;
+        return await Transaction.find(filter).sort({ "date": "desc" }).limit(limit);
     },
     async getOne(transactionId) {
         return await Transaction.findById(transactionId);
@@ -16,18 +16,18 @@ const transactionService = {
         session.startTransaction()
 
         try {
-            const transaction = await Transaction.create(transactionData).session(session)
+            const transaction = await Transaction.create({ ...transactionData }, { session })
 
             const balanceChange = transactionData.type === "expenses" ? transaction.amount : -transaction.amount;
 
-            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: balanceChange } }).session(session)
+            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: balanceChange } }, { session })
 
             await session.commitTransaction();
 
             return transaction;
         } catch (error) {
             await session.abortTransaction()
-            console.log("Failed to add transaction", error)
+            throw error
         } finally {
             session.endSession()
         }
@@ -41,28 +41,29 @@ const transactionService = {
         session.startTransaction()
 
         try {
-            const transaction = await Transaction.findById(transactionData).session(session)
-            if (!transaction) {
+            const oldTransaction = await Transaction.findById(transactionId, null, { session })
+
+            if (!oldTransaction) {
                 throw new Error("Transaction not found")
             }
 
             // Reverse balance from current transaction
-            const reverseBalanceChange = transaction.type === "income" ? transaction.amount : -transaction.amount;
+            const oldBalanceChange = oldTransaction.type === "income" ? -oldTransaction.amount : oldTransaction.amount;
 
-            await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balance: reverseBalanceChange } }).session(session)
+            await Account.findByIdAndUpdate(oldTransaction.accountId, { $inc: { balance: oldBalanceChange } }, { session })
 
             // Add new balance change
             const newBalanceChange = transactionData.type === "income" ? transactionData.amount : -transactionData.amount
 
-            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: newBalanceChange } }).session(session)
+            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: newBalanceChange } }, { session })
 
-            const updatedTransaction = await findByIdAndUpdate(transactionId, transactionData).session(session)
+            const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, { ...transactionData }, { new: true, session })
 
             await session.commitTransaction();
             return updatedTransaction
         } catch (error) {
             await session.abortTransaction()
-            console.log("Failed to update transaction", error)
+            throw error
         } finally {
             session.endSession()
         }
@@ -88,7 +89,7 @@ const transactionService = {
             await session.commitTransaction()
         } catch (error) {
             await session.abortTransaction()
-            console.log("Failed to delete transaction", error)
+            throw error
         } finally {
             session.endSession()
         }

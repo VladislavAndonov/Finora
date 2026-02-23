@@ -5,14 +5,14 @@ const transactionController = Router();
 
 transactionController.get("/", async (req, res) => {
     const userId = req.user._id;
-    const { account, type, year, month, date, startDate, endDate, limit } = req.query;
+    const { accountId, type, year, month, date, startDate, endDate, limit } = req.query;
 
     const filter = {
         ownerId: userId
     }
 
-    if (account) {
-        filter.account = account
+    if (accountId) {
+        filter.accountId = accountId
     }
 
     if (startDate && endDate) {
@@ -69,9 +69,9 @@ transactionController.get("/", async (req, res) => {
 
 transactionController.post("/", async (req, res) => {
     const userId = req.user._id;
-    const { title, type, amount, date, category } = req.body
+    const { title, accountId, type, amount, date, category } = req.body
 
-    const transaction = await transactionService.create({ title, ownerId: userId, type, amount, date, category });
+    const transaction = await transactionService.create({ title, accountId, ownerId: userId, type, amount, date, category });
 
     res.json(transaction);
 });
@@ -89,9 +89,9 @@ transactionController.get("/:id", async (req, res) => {
 
 transactionController.put("/:id", async (req, res) => {
     const userId = req.user._id;
-    const { title, type, amount, date, category } = req.body
+    const { title, accountId, type, amount, date, category } = req.body
 
-    const transaction = await transactionService.update(req.params.id, { title, ownerId: userId, type, amount, date, category });
+    const transaction = await transactionService.update(req.params.id, { title, accountId, ownerId: userId, type, amount, date, category });
 
     res.json(transaction);
 })
