@@ -3,12 +3,15 @@ import "../../styles/home.css"
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
 
-import { getAccount, getAllUserAccounts, getTransactions } from '../api/data.js';
+import { getAllUserAccounts, getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 import { formatDate } from "../utils/dateUtils.js";
 import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js";
+import { navigate } from "../utils/navigation.js";
+import { currencies } from "../utils/currencies.js";
+import { modalTemplate } from "./common/modal.js";
 
-const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, noTransactionsMessage }) =>
+const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, onAddAccount, noTransactionsMessage, modal, activeAccountId, getCurrency }) =>
     html`
     <div class="home">
         <header class="home__header">
@@ -18,16 +21,21 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, no
         <div class="home__content">
 
             <section class="home__section home__accounts">
-                ${accounts.map((a) => html`
+                ${accounts.length > 0 ? accounts.map((a) => html`
                     <button type="button"
-                        class="home__account ${a._id === state.activeAccountId ? "home__account--active" : ""}"
+                        class="home__btn home__account ${a._id === activeAccountId ? "home__account--active" : ""}"
                         data-id=${a._id}
                         @click=${selectAccount}>
                         <span class="home__account-name">${a.name}</span>
-                        <span class="home__account-balance">${a.currency}</span>
+                        <span class="home__account-balance">${getCurrency(a.currency)}${a.balance} ${a.currency}</span>
                     </button>
-                `)}
+                `) : null}
+                <button type="button" class="home__btn home__add-account" @click=${onAddAccount}>
+                    +
+                </button>
             </section>
+
+            ${modal}
 
             <section class="home__section home__chart"> 
                 <canvas id="balance-chart" class="home__canvas" aria-label="Balance chart"></canvas>
@@ -50,7 +58,7 @@ export async function homeView(ctx) {
             expenses: [],
             income: []
         },
-        userAccounts: await getAllUserAccounts(),
+        userAccounts: null,
         activeAccountId: getActiveAccountId() || null,
         ui: {
             activeTab: "all",
@@ -59,8 +67,17 @@ export async function homeView(ctx) {
         }
     }
 
+    state.userAccounts = await getAllUserAccounts({ isArchived: false });
+
+    function getCurrency(accountCurrency) {
+
+        const currency = currencies.find((c) => c.code === accountCurrency)
+
+        return currency?.sign
+    }
+
     async function selectAccount(e) {
-        const accountId = e.target.dataset.id;
+        const accountId = e.currentTarget.dataset.id;
 
         if (accountId === state.activeAccountId) return
 
@@ -71,16 +88,40 @@ export async function homeView(ctx) {
         update();
     }
 
+    function onAddAccount() {
+        state.ui.activeModal = modalTemplate({ onClose, content: addAccountModal() })
+
+        update()
+    }
+
+    function onClose() {
+        state.ui.activeModal = null;
+
+        update();
+    }
+
+    const allAccounts = await getAllUserAccounts()
+
+    function addAccountModal() {
+        return html`
+               <p class="home__modal-message">Accounts</p>
+               ${allAccounts.length > 0 ? allAccounts.map((a) => html`<li><a>${a.name}${a.currency}</a></li>`) : null}
+                <div class="home__modal-actions">
+                    <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>Create Account</a>
+                </div>`
+    }
+
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
     async function loadTransactions() {
         if (!state.activeAccountId) return;
 
         const result = await getTransactions({
-            acccountId: state.activeAccountId,
             startDate: state.thirtyDaysAgo.toISOString().split("T")[0],
             endDate: state.today.toISOString().split("T")[0]
         });
+
+        if (!result) return
 
         state.transactions.all = result;
         state.transactions.expenses = result.filter((t) => t.type === "expenses");
@@ -192,7 +233,7 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        let currentBalance = state.activeAccountId?.balance;
+        let currentBalance = state.activeAccountId?.balance || 0;
 
         let currentDate = new Date(state.today);
         const endDate = state.thirtyDaysAgo;
@@ -310,8 +351,12 @@ export async function homeView(ctx) {
             transactionsByDate: getDisplayedTransactions(),
             accounts: state.userAccounts,
             selectAccount,
+            onAddAccount,
             filters,
-            noTransactionsMessage: "No transactions for the last 30 days."
+            noTransactionsMessage: "No transactions for the last 30 days.",
+            modal: state.ui.activeModal,
+            activeAccountId: state.activeAccountId,
+            getCurrency
         }));
 
         renderGraph()
@@ -319,11 +364,3 @@ export async function homeView(ctx) {
 
     update()
 }
-
-
-
-/*
-
-
-
-*/
