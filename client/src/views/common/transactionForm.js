@@ -1,38 +1,6 @@
 import "../../../styles/transactionForm.css"
 import { html } from "lit-html";
-
-
-const expenseCategories = [
-    "housing",
-    "utilities",
-    "groceries",
-    "dining",
-    "transport",
-    "health",
-    "shopping",
-    "entertainment",
-    "education",
-    "debt",
-    "travel",
-    "insurance",
-    "kids",
-    "pets",
-    "gifts",
-    "subscriptions",
-    "other"
-]
-
-const incomeCategories = [
-    "salary",
-    "freelance",
-    "business",
-    "bonus",
-    "investment",
-    "rental",
-    "refund",
-    "gift",
-    "other"
-]
+import { categoriesMasterList } from "../../utils/categoryList";
 
 export const transactionForm = ({ onSubmit, onDelete, onTypeChange, transaction, state }) =>
     html`
@@ -77,15 +45,15 @@ export const transactionForm = ({ onSubmit, onDelete, onTypeChange, transaction,
                 <select class="transaction-form__select" name="category" id="category" value=${transaction?.category ?? ""}>
                     <option value="">Select a category</option>
                     ${state.selectedType === "expenses"
-            ? expenseCategories.map((cat) => html`
-                            <option ?selected=${transaction?.category === cat} value=${cat}>
-                                ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+            ? categoriesMasterList.filter((cat) => cat.type === "expenses").map((cat) => html`
+                            <option ?selected=${transaction?.category === cat.name} value=${cat.name}>
+                                ${(cat.name).charAt(0).toUpperCase() + (cat.name).slice(1)}
                             </option>
                         `)
             : state.selectedType === "income"
-                ? incomeCategories.map((cat) => html`
-                            <option ?selected=${transaction?.category === cat} value=${cat}>
-                                ${cat.charAt(0).toUpperCase() + cat.slice(1)}
+                ? categoriesMasterList.filter((cat) => cat.type === "income").map((cat) => html`
+                            <option ?selected=${transaction?.category === cat.name} value=${cat.name}>
+                                ${(cat.name).charAt(0).toUpperCase() + (cat.name).slice(1)}
                             </option>
                         `)
                 : null}
