@@ -26,9 +26,6 @@ const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filt
                             @click=${() => selectMonth(m.year, m.month)}>${m.label}
                             ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
                         </button>`)}
-                        <button>
-                            
-                        </button>
                 </div>
 
                 ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
@@ -335,12 +332,19 @@ export const transactionsView = async (ctx) => {
         renderExpensesGraph()
         renderIncomeGraph()
 
+        const monthScroll = document.getElementById('month-scroll');
+
         // Auto-scroll on every render
         setTimeout(() => {
-            const scroll = document.getElementById('month-scroll');
-            const active = scroll?.querySelector('.transactions__month-item--active');
+            const active = monthScroll?.querySelector('.transactions__month-item--active');
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
+
+        // Mouse scroll behavior
+        monthScroll.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            monthScroll.scrollLeft += e.deltaY * 0.3;
+        }, { passive: false });
     }
 
     update();

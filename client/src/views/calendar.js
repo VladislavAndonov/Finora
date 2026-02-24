@@ -72,6 +72,8 @@ export async function calendarView(ctx) {
         }
     }
 
+
+
     state.maxDate.setMonth(state.today.getMonth() + 7);
     state.minDate.setMonth(state.today.getMonth() - 13)
 
@@ -291,12 +293,19 @@ export async function calendarView(ctx) {
             state
         }));
 
+        const monthScroll = document.getElementById('month-scroll');
+
         // Auto-scroll on every render
         setTimeout(() => {
-            const scroll = document.getElementById('month-scroll');
-            const active = scroll?.querySelector('.calendar__month-item--active');
+            const active = monthScroll?.querySelector('.calendar__month-item--active');
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
+
+        // Mouse scroll behavior
+        monthScroll.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            monthScroll.scrollLeft += e.deltaY * 0.3;
+        }, { passive: false });
     };
 
     update();
