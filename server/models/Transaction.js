@@ -4,37 +4,49 @@ import { User } from "./User.js";
 
 const { Schema } = mongoose;
 
-const expensesCategories = [
-    "housing",
-    "utilities",
-    "groceries",
-    "dining",
-    "transport",
-    "health",
-    "shopping",
-    "entertainment",
-    "education",
-    "debt",
-    "travel",
-    "insurance",
-    "kids",
-    "pets",
-    "gifts",
-    "subscriptions",
-    "other"
-]
+const categoriesList = [
+    // Housing
+    "Rent",
+    "Home Maintenance",
+    "Bills & Utilities",
 
-const incomeCategories = [
-    "salary",
-    "freelance",
-    "business",
-    "bonus",
-    "investment",
-    "rental",
-    "refund",
-    "gift",
-    "other"
-]
+    // Food
+    "Groceries",
+    "Dining Out",
+
+    // Transport
+    "Fuel",
+    "Public Transport",
+    "Auto Maintenance",
+
+    // Lifestyle
+    "Shopping",
+    "Entertainment",
+    "Personal Care",
+    "Pets",
+    "Travel",
+
+    // Health
+    "Medical",
+    "Fitness",
+
+    // Financial
+    "Insurance",
+    "Taxes",
+    "Savings & Investments",
+    "Loan Repayment",
+    "Bank Fees",
+
+    // Income
+    "Salary",
+    "Side Income",
+    "Refunds",
+    "Bonuses & Gifts",
+
+    // Other
+    "Transfer",
+    "Uncategorized"
+];
 
 const transactionSchema = new Schema({
     title: {
@@ -80,7 +92,7 @@ const transactionSchema = new Schema({
     category: {
         type: String,
         enum: {
-            values: [...expensesCategories, ...incomeCategories],
+            values: categoriesList,
             message: "Invalid category."
         },
         required: true,
