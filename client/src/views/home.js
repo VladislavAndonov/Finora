@@ -1,4 +1,5 @@
 import "../../styles/home.css"
+import "../../styles/spinner.css"
 
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
@@ -9,9 +10,8 @@ import { formatDate } from "../utils/dateUtils.js";
 import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js";
 import { navigate } from "../utils/navigation.js";
 import { currencies } from "../utils/currencies.js";
-import { modalTemplate } from "./common/modal.js";
 
-const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, onAddAccount, noTransactionsMessage, modal, activeAccountId, getCurrency }) =>
+const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, onAddAccountClick, noTransactionsMessage, addAccountModal, activeAccountId, getCurrency, isAccountModalOpen }) =>
     html`
     <div class="home">
         <header class="home__header">
@@ -30,12 +30,12 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
                         <span class="home__account-balance">${getCurrency(a.currency)}${a.balance} ${a.currency}</span>
                     </button>
                 `) : null}
-                <button type="button" class="home__btn home__add-account" @click=${onAddAccount}>
+                <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
                     +
                 </button>
             </section>
 
-            ${modal}
+            ${isAccountModalOpen ? addAccountModal() : ""}
 
             <section class="home__section home__chart"> 
                 <canvas id="balance-chart" class="home__canvas" aria-label="Balance chart"></canvas>
@@ -63,7 +63,7 @@ export async function homeView(ctx) {
         ui: {
             activeTab: "all",
             graphInstance: null,
-            activeModal: null
+            isAccountModalOpen: false
         }
     }
 
@@ -88,28 +88,32 @@ export async function homeView(ctx) {
         update();
     }
 
-    function onAddAccount() {
-        state.ui.activeModal = modalTemplate({ onClose, content: addAccountModal() })
+    function onAddAccountClick() {
+        state.ui.isAccountModalOpen = true
 
         update()
     }
 
     function onClose() {
-        state.ui.activeModal = null;
+        state.ui.isAccountModalOpen = false
 
         update();
     }
 
     const allAccounts = await getAllUserAccounts()
 
-    function addAccountModal() {
-        return html`
-               <p class="home__modal-message">Accounts</p>
-               ${allAccounts.length > 0 ? allAccounts.map((a) => html`<li><a>${a.name}${a.currency}</a></li>`) : null}
-                <div class="home__modal-actions">
-                    <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>Create Account</a>
-                </div>`
-    }
+    const addAccountModal = () =>
+        html`
+            <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onClose()}>
+                <div class="modal__content">
+                    <p class="home__modal-message">Accounts</p>
+                    ${allAccounts.length > 0 ? allAccounts.map((a) => html`<li><a>${a.name}${a.currency}</a></li>`) : null}
+                    <div class="home__modal-actions">
+                        <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>Create Account</a>
+                    </div>
+                </div>
+            </div>
+        `
 
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
@@ -282,7 +286,8 @@ export async function homeView(ctx) {
             width = chartWidth;
             height = chartHeight;
             gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, "#96afff10");
+            gradient.addColorStop(0, "#00000000");
+            gradient.addColorStop(0.5, "#96afff40");
             gradient.addColorStop(1, "#96afff70");
         }
 
@@ -348,14 +353,18 @@ export async function homeView(ctx) {
 
     const update = () => {
         ctx.render(homeTemplate({
-            transactionsByDate: getDisplayedTransactions(),
-            accounts: state.userAccounts,
-            selectAccount,
-            onAddAccount,
             filters,
+            transactionsByDate: getDisplayedTransactions(),
             noTransactionsMessage: "No transactions for the last 30 days.",
-            modal: state.ui.activeModal,
+
+            accounts: state.userAccounts,
             activeAccountId: state.activeAccountId,
+            selectAccount,
+
+            isAccountModalOpen: state.ui.isAccountModalOpen,
+            onAddAccountClick,
+            addAccountModal,
+
             getCurrency
         }));
 

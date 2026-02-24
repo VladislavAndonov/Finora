@@ -1,16 +1,15 @@
 import page from "page";
-import { html, render } from "lit-html";
+import { render } from "lit-html";
 
 import { logout } from "../api/api.js";
 import { appLayout } from '../views/common/appLayout.js';
-import { modalTemplate } from "../views/common/modal.js";
 
 const root = document.querySelector(".app");
 
 const uiState = {
     renderApp: null,
     activeView: null,
-    activeModal: null
+    logoutModalOpen: false
 }
 
 export function withAppShell(ctx, next) {
@@ -25,9 +24,11 @@ export function withAppShell(ctx, next) {
                 content: uiState.activeView,
                 username,
                 currentPath,
+                logoutModalOpen: uiState.logoutModalOpen,
                 onLogoutClick,
-                onAddTransaction,
-                modal: uiState.activeModal ? modalTemplate(uiState.activeModal) : null
+                onConfirmLogout,
+                onCancelLogout,
+                onAddTransaction
             }), root);
         }
 
@@ -43,21 +44,8 @@ export function withoutShell(ctx, next) {
     next();
 }
 
-function logoutModalContent() {
-    return html`
-        <p class="modal__message">Are you sure you want to logout?</p>
-            <div class="modal__actions">
-                <button class="modal__btn modal__btn--primary" @click=${onConfirmLogout}>Confirm</button>
-                <button class="modal__btn modal__btn--secondary" @click=${onCancelLogout}>Cancel</button>
-            </div>
-        `;
-}
-
 function onLogoutClick() {
-    uiState.activeModal = {
-        content: logoutModalContent(),
-        onClose: onCancelLogout
-    };
+    uiState.logoutModalOpen = true;
 
     document.addEventListener('keydown', handleEscKey);
 
@@ -65,7 +53,7 @@ function onLogoutClick() {
 }
 
 function onCancelLogout() {
-    uiState.activeModal = null;
+    uiState.logoutModalOpen = false;
 
     document.removeEventListener('keydown', handleEscKey);
 
@@ -79,7 +67,7 @@ async function onConfirmLogout() {
     } catch {
         console.log("Logout failed. Please try again");
     } finally {
-        uiState.activeModal = null;
+        uiState.logoutModalOpen = false;
         uiState.renderApp();
     }
 }

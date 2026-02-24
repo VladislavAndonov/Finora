@@ -3,14 +3,17 @@ import "../../../styles/layout.css"
 import { html } from 'lit-html';
 
 import { navigate } from '../../utils/navigation.js';
+import { modalTemplate } from "./logoutModal.js";
 
 export const appLayout = ({
     content,
     username,
     currentPath,
     onLogoutClick,
-    onAddTransaction,
-    modal
+    logoutModalOpen,
+    onConfirmLogout,
+    onCancelLogout,
+    onAddTransaction
 }) => html`
     <div class="app-layout">
         <aside class="app-layout__sidebar">
@@ -49,6 +52,8 @@ export const appLayout = ({
             ${currentPath !== "/transactions/add" && !currentPath.startsWith("/transactions/edit/") ? html`<button @click=${onAddTransaction} class="app-layout__fab" title="Add Transaction">+</button>` : ""} 
         </main>
 
-        ${modal}
+        ${logoutModalOpen
+        ? modalTemplate({ onConfirmLogout, onCancelLogout })
+        : ""}
     </div>
 `;
