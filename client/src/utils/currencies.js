@@ -13,5 +13,5 @@ export const currencies = [
     { id: 12, code: "INR", country: "India", sign: "₹" },
     { id: 13, code: "NOK", country: "Norway", sign: "kr" },
     { id: 14, code: "KRW", country: "South Korea", sign: "₩" },
-    { id: 15, code: "BTC", country: "Decentralized / Digital", sign: "₿" }
+    { id: 15, code: "BTC", country: "Decentralized", sign: "₿" }
 ]
