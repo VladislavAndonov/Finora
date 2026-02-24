@@ -35,7 +35,7 @@
 }
 
 .home__chart {
-    background-color: var(--bg-secondary);
+    min-width: 0;
 
     grid-row: 2 / 8;
 }
@@ -44,16 +44,22 @@
     display: flex;
 }
 
+.home__btn {
+    padding: 0.6rem 1rem;
+
+    border-radius: 0.6rem;
+    background-color: var(--bg-lighter);
+}
+
 .home__account {
     font-weight: 600;
 
     display: flex;
     flex-direction: column;
+}
 
-    padding: 0.6rem 1rem;
-
-    border-radius: 0.6rem;
-    background-color: var(--bg-lighter);
+.home__add-account {
+    border: none;
 }
 
 .home__account-name,

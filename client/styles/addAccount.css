@@ -1,0 +1,224 @@
+.add-account {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+}
+
+.add-account__header {
+    display: flex;
+    align-items: center;
+}
+
+.add-account__back {
+    font-size: 20px;
+    line-height: 1;
+
+    padding: 0;
+    padding: 1rem;
+
+    cursor: pointer;
+    transition: color 0.2s;
+
+    color: var(--text-muted);
+    border: none;
+    border-radius: 50%;
+    background: none;
+}
+
+.add-account__back:hover {
+    transition: background-color 0.5s;
+
+    background-color: var(--bg-primary);
+}
+
+.add-account__title {
+    font-size: 1.5rem;
+
+    flex: 1;
+
+    margin: 0;
+
+    text-align: center;
+}
+
+.add-account__content {
+    flex: 1;
+
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Name */
+
+.account-form__label {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    color: var(--text-muted);
+}
+
+.account-form__name-input {
+    font-family: inherit;
+    font-size: 22px;
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem 0 0.5rem;
+
+    transition: border-color 0.2s;
+
+    color: var(--text-primary);
+    border: none;
+    border-bottom: 1px solid var(--border-secondary);
+    outline: none;
+    background: transparent;
+}
+
+.account-form__name-input::placeholder {
+    color: var(--text-muted);
+}
+
+.account-form__name-input:focus {
+    border-bottom-color: var(--border-primary);
+}
+
+/* ---- Starting balance ---- */
+
+.starting-balance-row {
+    display: flex;
+    align-items: baseline;
+
+    margin: 2rem 0 3rem;
+
+    gap: 1rem;
+}
+
+.starting-balance-row label {
+    /* color: var(--text-muted); */
+}
+
+.account-form__balance-input {
+    font-family: inherit;
+    font-size: 2rem;
+    font-weight: 600;
+
+    width: 140px;
+
+    transition: border-color 0.2s, color 0.2s;
+
+    color: var(--text-primary);
+    border: none;
+    border-bottom: 1px solid var(--border-secondary);
+    outline: none;
+    background: transparent;
+}
+
+.account-form__balance-input:focus {
+    border-bottom-color: var(--border-primary);
+}
+
+/* ---- Currency grid ---- */
+
+.currency-grid {
+    display: grid;
+    overflow-y: auto;
+
+    grid-template-columns: repeat(auto-fill, minmax( 100px, 1fr) );
+    gap: 0.5rem;
+}
+
+.currency-btn {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 0.8rem;
+
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: center;
+
+    border: 1px solid var(--border-secondary);
+    border-radius: 12px;
+    background: var(--bg-primary);
+
+    gap: 0.2rem;
+}
+
+.currency-btn:hover {
+    border-color: var(--border-primary);
+    background: var(--bg-secondary);
+}
+
+.currency-btn.selected {
+    border-color: #5b7cfa;
+    background: #2b3560;
+}
+
+.currency-btn__code {
+    font-weight: 500;
+}
+
+.currency-btn__sign {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.currency-btn__country {
+    font-size: 0.7rem;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: var(--text-muted);
+}
+
+/* ---- Submit bar ---- */
+
+.account-form__actions {
+    display: flex;
+
+    margin-top: 2rem;
+}
+
+.account-form__btn {
+    font-weight: 600;
+
+    display: block;
+
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    margin-top: auto;
+    padding: 1rem;
+
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+
+    border: none;
+    border-radius: 12px;
+    background: var(--primary);
+}
+
+.account-form__btn:hover {
+    background: #5571ff;
+}
+
+.account-form__btn:disabled {
+    cursor: not-allowed;
+
+    color: #4a5268;
+    background: #2a3040;
+}
+
+/* Hidden real currency input */
+
+.account-form__currency-hidden {
+    display: none;
+}

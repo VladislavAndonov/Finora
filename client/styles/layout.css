@@ -8,13 +8,14 @@
 
 .app-layout__main {
     display: flex;
+    overflow-y: auto;
     flex: 1 1 auto;
     flex-direction: column;
 
     min-width: 0;
+    min-height: 0;
     padding: 4rem 1rem 1rem;
 
-    border-radius: 0 0.5rem 0.5rem 0;
     background-color: var(--bg-darker);
 }
 
