@@ -18,18 +18,18 @@ import { editTransactionView } from "./views/editTransaction.js";
 import { addAccountView } from './views/addAccount.js';
 import { editAccountView } from './views/editAccount.js';
 
-page("/", authGuard, withAppShell, homeView);
+page("/", withAppShell, authGuard, homeView);
 page("/index.html", "/");
-page("/calendar", authGuard, withAppShell, calendarView);
-page("/transactions", authGuard, withAppShell, transactionsView);
-page("/transactions/add", authGuard, withAppShell, addTransactionView)
-page("/transactions/edit/:id", authGuard, withAppShell, editTransactionView)
-page("/accounts/add", authGuard, withAppShell, addAccountView)
-page("/accounts/edit/:id", authGuard, withAppShell, editAccountView)
+page("/calendar", withAppShell, authGuard, calendarView);
+page("/transactions", withAppShell, authGuard, transactionsView);
+page("/transactions/add", withAppShell, authGuard, addTransactionView)
+page("/transactions/edit/:id", withAppShell, authGuard, editTransactionView)
+page("/accounts/add", withAppShell, authGuard, addAccountView)
+page("/accounts/edit/:id", withAppShell, authGuard, editAccountView)
 
 
-page("/auth/login", guestGuard, withoutShell, loginView);
-page("/auth/register", guestGuard, withoutShell, registerView);
+page("/auth/login", withoutShell, guestGuard, loginView);
+page("/auth/register", withoutShell, guestGuard, registerView);
 
 page("*", withoutShell, notFoundView);
 
