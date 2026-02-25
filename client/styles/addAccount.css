@@ -85,7 +85,7 @@
     border-bottom-color: var(--border-primary);
 }
 
-/* ---- Starting balance ---- */
+/* Starting balance */
 
 .starting-balance-row {
     display: flex;
@@ -120,7 +120,7 @@
     border-bottom-color: var(--border-primary);
 }
 
-/* ---- Currency grid ---- */
+/* Currency grid */
 
 .currency-grid {
     display: grid;
@@ -179,7 +179,7 @@
     color: var(--text-muted);
 }
 
-/* ---- Submit bar ---- */
+/* Submit bar */
 
 .account-form__actions {
     display: flex;
