@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import { Transaction } from "../models/Transaction.js";
 import { Account } from "../models/Account.js";
 
+// Helper function to avoid floating point imprecision
+const toFixedAmount = (amount) => Math.round(amount * 100) / 100;
+
 const transactionService = {
     async getTransactions(filter, limit) {
         return await Transaction.find(filter).sort({ "date": "desc" }).limit(limit);
@@ -10,20 +13,17 @@ const transactionService = {
         return await Transaction.findById(transactionId);
     },
     async create(transactionData) {
-        // return await Transaction.create(transactionData);
-
         const session = await mongoose.startSession()
         session.startTransaction()
 
         try {
             const [transaction] = await Transaction.create([transactionData], { session });
 
-            const balanceChange = transactionData.type === "income" ? transaction.amount : -transaction.amount;
+            const balanceChange = toFixedAmount(transactionData.type === "income" ? transaction.amount : -transaction.amount);
 
             await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: balanceChange } }, { session })
 
             await session.commitTransaction();
-
             return transaction;
         } catch (error) {
             await session.abortTransaction()
@@ -31,12 +31,8 @@ const transactionService = {
         } finally {
             session.endSession()
         }
-
-
     },
     async update(transactionId, transactionData) {
-        // return await Transaction.findByIdAndUpdate(transactionId, transactionData);
-
         const session = await mongoose.startSession()
         session.startTransaction()
 
@@ -47,14 +43,10 @@ const transactionService = {
                 throw new Error("Transaction not found")
             }
 
-            // Reverse balance from current transaction
-            const oldBalanceChange = oldTransaction.type === "income" ? -oldTransaction.amount : oldTransaction.amount;
-
+            const oldBalanceChange = toFixedAmount(oldTransaction.type === "income" ? -oldTransaction.amount : oldTransaction.amount);
             await Account.findByIdAndUpdate(oldTransaction.accountId, { $inc: { balance: oldBalanceChange } }, { session })
 
-            // Add new balance change
-            const newBalanceChange = transactionData.type === "income" ? transactionData.amount : -transactionData.amount
-
+            const newBalanceChange = toFixedAmount(transactionData.type === "income" ? transactionData.amount : -transactionData.amount);
             await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: newBalanceChange } }, { session })
 
             const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, { ...transactionData }, { new: true, session })
@@ -69,8 +61,6 @@ const transactionService = {
         }
     },
     async delete(transactionId) {
-        // return await Transaction.findByIdAndDelete(transactionId);
-
         const session = await mongoose.startSession()
         session.startTransaction()
 
@@ -80,7 +70,7 @@ const transactionService = {
                 throw new Error("Transaction not found")
             }
 
-            const balanceChange = transaction.type === "income" ? transaction.amount : -transaction.amount
+            const balanceChange = toFixedAmount(transaction.type === "income" ? -transaction.amount : transaction.amount);
 
             await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balance: balanceChange } }).session(session)
 

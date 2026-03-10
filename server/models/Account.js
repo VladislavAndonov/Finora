@@ -45,7 +45,7 @@ const accountSchema = new Schema({
     },
     balance: {
         type: Number,
-        requred: true,
+        required: true,
         default: 0
     },
     isArchived: {
