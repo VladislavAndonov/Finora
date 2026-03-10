@@ -5,7 +5,7 @@ import { html } from "lit-html";
 import { login } from "../api/data.js"
 import { navigate } from "../utils/navigation.js";
 
-export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
+export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =>
     html`
         <main class="login">
             <div class="login__content">
@@ -13,7 +13,9 @@ export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
                 <form class="login__form" @submit=${onSubmit}>
                     <header class="login__header">
                         <h2 class="login__title">Sign in</h2>
+                        <p class="login__subtitle">Welcome back</p>
                     </header>
+
 
                     <fieldset class="login__fieldset">
                         <label class="login__label" for="email">Email</label>
@@ -27,11 +29,21 @@ export const loginTemplate = (onSubmit, errMessage, isSubmitting) =>
                     
                     ${errMessage ? html`<p class="login__error">${errMessage}</p>` : null}
 
-                    <div class="login__actions">
-                        <button type="submit" class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing in..." : "Sign in"}</button>
-                        <span class="login__divider">Or</span>
-                        <a href="/auth/register" class="login__nav-link" @click=${navigate}>Sign up</a>
+                    <div class="login__demo-section">
+
+                        <div class="login__actions">
+                            <button type="submit" class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing in..." : "Sign in"}</button>
+                            <p class="login__signup-prompt">
+                                Don't have an account yet?
+                                <a href="/auth/register" class="login__nav-link" @click=${navigate}>Sign up</a>
+                            </p>
+                        </div>
+
+                        <div class="login__divider">try without an account</div>
+
+                        <button type="button" class="login__btn login__btn--demo" @click=${onDemoLogin} ?disabled=${isSubmitting}>Demo Login</button>
                     </div>
+
                 </form>
                 
             </div>
@@ -43,7 +55,7 @@ export async function loginView(ctx) {
     let isSubmitting = false;
 
     function render() {
-        ctx.render(loginTemplate(onSubmit, errMessage, isSubmitting));
+        ctx.render(loginTemplate(onSubmit, onDemoLogin, errMessage, isSubmitting));
     }
 
     render()
@@ -73,6 +85,23 @@ export async function loginView(ctx) {
             errMessage = err.message;
             isSubmitting = false;
             render()
+        }
+    }
+
+    async function onDemoLogin() {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        errMessage = null;
+        render();
+
+        try {
+            await login("demo@gmail.com", "123456");
+            ctx.page.redirect("/");
+        } catch (err) {
+            errMessage = err.message;
+            isSubmitting = false;
+            render();
         }
     }
 }
