@@ -1,11 +1,15 @@
-# Personal Expense Tracker – Technical Documentation
+# Personal Expense Tracker - Technical Documentation
 
 ## Overview
 
 **Finora** is a **full-stack single-page application (SPA)** for personal expense tracking.  
-It allows users to log income and expense transactions, monitor balance changes, and explore their financial activity through multiple interactive views.
+It allows users to manage multiple financial accounts, log income and expense transactions, and monitor financial health through interactive data visualizations.
 
-The application follows a **client–server architecture** with a RESTful API and is designed with scalability, security, and maintainability in mind.
+**Live Deployment:** [https://finora-web.netlify.app](https://finora-web.netlify.app)
+
+**Demo Credentials:**
+* **Button:** Use the "Demo login" button on the login page.
+* **Manual:** Email: `demo@gmail.com` | Password: `123456`
 
 ---
 
@@ -13,17 +17,19 @@ The application follows a **client–server architecture** with a RESTful API an
 
 ### Frontend
 - **Vanilla JavaScript (SPA)**
-- **page.js** – client-side routing
-- **lit-html** – declarative and efficient rendering
-- **HTML / CSS**
+- **page.js** - client-side routing.
+- **lit-html** - declarative and efficient rendering.
+- **HTML / CSS** - implemented with **BEM (Block Element Modifier)** naming convention for style encapsulation.
+- **Chart.js** - integrated for dynamic data representation and financial graphing.
 
 ### Backend
-- **Node.js**
-- **Express.js**
-- **MongoDB** (with Mongoose for schema modeling)
+- **Node.js & Express.js**
+- **MongoDB** (with Mongoose for schema modeling).
 
 ### Development & Deployment
-- RESTful API for frontend–backend communication
+- **Vite** - frontend build tool and bundler.
+- **Fly.io** - backend hosting.
+- **Netlify** - frontend hosting.
 
 ---
 
@@ -32,12 +38,14 @@ The application follows a **client–server architecture** with a RESTful API an
 The application is a **personal finance management tool**.
 
 Users can:
-- Record income and expense transactions
-- Track balance movement over time
-- View transactions grouped by month or by specific date
-- Edit or delete previously recorded transactions
+- Manage multiple financial accounts under a single profile.
+- Record income and expense transactions.
+- Track balance movement over time with interactive graphs.
+- View transactions grouped by month, specific date, or **custom date ranges** (e.g., last 30 days).
+- Edit or delete previously recorded transactions.
 
-The primary goal is to give users **clear visibility into their financial behavior**, while providing a foundation for *future insights and personalized financial suggestions*.
+
+The primary goal is to give users **clear visibility into their financial behavior**.
 
 ---
 
@@ -45,7 +53,8 @@ The primary goal is to give users **clear visibility into their financial behavi
 
 ### High-Level Architecture
 
-The system follows a **client–server model**:
+The system follows a **client-server model**. The data hierarchy supports a nested relationship:  
+**One User ➔ Multiple Accounts ➔ Multiple Transactions.**
 
 - The **frontend** handles routing, rendering, and user interaction
 - The **backend** handles:
@@ -58,80 +67,33 @@ The frontend communicates with the backend exclusively via **HTTP requests using
 
 ---
 
-## Backend Design Pattern
-
-The backend follows the **MVC (Model–View–Controller)** pattern, with an additional **Service Layer** for database operations.
-
-### Models
-Models define the structure and relationships of persisted data and enforce schema-level validation.
-
-### Controllers
-Controllers handle incoming HTTP requests, validate intent, coordinate business logic, and return appropriate responses.
-
-### Services
-Services encapsulate all database interactions and complex data operations, keeping controllers thin and focused.
-
-This layered approach improves:
-- Separation of concerns
-- Maintainability
-- Testability
-
----
-
 ## Data Models
 
 ### User Model
+Represents registered users and authentication data.
+- **username** - unique display name
+- **email** - unique identifier used for authentication
+- **password** - securely hashed credential
+- **monthlyGoal** *(optional)* - user-defined monthly financial goal
 
-Represents registered users of the application and stores authentication and personalization data.
-
-**Key properties:**
-- **username** – unique display name
-- **email** – unique identifier used for authentication
-- **password** – securely hashed credential
-- **monthlyGoal** *(optional)* – user-defined monthly financial goal
-
-**Behavior:**
-- Passwords are hashed automatically before persistence
-- Authentication-related fields are protected from accidental exposure
-- Timestamps track account creation and updates
-
----
+### Account Model
+Allows users to separate finances into distinct buckets (e.g., Savings, Checking).
+- **name** - title of the account (max 30 chars).
+- **ownerId** - reference to the User.
+- **currency** - supported ISO codes (USD, EUR, BTC, etc.).
+- **balance** - Although the account document stores a numeric balance for quick access, this value cannot be edited directly.
+- **isArchived** - flag for soft-deletion/deactivation.
 
 ### Transaction Model
-
-Represents individual financial records belonging to users.
-
-**Key properties:**
-- **title** – short description of the transaction
-- **ownerId** – reference to the owning user
-- **type** – `income` or `expenses`
-- **amount** – monetary value with two-decimal precision
-- **date** – date the transaction occurred
-- **category** – logical grouping (e.g. food, rent, salary)
-
-**Behavior:**
-- Transactions are always associated with a single user
-- Indexed fields support efficient filtering by owner and date
-- Timestamps track creation and modification
-
----
-
-## Business Logic
-
-Core business rules include:
-
-- Users can only access and manipulate their own data
-- Balance is computed dynamically from all income and expense transactions
-- Transactions can be filtered and grouped by:
-  - Month
-  - Specific date
-  - Transaction type
-- Any transaction update immediately affects:
-  - Balance calculations
-  - Visualizations
-  - Transaction listings
-
-*(Planned: category analytics and financial insights.)*
+Represents individual financial records.
+- **title** - name of the transaction.
+- **ownerId** - reference to the User.
+- **accountId** - reference to the parent account.
+- **type** - `income` or `expenses`.
+- **amount** - monetary value.
+- **date** - date of occurrence.
+- **category** - logical grouping (e.g. Groceries, Rent, Salary)
+- **note** *(optional)* - a description of the transaction.
 
 ---
 
@@ -171,13 +133,16 @@ All protected endpoints require authentication via JWT.
 
 ---
 
-### Finance (`financeController`)
+### Accounts (`accountController`)
 
-| Method | Endpoint   | Description                           |
-| ------ | ---------- | ------------------------------------- |
-| GET    | `/balance` | Returns the user’s calculated balance |
+| Method | Endpoint        | Description                                                       |
+| ------ | --------------- | ----------------------------------------------------------------- |
+| GET    | `/accounts`     | Returns all active accounts for the user                          |
+| POST   | `/accounts`     | Creates a new financial account (name, currency, startingBalance) |
+| GET    | `/accounts/:Id` | Returns an account by ID                                          |
+| PUT    | `/accounts/:id` | Updates account details                                           |
 
-*(Planned: extended summaries and financial insights.)*
+**Important business rule**: Accounts cannot be deleted. They can only be archived (soft-delete) using the **`isArchived`** flag. The backend enforces archive-only deletion.
 
 ---
 
@@ -218,14 +183,19 @@ Dynamic routes are used for transaction editing, and a fallback route handles un
 ### Authenticated Views
 
 #### Home View
+- Displays a list of all **active accounts**. Users can click an account to set it as "active" and dashboard data will dynamically update.
 - Displays **current balance**
 - Shows **latest transactions**
-- Visualizes balance movement with a **line chart**
-- *(Planned: insights and personalized suggestions)*
+- Visualizes balance movement with a **line graph**
+- The Home view includes a button that opens an Accounts modal. From the modal:
+  - Selecting an account opens the edit page: /accounts/edit/:id.
+  - Clicking Create Account opens the add account page: /accounts/add.
+
 
 #### Transactions View
 - Displays transactions for a selected month
 - Month navigation updates data dynamically
+- A visual representation of transactions for the current month by categories represented by two doughnut graphs - expenses and income.
 
 #### Calendar View
 - Interactive calendar with highlighted transaction dates
@@ -235,26 +205,59 @@ Dynamic routes are used for transaction editing, and a fallback route handles un
 
 ## Transaction Management
 
-### Adding Transactions
+Transactions are the **only way to change an account’s balance**.  
+Any transaction that is created, edited, or deleted automatically updates the related account balance.
 
-Logged-in users can add a new transaction from any protected view using a persistent action button.  
-This opens a form where the user enters the transaction details such as title, type, amount, date, and category.
+### Adding a Transaction
+- Users can add a transaction from any authenticated view using the **global action button**.
+- A form opens where the user provides:
+  - title
+  - type (`income` or `expense`)
+  - amount
+  - date
+  - category
+  - note
+- After submission, the transaction is saved and immediately reflected in:
+  - account balances
+  - charts and visualizations
+  - transaction lists
 
-Once the form is submitted, the transaction is saved and immediately becomes part of the user’s data.
+### Editing or Deleting a Transaction
+- Selecting a transaction opens the same form with **pre-filled data**.
+- Users can:
+  - update transaction details
+  - delete the transaction
+- Any change instantly updates all related data across the application.
 
-### Editing and Deleting Transactions
+---
 
-Clicking on an existing transaction opens the same form with all fields pre-filled using the transaction data retrieved from the database.  
-From there, users can update the transaction details or delete the transaction entirely.
+## Account Management
 
-Any changes are reflected right away across the application, including the balance, charts, and transaction lists.
+Accounts organize a user's finances (e.g., checking, savings, crypto wallets).  
+Unlike transactions, **accounts cannot directly modify balances**.
 
+### Adding an Account
+When creating an account, the API accepts a `startingBalance`. However, this value is **not written directly to the account balance**.
+
+Instead the backend performs two operations:
+1. Creates the account with a default balance.
+2. Creates a **starting balance transaction** linked to that account.
+
+Both operations run inside a **MongoDB session**, ensuring they succeed or fail together and keeping the data consistent.
+
+### Editing an Account
+Users can update account details such as:
+- name
+- currency
+- archive status
+
+The account **balance cannot be edited directly**.  
+Any API request attempting to change the balance through the account update endpoint is rejected.
 
 ---
 
 ## Future Improvements *(Planned)*
 
+- Budget tracking
 - Financial insights and analytics
-- Budget tracking and alerts
-- Category-based spending summaries
 - Data export functionality
