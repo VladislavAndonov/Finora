@@ -1,104 +1,113 @@
-import { html } from "lit-html";
-
-import { transactionForm } from './common/transactionForm.js';
 import { addTransaction } from '../api/data.js';
-import { utcToLocal } from '../utils/dateUtils.js';
 
-const addTransactionTemplate = ({ onSubmit, onTypeChange, transaction, state }) =>
-    html`<div class="add-transaction">
-            <header class="add-transaction__header">
-                <h1 class="add-transaction__title">Add Transaction</h1>
-            </header>
-
-            <div class="add-transaction__content">
-                ${transactionForm({ onSubmit, onTypeChange, transaction, state })}
-            </div>
-        </div>`;
+import { categoriesMasterList } from "../utils/categoryList.js";
+import { utcToLocal } from "../utils/dateUtils.js";
+import { transactionForm } from "./common/transactionForm.js";
 
 export const addTransactionView = (ctx) => {
-    const defaultType = "expenses"
 
     let state = {
         errMessage: null,
         isSubmitting: false,
-        currentDate: utcToLocal(new Date()),
-        submitLabel: 'Add Transaction',
-        selectedType: defaultType
-    }
+        submitLabel: "Adding...",
+        selectedType: "expenses",
+        selectedCategory: null,
+        selectedDate: utcToLocal(new Date()),
+        showCategoryModal: false,
+    };
 
-    function renderForm() {
-        ctx.render(addTransactionTemplate({
-            onSubmit,
-            onTypeChange,
-            transaction: { date: state.currentDate, type: state.selectedType },
-            state
-        }));
-    }
+    const renderForm = () => ctx.render(transactionForm({
+        onSubmit,
+        onDelete: null,
+        onTypeChange,
+        onCategorySelect,
+        onOpenModal,
+        onCloseModal,
+        onDateChange,
+        transaction: null,
+        state,
+        title: "Add Transaction",
+        submitLabel: "Add Transaction"
+    }));
 
-    renderForm()
+    renderForm();
 
     function onTypeChange(event) {
         state.selectedType = event.target.value;
+        const stillValid = categoriesMasterList.find(c => c.name === state.selectedCategory && c.type === state.selectedType);
+
+        if (!stillValid) {
+            state.selectedCategory = null;
+        }
         renderForm();
-    };
+    }
+
+    function onDateChange(event) {
+        state.selectedDate = event.target.value;
+        renderForm();
+    }
+    function onOpenModal() {
+        state.showCategoryModal = true;
+        renderForm();
+    }
+    function onCloseModal() {
+        state.showCategoryModal = false;
+        renderForm();
+    }
+    function onCategorySelect(name) {
+        state.selectedCategory = name;
+        state.showCategoryModal = false;
+        renderForm();
+    }
 
     async function onSubmit(event) {
         event.preventDefault();
-
-        if (state.isSubmitting) return;
-
-        const formData = new FormData(event.target);
-        const createdTransaction = {
-            title: formData.get("title").trim(),
-            type: formData.get("type"),
-            amount: Number(formData.get("amount")),
-            date: formData.get("date"),
-            category: formData.get("category").trim().toLowerCase() ?? undefined
+        if (state.isSubmitting) {
+            return
         }
 
-        if (!createdTransaction.title ||
-            !createdTransaction.type ||
-            !createdTransaction.amount ||
-            !createdTransaction.date ||
-            !createdTransaction.category) {
+        const formData = new FormData(event.currentTarget);
+        const title = formData.get("title")?.trim();
+        const amount = Number(formData.get("amount"));
+        const note = formData.get("note")?.trim() ?? "";
+        const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-            state.errMessage = "Please fill the required fields."
-            return renderForm()
-        }
-
-        if (createdTransaction.title.length < 3) {
-            state.errMessage = "Title must be at least 3 characters."
+        if (!title || !type || !amount || !date) {
+            state.errMessage = "Please fill the required fields.";
             return renderForm();
         }
-        if (createdTransaction.title.length > 20) {
-            state.errMessage = "Title must be 20 characters or fewer."
+        if (title.length > 30) {
+            state.errMessage = "Title must be 30 characters or fewer.";
             return renderForm();
         }
-        if (createdTransaction.amount < 0.01) {
-            state.errMessage = "Amount must be at least 0.01."
+        if (amount < 0.01) {
+            state.errMessage = "Amount must be at least 0.01.";
             return renderForm();
         }
-        if (createdTransaction.amount > 999999.99) {
-            state.errMessage = "Amount must be a maximum of 999,999.99."
+        if (amount > 999999.99) {
+            state.errMessage = "Amount must be a maximum of 999,999.99.";
             return renderForm();
         }
-        if (!Number.isInteger(createdTransaction.amount * 100)) {
-            state.errMessage = "Amount can have at most two decimals places."
+        if (!Number.isInteger(amount * 100)) {
+            state.errMessage = "Amount can have at most two decimal places.";
+            return renderForm();
+        }
+        if (note.length > 200) {
+            state.errMessage = `Note must be 200 characters or fewer. Current: ${note.length}`;
             return renderForm();
         }
 
         state.isSubmitting = true;
         state.errMessage = null;
-        state.submitLabel = "Adding transaction..."
         renderForm();
 
         try {
-            await addTransaction(createdTransaction);
-            ctx.page.redirect("/");
+            await addTransaction({ title, type, amount, date, category, note })
+            ctx.page.redirect("/")
         } catch (err) {
-            state.errMessage = err.message;
-            state.isSubmitting = false;
+            state.errMessage = err.message
+            state.isSubmitting = false
             renderForm()
         }
     }
-}
+};

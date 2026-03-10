@@ -1,73 +1,145 @@
-import "../../../styles/transactionForm.css"
+import "../../../styles/transactionForm.css";
+
 import { html } from "lit-html";
-import { categoriesMasterList } from "../../utils/categoryList";
+import { categoriesMasterList } from "../../utils/categoryList.js";
+import { formatDate, formatHour, formatMinute, formatAmPm } from "../../utils/dateUtils.js";
 
-export const transactionForm = ({ onSubmit, onDelete, onTypeChange, transaction, state }) =>
-    html`
-        <form class="transaction-form" @submit=${onSubmit}>
+export const transactionForm = ({
+    onSubmit,
+    onDelete,
+    onTypeChange,
+    onCategorySelect,
+    onOpenModal,
+    onCloseModal,
+    onDateChange,
+    transaction,
+    state,
+    title,
+    submitLabel
+}) => {
+    const selectedCategory = categoriesMasterList.find(c => c.name === state.selectedCategory && c.type === state.selectedType);
+    const cardColor = selectedCategory?.color ?? "#aaa";
 
-            <!-- Title -->
-            <fieldset class="transaction-form__fieldset">
-                <label class="transaction-form__label" for="title">Title</label>
-                <input class="transaction-form__input" type="text" name="title" id="title" value=${transaction?.title ?? ""}>
-            </fieldset>
+    return html`
+        <div class="transaction-form">
 
-            <!-- Type -->
-            <fieldset class="transaction-form__fieldset">
-                <legend class="transaction-form__label">Type</legend>
-                <div class="transaction-form__radio-group">
-                    <div class="transaction-form__radio-option">
-                        <input class="transaction-form__radio" type="radio" name="type" .checked=${state.selectedType === "expenses"} id="expenses" value="expenses" @change=${onTypeChange}>
-                        <label class="transaction-form__label" for="expenses">Expenses</label>
+            <nav class="transaction-form__nav">
+                <button class="transaction-form__nav-btn" type="button" @click=${() => history.back()}>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="transaction-form__title">${title}</h1>
+                ${onDelete ? html`
+                    <button class="transaction-form__nav-btn transaction-form__nav-btn--danger" type="button"
+                        @click=${onDelete} ?disabled=${state.isSubmitting}>
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                ` : html`<div style="width: 3rem"></div>`}
+            </nav>
+
+            <form class="transaction-form__body" @submit=${onSubmit}>
+
+                <div class="transaction-form__card" style="background-color: ${cardColor}">
+                    <div class="transaction-form__type-toggle">
+                        <label class="transaction-form__type-option ${state.selectedType === 'expenses' ? 'active' : ''}">
+                            <input type="radio" name="type" value="expenses" .checked=${state.selectedType === 'expenses'} @change=${onTypeChange}>
+                            <i style="font-size: 0.8rem" class="fa-solid fa-caret-down"></i>
+                            Expense
+                        </label>
+                        <label class="transaction-form__type-option ${state.selectedType === 'income' ? 'active' : ''}">
+                            <input type="radio" name="type" value="income" .checked=${state.selectedType === 'income'} @change=${onTypeChange}>
+                            <i style="font-size: 0.8rem" class="fa-solid fa-caret-up"></i>
+                            Income
+                        </label>
                     </div>
-                    <div class="transaction-form__radio-option">
-                        <input class="transaction-form__radio" type="radio" name="type" .checked=${state.selectedType === "income"} id="income" value="income" @change=${onTypeChange}>
-                        <label class="transaction-form__label" for="income">Income</label>
+                    <div class="transaction-form__card-body">
+                        <div class="transaction-form__card-amount-wrap">
+                            <div class="transaction-form__currency-row">
+                                <span class="prefix">$</span>
+                                <input class="transaction-form__amount-input" type="number" name="amount"
+                                    inputmode="numeric" step="0.01" placeholder="0.00" autocomplete="off"
+                                    value=${transaction?.amount ?? ''}>
+                            </div>
+                            <span class="transaction-form__card-category-text">
+                                ${state.selectedCategory ?? 'Select Category'}
+                            </span>
+                        </div>
+                        <button class="transaction-form__card-category-btn" type="button" @click=${onOpenModal}>
+                            <i class=${selectedCategory?.icon ?? 'fa-solid fa-tag'}></i>
+                        </button>
                     </div>
                 </div>
-            </fieldset>
 
-            <!-- Amount -->
-            <fieldset class="transaction-form__fieldset">
-                <label class="transaction-form__label" for="amount">Amount</label>
-                <input class="transaction-form__input--number" type="number" name="amount" id="amount" step="0.01" value=${transaction?.amount ?? ""}>
-            </fieldset>
+                <input type="hidden" name="category" value=${state.selectedCategory ?? ''}>
 
-            <!-- Date -->
-            <fieldset class="transaction-form__fieldset">
-                <label class="transaction-form__label" for="date">Date</label>
-                <input class="transaction-form__input--datetime" type="datetime-local" name="date" id="date" value=${transaction?.date ?? ""}>
-            </fieldset>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-t"></i>
+                    <input class="transaction-form__flat-input" maxlength="30" type="text" name="title"
+                        placeholder="Title" value=${transaction?.title ?? ''}>
+                </div>
 
-            <!-- Category -->
-            <fieldset class="transaction-form__fieldset">
-                <label class="transaction-form__label" for="category">Category</label>
-                <select class="transaction-form__select" name="category" id="category" value=${transaction?.category ?? ""}>
-                    <option value="">Select a category</option>
-                    ${state.selectedType === "expenses"
-            ? categoriesMasterList.filter((cat) => cat.type === "expenses").map((cat) => html`
-                            <option ?selected=${transaction?.category === cat.name} value=${cat.name}>
-                                ${(cat.name).charAt(0).toUpperCase() + (cat.name).slice(1)}
-                            </option>
-                        `)
-            : state.selectedType === "income"
-                ? categoriesMasterList.filter((cat) => cat.type === "income").map((cat) => html`
-                            <option ?selected=${transaction?.category === cat.name} value=${cat.name}>
-                                ${(cat.name).charAt(0).toUpperCase() + (cat.name).slice(1)}
-                            </option>
-                        `)
-                : null}
-                </select>
-            </fieldset>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-note-sticky"></i>
+                    <textarea class="transaction-form__flat-input transaction-form__flat-input--textarea"
+                        name="note" maxlength="200" placeholder="Note">${transaction?.note ?? ''}</textarea>
+                </div>
 
-            ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
+                ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
 
-            <div class="transaction-form__actions">
-                <button type="submit" class="transaction-form__btn transaction-form__btn--primary" ?disabled=${state.isSubmitting}>${state.submitLabel}</button>
-            
-                <button type="button" class="transaction-form__btn transaction-form__btn--secondary" @click=${() => history.back()}>Cancel</button>
+                <div class="transaction-form__datetime-row"
+                    @click=${() => document.getElementById('date').showPicker()}>
+                    <div class="transaction-form__calendar-icon">
+                        <i class="fa-regular fa-calendar-days"></i>
+                    </div>
+                    <span class="transaction-form__date-label">${formatDate(state.selectedDate)}</span>
+                    <div class="transaction-form__time-display">
+                        <span class="transaction-form__time-part">${formatHour(state.selectedDate)}</span>
+                        <span class="transaction-form__time-sep">:</span>
+                        <span class="transaction-form__time-part">${formatMinute(state.selectedDate)}</span>
+                        <span class="transaction-form__time-ampm">${formatAmPm(state.selectedDate)}</span>
+                    </div>
+                    <input class="transaction-form__datetime--hidden"
+                        type="datetime-local" id="date" name="date"
+                        value=${state.selectedDate ?? ''} @change=${onDateChange}>
+                </div>
 
-                ${onDelete ? html`<button type="button" class="transaction-form__btn transaction-form__btn--danger" @click=${onDelete} ?disabled=${state.isSubmitting}>${state.deleteLabel}</button>` : null}
-            </div>
-        </form>
+                <div class="transaction-form__actions">
+                    <button class="transaction-form__save-btn" type="submit"
+                        ?disabled=${state.isSubmitting}>
+                        ${state.isSubmitting ? state.submitLabel : submitLabel}
+                    </button>
+                </div>
+
+            </form>
+
+            ${state.showCategoryModal ? html`
+                <div class="category-modal__backdrop" @click=${onCloseModal}>
+                    <div class="category-modal" @click=${(e) => e.stopPropagation()}>
+                        <div class="category-modal__header">
+                            <h2 class="category-modal__title">Select Category</h2>
+                            <div class="category-modal__header-actions">
+                                <button class="category-modal__close" type="button" @click=${onCloseModal}>
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="category-modal__grid">
+                            ${categoriesMasterList
+                .filter(c => c.type === state.selectedType)
+                .map(c => html`
+                                    <button type="button"
+                                        class="category-modal__item ${state.selectedCategory === c.name ? 'selected' : ''}"
+                                        @click=${() => onCategorySelect(c.name)}>
+                                        <div class="category-modal__icon-wrap" style="background-color: ${c.color}">
+                                            <i class=${c.icon}></i>
+                                        </div>
+                                        <span class="category-modal__label">${c.name}</span>
+                                    </button>
+                                `)}
+                        </div>
+                    </div>
+                </div>
+            ` : null}
+
+        </div>
     `;
+};
