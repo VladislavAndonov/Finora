@@ -21,18 +21,21 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
         <div class="home__content">
 
             <section class="home__section home__accounts">
-                ${accounts.length > 0 ? accounts.map((a) => html`
-                    <button type="button"
-                        class="home__btn home__account ${a._id === activeAccountId ? "home__account--active" : ""}"
-                        data-id=${a._id}
-                        @click=${selectAccount}>
-                        <span class="home__account-name">${a.name}</span>
-                        <span class="home__account-balance">${getCurrency(a.currency)}${a.balance} ${a.currency}</span>
+                <div class="home__accounts-scroller" id="accountScroller">
+                    ${accounts.length > 0 ? accounts.map((a) => html`
+                        <button type="button"
+                            class="home__btn home__account ${a._id === activeAccountId ? "home__account--active" : ""}"
+                            data-id=${a._id}
+                            @click=${selectAccount}>
+                            <span class="home__account-name">${a.name}</span>
+                            <span class="home__account-balance">${getCurrency(a.currency)}${a.balance} ${a.currency}</span>
+                        </button>
+                    `) : null}
+                    <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                        Account
                     </button>
-                `) : null}
-                <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
-                    +
-                </button>
+                </div>
             </section>
 
             ${isAccountModalOpen ? addAccountModal() : ""}
@@ -104,16 +107,48 @@ export async function homeView(ctx) {
 
     const addAccountModal = () =>
         html`
-            <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onClose()}>
-                <div class="modal__content">
-                    <p class="home__modal-message">Accounts</p>
-                    ${allAccounts.length > 0 ? allAccounts.map((a) => html`<li><a>${a.name}${a.currency}</a></li>`) : null}
-                    <div class="home__modal-actions">
-                        <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>Create Account</a>
+        <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onClose()}>
+            <div class="modal__content">
+                <div class="modal__header">
+                    <div>
+                        <p class="modal__title">Accounts</p>
+                        <p class="modal__subtitle">${allAccounts.length} linked account${allAccounts.length !== 1 ? 's' : ''}</p>
                     </div>
+                    <button class="modal__close" @click=${onClose}>
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                ${allAccounts.length > 0
+                ? html`
+                        <ul class="modal__account-list">
+                            ${allAccounts.map((a) => html`
+                                <li class="modal__account-item">
+                                    <a href="/accounts/edit/${a._id}" class="modal__account-link" @click=${navigate}>
+                                        <div class="modal__account-info">
+                                            <span class="modal__account-name">${a.name}</span>
+                                            <span class="modal__account-currency">${a.currency}</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            `)}
+                        </ul>
+                    `
+                : html`
+                        <div class="modal__empty">
+                            <p>No accounts yet</p>
+                        </div>
+                    `
+            }
+
+                <div class="modal__actions">
+                    <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>
+                        Create Account
+                    </a>
                 </div>
             </div>
-        `
+        </div>
+    `
 
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
@@ -237,7 +272,8 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        let currentBalance = state.activeAccountId?.balance || 0;
+        const activeAccount = state.userAccounts.find(a => a._id === state.activeAccountId);
+        let currentBalance = activeAccount?.balance || 0;
 
         let currentDate = new Date(state.today);
         const endDate = state.thirtyDaysAgo;
@@ -281,8 +317,7 @@ export async function homeView(ctx) {
         const chartWidth = chartArea.right - chartArea.left;
         const chartHeight = chartArea.bottom - chartArea.top;
         if (!gradient || width !== chartWidth || height !== chartHeight) {
-            // Create the gradient because this is either the first render
-            // or the size of the chart has changed
+            // Create the gradient because this is either the first render or the size of the chart has changed
             width = chartWidth;
             height = chartHeight;
             gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
@@ -369,6 +404,21 @@ export async function homeView(ctx) {
         }));
 
         renderGraph()
+
+        const accountScroller = document.getElementById('accountScroller');
+
+        // Auto-scroll on every render
+        setTimeout(() => {
+            const active = accountScroller?.querySelector('.home__account--active');
+            active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 0);
+
+        // Mouse scroll behavior
+        accountScroller.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            accountScroller.scrollLeft += e.deltaY * 0.3;
+        }, { passive: false });
+
     }
 
     update()
