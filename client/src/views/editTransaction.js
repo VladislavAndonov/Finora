@@ -74,6 +74,7 @@ export const editTransactionView = async (ctx) => {
 
         const formData = new FormData(event.currentTarget);
         const title = formData.get("title")?.trim();
+        const amountStr = formData.get("amount") ?? "";
         const amount = Number(formData.get("amount"));
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
@@ -94,7 +95,7 @@ export const editTransactionView = async (ctx) => {
             state.errMessage = "Amount must be a maximum of 999,999.99.";
             return renderForm();
         }
-        if (!Number.isInteger(amount * 100)) {
+        if (!/^\d+(\.\d{1,2})?$/.test(amountStr)) {
             state.errMessage = "Amount can have at most two decimal places.";
             return renderForm();
         }
