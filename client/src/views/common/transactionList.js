@@ -29,14 +29,17 @@ export const transactionList = (filters, transactionsByDate, noTransactionsMessa
                                             <span class="transaction-list__title">${txn.title}</span>
                                             <span class="transaction-list__category" style="--category-color: ${getCategoryColor(txn.category, txn.type)}">${txn.category}</span>
                                         </div>
-                                        <span class="transaction-list__amount transaction-list__amount--${txn.type === "expenses" ? "negative" : "positive"}">€${txn.amount}</span>
-                                    </a>
-                                </li>
-                            `)}
+                                        <span class="transaction-list__amount transaction-list__amount--${txn.type === "expenses" ? "negative" : "positive"}">
+                                            ${txn.type === "expenses" ? html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-down"></i>` : html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-up"></i>`}
+                                            €${txn.amount}
+                                        </span>
+                                    </a >
+                                </li >
+    `)}
                         </ul>
                     <div>
                 `) : html`<p class="transaction-list__empty-message">${noTransactionsMessage}</p>`}
-        </div>
+        </div >
     `;
 
 

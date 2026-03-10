@@ -14,6 +14,7 @@ export const registerTemplate = (onSubmit, errMessage, isSubmitting) =>
                 <form class="register__form" @submit=${onSubmit}>
                     <header class="register__header">
                         <h2 class="register__title">Sign up</h2>
+                        <p class="register__subtitle">Welcome to Finora</p>
                     </header>
 
                     <fieldset class="register__fieldset">
@@ -36,13 +37,15 @@ export const registerTemplate = (onSubmit, errMessage, isSubmitting) =>
                         <input class="register__input" type="password" name="confirmPassword" id="confirmPassword">
                     </fieldset>
 
-                    ${errMessage ? html`<p class="login__error">${errMessage}</p>` : null}
+                    ${errMessage ? html`<p class="register__error">${errMessage}</p>` : null}
 
 
                     <div class="register__actions">
                         <button type="submit" class="register__btn register__btn--primary ${isSubmitting ? 'register__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing up..." : "Sign up"}</button>
-                        <span class="login__divider">Or</span>
-                        <a href="/auth/login" class="register__nav-link" @click=${navigate}>Sign in</a>
+                        <p class="register__signup-prompt">
+                            Already have an account?
+                            <a href="/auth/login" class="register__nav-link" @click=${navigate}>Sign in</a>
+                        </p>
                     </div>
 
                 </form>

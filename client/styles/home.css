@@ -23,7 +23,7 @@
     padding: 1rem;
 
     color: var(--text-primary);
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--border-secondary);
     border-radius: 0.5rem;
 }
 
@@ -41,13 +41,41 @@
 }
 
 .home__accounts {
+    position: relative;
+
+    overflow-x: auto;
+
+    padding: 0;
+}
+
+.home__accounts::after {
+    position: absolute;
+
+    content: "";
+    pointer-events: none;
+
+    box-shadow: inset -12px 0 12px 0px var(--bg-darker);
+
+    inset: 0;
+}
+
+.home__accounts-scroller {
     display: flex;
+    overflow-x: auto;
+
+    padding: 1rem;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.5rem;
 }
 
 .home__btn {
     padding: 0.6rem 1rem;
 
-    border-radius: 0.6rem;
+    cursor: pointer;
+
+    border-radius: 0.8rem;
     background-color: var(--bg-lighter);
 }
 
@@ -56,17 +84,37 @@
 
     display: flex;
     flex-direction: column;
-}
 
-.home__add-account {
+    text-align: left;
+
     border: none;
 }
 
-.home__account-name,
+.home__account--active {
+    outline: 4px solid var(--primary);
+}
+
+.home__add-account {
+    color: var(--text-muted);
+    border: 1px solid var(--border-secondary);
+    background-color: transparent;
+}
+
+.home__add-account:hover {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-primary);
+}
+
 .home__account-balance {
     display: block;
+
+    white-space: nowrap;
 }
 
 .home__account-name {
     font-size: 1.2rem;
+
+    display: block;
+
+    white-space: nowrap;
 }

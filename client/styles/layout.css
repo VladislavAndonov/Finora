@@ -3,7 +3,7 @@
 
     height: 100vh;
 
-    background-color: var(--bg-primary);
+    background-color: var(--bg-darker);
 }
 
 .app-layout__main {
@@ -16,7 +16,7 @@
     min-height: 0;
     padding: 4rem 1rem 1rem;
 
-    background-color: var(--bg-darker);
+    border-left: 2px solid var(--border-secondary);
 }
 
 .app-layout__sidebar {
@@ -44,7 +44,7 @@
 }
 
 .app-layout__nav-link {
-    font-size: 1.2rem;
+    position: relative;
 
     display: flex;
     align-items: center;
@@ -57,20 +57,36 @@
 
     color: var(--text-secondary);
     border: none;
-    border-radius: 0.5rem;
-    background-color: var(--bg-primary);
+    border-radius: 0.8rem;
+    background-color: transparent;
 
     gap: 1rem;
 }
 
 .app-layout__nav-link:hover {
     color: var(--text-primary);
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-primary);
 }
 
 .app-layout__nav-link--active {
     color: var(--text-primary);
-    background-color: var(--secondary-muted) !important;
+    background-color: var(--bg-secondary) !important;
+    box-shadow: inset 1px 1px 4px 1px rgba(120, 120, 120, 0.3);
+}
+
+.app-layout__nav-link--active::after {
+    position: absolute;
+    top: 0.6rem;
+    right: 0;
+    bottom: 0.6em;
+
+    width: 3px;
+
+    content: '';
+
+    border-radius: 2rem;
+    background: var(--primary);
+    box-shadow: 0 0 8px 2px var(--primary);
 }
 
 .app-layout__nav-link:focus-visible {

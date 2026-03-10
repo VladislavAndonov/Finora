@@ -1,16 +1,16 @@
-.add-account {
+.edit-account {
     display: flex;
     flex-direction: column;
 
     height: 100%;
 }
 
-.add-account__header {
+.edit-account__header {
     display: flex;
     align-items: center;
 }
 
-.add-account__back {
+.edit-account__back {
     font-size: 1.2rem;
 
     display: flex;
@@ -30,13 +30,13 @@
     background: none;
 }
 
-.add-account__back:hover {
+.edit-account__back:hover {
     transition: all 0.5s ease;
 
     background-color: var(--bg-primary);
 }
 
-.add-account__title {
+.edit-account__title {
     font-size: 1.5rem;
 
     flex: 1;
@@ -46,7 +46,7 @@
     text-align: center;
 }
 
-.add-account__content {
+.edit-account__content {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -56,7 +56,7 @@
     margin: 0 auto;
 }
 
-.add-account__label {
+.edit-account__label {
     display: block;
 
     margin-bottom: 0.5rem;
@@ -64,12 +64,13 @@
     color: var(--text-muted);
 }
 
-.add-account__name-input {
+.edit-account__name-input {
     font-family: inherit;
-    font-size: 22px;
+    font-size: 1.4rem;
 
     box-sizing: border-box;
     width: 100%;
+    margin-bottom: 3rem;
     padding: 0.5rem 0 0.5rem;
 
     transition: border-color 0.2s;
@@ -81,65 +82,15 @@
     background: transparent;
 }
 
-.add-account__name-input::placeholder {
+.edit-account__name-input::placeholder {
     color: var(--text-muted);
 }
 
-.add-account__name-input:focus {
+.edit-account__name-input:focus {
     border-bottom-color: var(--border-primary);
 }
 
-.add-account__starting-balance{
-    display: flex;
-    align-items: baseline;
-
-    margin: 2rem 0 3rem;
-}
-
-.add-account__starting-balance label {
-    color: var(--text-muted);
-}
-
-.add-account__balance-input {
-    font-family: inherit;
-    font-size: 2rem;
-    font-weight: 600;
-
-    max-width: 200px;
-
-    transition: all 0.2s ease;
-
-    color: var(--text-primary);
-    border: none;
-    border-bottom: 1px solid var(--border-secondary);
-    outline: none;
-    background: transparent;
-}
-
-.add-account__balance-input:focus {
-    border-bottom-color: var(--border-primary);
-}
-
-.add-account__currency-prefix {
-    font-size: 2rem;
-    font-weight: 600;
-
-    padding-left: 1rem;
-}
-
-.add-account__starting-balance:has(.add-account__balance-input:placeholder-shown)
-.add-account__currency-prefix {
-    color: var(--text-muted);
-    transition: all 0.2s ease;
-}
-
-.add-account__starting-balance:has(.add-account__balance-input:not(:placeholder-shown))
-.add-account__currency-prefix {
-    color: var(--text-primary);
-    transition: all 0.2s ease;
-}
-
-.add-account__currency-grid {
+.edit-account__currency-grid {
     display: grid;
     overflow-y: auto;
 
@@ -149,7 +100,7 @@
     gap: 0.5rem;
 }
 
-.add-account__currency-btn {
+.edit-account__currency-btn {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -167,28 +118,28 @@
     gap: 0.2rem;
 }
 
-.add-account__currency-btn:hover {
+.edit-account__currency-btn:hover {
     border-color: var(--border-primary);
     background: var(--bg-secondary);
 }
 
-.add-account__currency-btn.selected {
+.edit-account__currency-btn.selected {
     border-color: var(--border-primary);
     outline: 4px solid var(--primary);
     background: var(--bg-lighter);
 }
 
-.add-account__code {
+.edit-account__code {
     font-weight: 500;
 }
 
-.add-account__sign {
+.edit-account__sign {
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.2;
 }
 
-.add-account__country {
+.edit-account__country {
     font-size: 0.7rem;
 
     overflow: hidden;
@@ -199,13 +150,13 @@
     color: var(--text-muted);
 }
 
-.add-account__actions {
+.edit-account__actions {
     display: flex;
 
     margin-top: auto;
 }
 
-.add-account__btn {
+.edit-account__btn {
     font-size: 1.2em;
     font-weight: 700;
 
@@ -222,13 +173,13 @@
     box-shadow: inset 1px 1px 4px 1px rgba(255, 255, 255, 0.3);
 }
 
-.add-account__btn:hover {
+.edit-account__btn:hover {
     cursor: pointer;
 
     border-radius: 999px;
 }
 
-.add-account__btn:disabled {
+.edit-account__btn:disabled {
     cursor: not-allowed;
 
     color: rgba(255, 255, 255, 0.3);
@@ -238,6 +189,6 @@
 
 /* Hidden actual currency input */
 
-.add-account__currency--hidden {
+.edit-account__currency--hidden {
     display: none;
 }

@@ -18,33 +18,34 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
             </header>
 
             <div class="add-account__content">
-                <form @submit=${onSubmit} id="add-account-form">
-                    <input class="account-form__currency-hidden" type="text" name="currency" .value=${selectedCurrency} readonly/>
+                <form @submit=${onSubmit} id="add-account__form">
+                    <input class="add-account__currency--hidden" type="text" name="currency" .value=${selectedCurrency} readonly/>
 
-                    <label class="account-form__label" for="name">Name</label>
-                    <input class="account-form__name-input" type="text" name="name" placeholder="Account name" autocomplete="off" @input=${onNameInput}/>
+                    <label class="add-account__label" for="name">Name</label>
+                    <input class="add-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" @input=${onNameInput}/>
 
-                    <div class="starting-balance-row"> <label for="startingBalance">Starting at</label>
-                        <input class="account-form__balance-input" type="number" name="startingBalance" placeholder="${currencySign}0" step="0.1"/>
+                    <div class="add-account__starting-balance">
+                        <label for="startingBalance">Starting at</label>
+                        <span class="add-account__currency-prefix">${currencySign}</span>
+                        <input class="add-account__balance-input" type="number" name="startingBalance" autocomplete="off" placeholder="0" step="0.1"/>
                     </div>
 
-                    <div class="currency-grid">
-                        ${currencies.map(
-        (c) => html`
-                        <button type="button" class="currency-btn ${selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
-                            <span class="currency-btn__code">${c.code}</span>
-                            <span class="currency-btn__sign">${c.sign}</span>
-                            <span class="currency-btn__country">${c.country}</span>
+                    <div class="add-account__currency-grid">
+                        ${currencies.map((c) => html`
+                        <button type="button" class="add-account__currency-btn ${selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
+                            <span class="add-account__code">${c.code}</span>
+                            <span class="add-account__sign">${c.sign}</span>
+                            <span class="add-account__country">${c.country}</span>
                         </button>
                     `)}
                     </div>
                 </form>
-            </div>
 
-            <div class="account-form__actions">
-                <button class="account-form__btn" type="submit" form="add-account-form" ?disabled=${!nameValue.trim()}>
-                    Add Account (${selectedCurrency})
-                </button>
+                <div class="add-account__actions">
+                    <button class="add-account__btn" type="submit" form="add-account__form" ?disabled=${!nameValue.trim()}>
+                        Add Account (${selectedCurrency})
+                    </button>
+                </div>
             </div>
         </div>
 `};
@@ -55,7 +56,10 @@ export const addAccountView = (ctx) => {
     let nameValue = "";
 
     function selectCurrency(code) {
-        if (selectedCurrency === code) return;
+        if (selectedCurrency === code) {
+            return
+        }
+
         selectedCurrency = code;
         renderForm();
     }
@@ -77,10 +81,11 @@ export const addAccountView = (ctx) => {
 
         try {
             await addAccount(createdAccount);
-            ctx.page.redirect("/");
+
+            ctx.page.redirect("/")
         } catch (error) {
-            console.error(error);
-            renderForm();
+            console.error(error)
+            renderForm()
         }
     }
 

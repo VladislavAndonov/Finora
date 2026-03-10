@@ -1,76 +1,154 @@
 .modal__backdrop {
     position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
+    z-index: 100;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 100%;
-    height: 100%;
-    padding-bottom: 40vh;
-
     background-color: rgba(0, 0, 0, 0.5);
 
-    backdrop-filter: blur(5px);
+    inset: 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .modal__content {
-    padding: 2rem;
+    position: relative;
 
-    color: #fff;
+    width: min(420px, calc( 100vw - 2rem) );
+    padding: 1.5rem;
+
     border: 1px solid var(--border-primary);
     border-radius: 1rem;
     background-color: var(--bg-primary);
+    box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.5);
 }
 
-.modal__message {
-    font-size: 1.4rem;
+.modal__header {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 1.5rem;
+
+    gap: 0.8rem;
+}
+
+.modal__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.modal__subtitle {
+    font-size: 0.8rem;
+
+    color: var(--text-muted);
+}
+
+.modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-left: auto;
+    padding: 1rem;
+
+    cursor: pointer;
+    transition: color 0.2s;
+
+    color: var(--text-muted);
+    border: none;
+    border-radius: 50%;
+    background: none;
+}
+
+.modal__close:hover {
+    transition: all 0.5s ease;
+
+    background-color: var(--bg-secondary);
+}
+
+.modal__account-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.4rem;
+}
+
+.modal__account-item {
+    flex: 1;
+}
+
+.modal__account-link {
+    display: flex;
+    align-items: center;
+
+    padding: 0.5rem 0.8rem;
+
+    cursor: pointer;
+
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+}
+
+.modal__account-link:hover {
+    background: var(--bg-lighter);
+}
+
+.modal__account-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.modal__account-name {
     font-weight: 600;
 
-    margin-bottom: 3rem;
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.modal__account-currency {
+    font-size: 0.8rem;
+
+    color: var(--text-secondary);
 }
 
 .modal__actions {
-    font-weight: 600;
-
     display: flex;
-    justify-content: space-between;
+
+    margin-top: 2rem;
 
     gap: 1rem;
 }
 
-.modal__btn--primary {
-    padding: 0.8rem 2.4rem;
+.modal__btn {
+    font-weight: 600;
 
-    transition: ease-in-out 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    color: var(--text-inverted);
+    padding: 0.6rem 1.2rem;
+
+    cursor: pointer;
+
     border: none;
-    border-radius: 1rem;
-    background-color: var(--secondary);
+    border-radius: 0.8rem;
+}
+
+.modal__btn--primary {
+    flex: 1;
+
+    background: var(--secondary);
 }
 
 .modal__btn:hover {
-    cursor: pointer;
-
-    border-radius: 2rem;
-}
-
-.modal__btn--secondary {
-    padding: 0.8rem 2.4rem;
-
-    transition: ease-in-out 0.2s;
-
-    border: none;
-    border-radius: 1rem;
-    background-color: var(--secondary-muted);
-}
-
-.modal-cancel:hover {
-    cursor: pointer;
-
-    border-radius: 2rem;
+    border-radius: 4rem;
 }

@@ -11,23 +11,9 @@
     --text-muted: #6e6e6e;
     --text-inverted: #0a0a0a;
     --border-primary: #4c4c4c;
-    --border-secondary: #2b2b2b;
+    --border-secondary: rgba(50, 50, 50, 0.5);
     --bg-lighter: #4a4a4a;
     --bg-primary: #191919;
     --bg-secondary: #252525;
     --bg-darker: #111111;
-}
-
-/* Removes the autocomplete background-color */
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-    transition: background-color 5000s ease-in-out 0s;
-
-    -webkit-background-clip: text;
-    box-shadow: inset 0 0 20px 20px #23232329;
-
-    -webkit-text-fill-color: var(--text-primary);
 }
