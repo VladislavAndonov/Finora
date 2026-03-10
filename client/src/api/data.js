@@ -81,11 +81,11 @@ export async function deleteTransaction(id) {
 export async function getAllUserAccounts(filters = {}) {
     const { isArchived } = filters;
 
-    if (isArchived) {
-        return api.get(`/accounts?isArchived=${isArchived}`)
+    if (isArchived !== undefined) {
+        return api.get(`/accounts?isArchived=${isArchived}`);
     }
 
-    return api.get("/accounts")
+    return api.get("/accounts");
 }
 
 export async function getAccountById(id) {
@@ -96,6 +96,6 @@ export async function addAccount({ name, currency, startingBalance }) {
     return await api.post("/accounts", { name, currency, startingBalance })
 }
 
-export async function editAccount(id, { name, currency }) {
-    return await api.put("/accounts/" + id, { name, currency })
+export async function editAccount(id, { name, currency, isArchived }) {
+    return await api.put("/accounts/" + id, { name, currency, isArchived })
 }

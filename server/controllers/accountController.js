@@ -10,10 +10,8 @@ accountController.get("/", async (req, res) => {
 
     filters.ownerId = userId
 
-    if (isArchived === "true") {
-        filters.isArchived = true
-    } else {
-        filters.isArchived = false
+    if (isArchived !== undefined) {
+        filters.isArchived = isArchived === "true";
     }
 
     const accounts = await accountService.getAccounts(filters)
@@ -43,13 +41,11 @@ accountController.get("/:id", async (req, res) => {
 
 accountController.put("/:id", async (req, res) => {
     const userId = req.user._id;
-    const { name, currency } = req.body
+    const { name, currency, isArchived } = req.body
 
-    const account = await accountService.update(req.params.id, { name, ownerId: userId, currency });
+    const account = await accountService.update(req.params.id, { name, ownerId: userId, currency, isArchived });
 
     res.json(account);
 })
-
-// TODO: Add account archiving
 
 export default accountController
