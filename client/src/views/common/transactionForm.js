@@ -57,7 +57,7 @@ export const transactionForm = ({
                                 <span class="prefix">$</span>
                                 <input class="transaction-form__amount-input" type="number" name="amount"
                                     inputmode="numeric" step="0.01" placeholder="0.00" autocomplete="off"
-                                    value=${transaction?.amount ?? ''}>
+                                    value=${transaction?.amount != null ? (transaction.amount % 1 === 0 ? transaction.amount : Number(transaction.amount).toFixed(2)) : ""}>
                             </div>
                             <span class="transaction-form__card-category-text">
                                 ${state.selectedCategory ?? 'Select Category'}

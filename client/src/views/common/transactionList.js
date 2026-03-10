@@ -17,7 +17,8 @@ export const transactionList = (filters, transactionsByDate, noTransactionsMessa
                     </div>
                 `)}
             </div >
-            
+
+            <div class="transaction-list__content">
                 ${Object.entries(transactionsByDate).length !== 0 ? Object.entries(transactionsByDate).map(([date, transactions]) => html`
                     <div class="transaction-list__group">
                         <span class="transaction-list__date">${date}</span>
@@ -31,14 +32,16 @@ export const transactionList = (filters, transactionsByDate, noTransactionsMessa
                                         </div>
                                         <span class="transaction-list__amount transaction-list__amount--${txn.type === "expenses" ? "negative" : "positive"}">
                                             ${txn.type === "expenses" ? html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-down"></i>` : html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-up"></i>`}
-                                            €${txn.amount}
+                                            $${txn.amount % 1 === 0 ? txn.amount : Number(txn.amount).toFixed(2)}
                                         </span>
                                     </a >
                                 </li >
     `)}
                         </ul>
-                    <div>
+                    </div>
                 `) : html`<p class="transaction-list__empty-message">${noTransactionsMessage}</p>`}
+
+            </div >
         </div >
     `;
 

@@ -27,7 +27,7 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
                     <div class="add-account__starting-balance">
                         <label for="startingBalance">Starting at</label>
                         <span class="add-account__currency-prefix">${currencySign}</span>
-                        <input class="add-account__balance-input" type="number" name="startingBalance" autocomplete="off" placeholder="0" step="0.1"/>
+                        <input class="add-account__balance-input" type="number" name="startingBalance" autocomplete="off" placeholder="0" step="0.01"/>
                     </div>
 
                     <div class="add-account__currency-grid">

@@ -27,7 +27,7 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
                             data-id=${a._id}
                             @click=${selectAccount}>
                             <span class="home__account-name">${a.name}</span>
-                            <span class="home__account-balance">${getCurrency(a.currency)}${a.balance} ${a.currency}</span>
+                            <span class="home__account-balance">${getCurrency(a.currency)}${a.balance % 1 === 0 ? a.balance : Number(a.balance).toFixed(2)} ${a.currency}</span>
                         </button>
                     `) : null}
                     <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
