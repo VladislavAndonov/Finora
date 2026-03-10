@@ -16,7 +16,7 @@
 .modal__content {
     position: relative;
 
-    width: min(420px, calc( 100vw - 2rem) );
+    width: min(480px, calc( 100vw - 2rem) );
     padding: 1.5rem;
 
     border: 1px solid var(--border-primary);
@@ -105,6 +105,12 @@
     min-width: 0;
 }
 
+.modal__account-status {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+}
+
 .modal__account-name {
     font-weight: 600;
 
@@ -118,6 +124,30 @@
     font-size: 0.8rem;
 
     color: var(--text-secondary);
+}
+
+.modal__account-status--archived {
+    font-size: 0.8rem;
+
+    padding: 0.2rem 0.4rem;
+
+    text-align: center;
+
+    color: var(--text-secondary);
+    border-radius: 999px;
+    background: var(--bg-lighter);
+}
+
+.modal__account-status--active {
+    font-size: 0.8rem;
+
+    padding: 0.2rem 0.4rem;
+
+    text-align: center;
+
+    color: var(--text-primary);
+    border-radius: 999px;
+    background: var(--primary);
 }
 
 .modal__actions {

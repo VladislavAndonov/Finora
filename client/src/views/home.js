@@ -1,5 +1,4 @@
 import "../../styles/home.css"
-import "../../styles/spinner.css"
 
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
@@ -61,7 +60,7 @@ export async function homeView(ctx) {
             expenses: [],
             income: []
         },
-        userAccounts: null,
+        activeAccounts: null,
         activeAccountId: getActiveAccountId() || null,
         ui: {
             activeTab: "all",
@@ -70,7 +69,7 @@ export async function homeView(ctx) {
         }
     }
 
-    state.userAccounts = await getAllUserAccounts({ isArchived: false });
+    state.activeAccounts = await getAllUserAccounts({ isArchived: false });
 
     function getCurrency(accountCurrency) {
 
@@ -126,8 +125,11 @@ export async function homeView(ctx) {
                                 <li class="modal__account-item">
                                     <a href="/accounts/edit/${a._id}" class="modal__account-link" @click=${navigate}>
                                         <div class="modal__account-info">
-                                            <span class="modal__account-name">${a.name}</span>
-                                            <span class="modal__account-currency">${a.currency}</span>
+                                            <div class="modal__account-status">
+                                                <span class="modal__account-name">${a.name}</span>
+                                                ${a.isArchived ? html`<span class="modal__account-status--archived">Archived</span>` : html`<span class="modal__account-status--active">Active</span>`}
+                                            </div>
+                                           <span class="modal__account-currency">${a.currency}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -272,7 +274,7 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        const activeAccount = state.userAccounts.find(a => a._id === state.activeAccountId);
+        const activeAccount = state.activeAccounts.find(a => a._id === state.activeAccountId);
         let currentBalance = activeAccount?.balance || 0;
 
         let currentDate = new Date(state.today);
@@ -392,7 +394,7 @@ export async function homeView(ctx) {
             transactionsByDate: getDisplayedTransactions(),
             noTransactionsMessage: "No transactions for the last 30 days.",
 
-            accounts: state.userAccounts,
+            accounts: state.activeAccounts,
             activeAccountId: state.activeAccountId,
             selectAccount,
 

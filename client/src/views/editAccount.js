@@ -5,7 +5,7 @@ import { html } from "lit-html";
 import { getAccountById, editAccount } from "../api/data.js";
 import { currencies } from "../utils/currencies.js";
 
-const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput }) =>
+const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput, isArchived, onToggleArchive }) =>
     html`
         <div class="edit-account">
             <header class="edit-account__header">
@@ -32,6 +32,20 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameV
                         `)}
                     </div>
                 </form>
+
+                <div class="edit-account__archive">
+                    <span class="edit-account__label">Archive Account</span>
+                    <p class="edit-account__archive-description">Archived accounts are hidden from your main view.</p>
+                    <button
+                        type="button"
+                        class="edit-account__toggle ${isArchived ? "active" : ""}"
+                        @click=${onToggleArchive}
+                        role="switch"
+                        aria-checked=${isArchived}
+                    >
+                        <span class="edit-account__toggle-thumb"></span>
+                    </button>
+                </div>
                 
                 <div class="edit-account__actions">
                     <button class="edit-account__btn" type="submit" form="edit-account__form" ?disabled=${!nameValue.trim()}>
@@ -47,11 +61,13 @@ export const editAccountView = async (ctx) => {
     const accId = ctx.params.id;
     let selectedCurrency = "USD";
     let nameValue = "";
+    let isArchived = false;
 
     try {
         const account = await getAccountById(accId);
         selectedCurrency = account.currency ?? "USD";
         nameValue = account.name ?? "";
+        isArchived = account.isArchived ?? false;
     } catch (err) {
         console.error(err.message);
     }
@@ -67,6 +83,11 @@ export const editAccountView = async (ctx) => {
         renderForm();
     }
 
+    function onToggleArchive() {
+        isArchived = !isArchived;
+        renderForm();
+    }
+
     async function onSubmit(event) {
         event.preventDefault();
 
@@ -74,6 +95,7 @@ export const editAccountView = async (ctx) => {
         const updatedAccount = {
             name: formData.get("name").trim(),
             currency: selectedCurrency,
+            isArchived,
         };
 
         try {
@@ -87,7 +109,7 @@ export const editAccountView = async (ctx) => {
 
     function renderForm() {
         ctx.render(
-            editAccountTemplate({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput })
+            editAccountTemplate({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput, isArchived, onToggleArchive })
         );
     }
 

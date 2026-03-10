@@ -96,13 +96,13 @@
 
 .home__add-account {
     color: var(--text-muted);
-    border: 1px solid var(--border-secondary);
+    border: 2px solid var(--border-secondary);
     background-color: transparent;
 }
 
 .home__add-account:hover {
     color: var(--text-secondary);
-    border: 1px solid var(--border-primary);
+    border: 2px solid var(--border-primary);
 }
 
 .home__account-balance {
