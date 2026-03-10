@@ -62,14 +62,14 @@ export async function getTransactionById(id) {
     return await api.get("/transactions/" + id);
 }
 
-export async function addTransaction({ title, type, amount, date, category }) {
+export async function addTransaction({ title, type, amount, date, category, note }) {
     const accountId = getActiveAccountId()
-    return await api.post("/transactions/", { title, accountId, type, amount, date, category });
+    return await api.post("/transactions/", { title, accountId, type, amount, date, category, note });
 }
 
-export async function editTransaction(id, { title, type, amount, date, category }) {
+export async function editTransaction(id, { title, type, amount, date, category, note }) {
     const accountId = getActiveAccountId()
-    return await api.put("/transactions/" + id, { title, accountId, type, amount, date, category });
+    return await api.put("/transactions/" + id, { title, accountId, type, amount, date, category, note });
 }
 
 export async function deleteTransaction(id) {
@@ -88,7 +88,7 @@ export async function getAllUserAccounts(filters = {}) {
     return api.get("/accounts")
 }
 
-export async function getAccount(id) {
+export async function getAccountById(id) {
     return await api.get("/accounts/" + id)
 }
 

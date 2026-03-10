@@ -43,9 +43,7 @@ const categoriesList = [
     "Refunds",
     "Bonuses & Gifts",
 
-    // Other
-    "Transfer",
-    "Uncategorized"
+    "Other"
 ];
 
 const transactionSchema = new Schema({

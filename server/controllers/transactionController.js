@@ -69,9 +69,9 @@ transactionController.get("/", async (req, res) => {
 
 transactionController.post("/", async (req, res) => {
     const userId = req.user._id;
-    const { title, accountId, type, amount, date, category } = req.body
+    const { title, accountId, type, amount, date, category, note } = req.body
 
-    const transaction = await transactionService.create({ title, accountId, ownerId: userId, type, amount, date, category });
+    const transaction = await transactionService.create({ title, accountId, ownerId: userId, type, amount, date, category, note });
 
     res.json(transaction);
 });
@@ -89,9 +89,9 @@ transactionController.get("/:id", async (req, res) => {
 
 transactionController.put("/:id", async (req, res) => {
     const userId = req.user._id;
-    const { title, accountId, type, amount, date, category } = req.body
+    const { title, accountId, type, amount, date, category, note } = req.body
 
-    const transaction = await transactionService.update(req.params.id, { title, accountId, ownerId: userId, type, amount, date, category });
+    const transaction = await transactionService.update(req.params.id, { title, accountId, ownerId: userId, type, amount, date, category, note });
 
     res.json(transaction);
 })
