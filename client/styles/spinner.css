@@ -1,0 +1,47 @@
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.loading-spinner {
+    position: relative;
+
+    width: 100px;
+    height: 100px;
+}
+
+.loading-spinner:before,
+.loading-spinner:after {
+    position: absolute;
+
+    content: '';
+
+    border-radius: 50%;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.3) inset;
+
+    inset: 0;
+}
+
+.loading-spinner:after {
+    animation: rotate 2s linear infinite;
+
+    box-shadow: 0 2px 0 var(--primary) inset;
+}
+
+@keyframes rotate {
+
+0% {
+    transform: rotate(
+    0)
+}
+
+100% {
+    transform: rotate(
+    360deg)
+}
+
+}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -139,3 +140,15 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 TODO.md
+=======
+# Ignore everything by default
+**
+
+# Allow backend only
+!server/
+!server/**
+
+# Allow Docker metadata
+!server/Dockerfile
+!.dockerignore
+>>>>>>> ui-improvements

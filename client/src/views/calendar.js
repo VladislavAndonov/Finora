@@ -1,38 +1,55 @@
-import { html } from 'https://esm.run/lit-html@1';
+import "../../styles/calendar.css"
+
+import { html } from "lit-html";
+
 import { transactionList } from './common/transactionList.js';
 import { getTransactions } from '../api/data.js';
-import { getMonthAndYearLabel } from '../utils/dateUtils.js';
+import { formatDate } from '../utils/dateUtils.js';
+import { getActiveAccountId } from "../state/sessionState.js";
 
-const calendarTemplate = ({ currentDate, transactions, showPrevMonth, showNextMonth, selectDate, dates, filters }) =>
+const calendarTemplate = ({ transactionsByDate, selectDate, dates, filters, selectMonth, monthList, state }) =>
     html`
     <div class="calendar">
-        <div class="calendar-wrapper">
-            <header class="calendar-header">
-                <i class="fa-solid fa-angle-left prev" @click=${showPrevMonth}></i>
-                <h3 class=current-date>${getMonthAndYearLabel(currentDate)}</h3>
-                <i class="fa-solid fa-angle-right next" @click=${showNextMonth}></i>
-            </header>
+        <header class="calendar__header">
+            <h1 class="calendar__title">Calendar</h1>
+        </header>
 
-            <div class="calendar-body">
+        <div class="calendar__content">
 
-                <ul class="weekdays">
-                    <li>Mon</li>
-                    <li>Tue</li>
-                    <li>Wed</li>
-                    <li>Thu</li>
-                    <li>Fri</li>
-                    <li>Sat</li>
-                    <li>Sun</li>
-                </ul>
+            <section class="calendar__section calendar__body">
+                <div class="calendar__month-scroll" id="month-scroll">
+                    ${monthList.map((m) => html`
+                        <button 
+                            class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                            ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
+                        </button>`)}
+                </div>
 
-                <ul class="dates" @click=${selectDate}>
-                    ${dates}
-                </ul>
-            </div>
+                <div class="calendar__grid">
+                    <ul class="calendar__weekdays">
+                        <li class="calendar__weekday">Mon</li>
+                        <li class="calendar__weekday">Tue</li>
+                        <li class="calendar__weekday">Wed</li>
+                        <li class="calendar__weekday">Thu</li>
+                        <li class="calendar__weekday">Fri</li>
+                        <li class="calendar__weekday">Sat</li>
+                        <li class="calendar__weekday">Sun</li>
+                    </ul>
+
+                    <ul class="calendar__dates" @click=${selectDate}>
+                        ${dates}
+                    </ul>
+                </div>
+            </section>
+                        
+            <section class="calendar__section calendar__transactions ${state.selectedDateTransactions.all.length !== 0 ? "calendar__transactions--active" : "calendar__transactions--hidden"}">
+                 ${transactionList(filters, transactionsByDate)}
+            </section>
+            
+
         </div>
-        <section class=transaction-list>
-            ${transactionList(filters, transactions)}
-        </section>
+            
     </div>`;
 
 
@@ -41,49 +58,68 @@ export async function calendarView(ctx) {
         today: new Date(),
         currentDate: new Date(),
         selectedDate: new Date(),
+        minDate: new Date(),
+        maxDate: new Date(),
+        activeAccountId: getActiveAccountId() || null,
         monthTransactions: [],
-        selectedDateTransactions: []
+        selectedDateTransactions: {
+            all: [],
+            expenses: [],
+            income: []
+        },
+        ui: {
+            activeTab: "all",
+        }
     }
 
-    state.monthTransactions = await getTransactions({
-        year: state.currentDate.getFullYear(),
-        month: state.currentDate.getMonth()
-    });
 
-    state.selectedDateTransactions = await getTransactions({
-        year: state.selectedDate.getFullYear(),
-        month: state.selectedDate.getMonth(),
-        date: state.selectedDate.getDate()
-    });
 
-    const showAllTransactions = async () => {
-        state.selectedDateTransactions = await getTransactions({
+    state.maxDate.setMonth(state.today.getMonth() + 7);
+    state.minDate.setMonth(state.today.getMonth() - 13)
+
+    async function loadMonthTransactions() {
+        if (!state.activeAccountId) return;
+
+        state.monthTransactions = await getTransactions({
+            acccountId: state.activeAccountId,
+            year: state.currentDate.getFullYear(),
+            month: state.currentDate.getMonth()
+        })
+    }
+
+    await loadMonthTransactions()
+
+    async function loadSelectedDateTransactions() {
+        if (!state.activeAccountId) return;
+
+        const transactions = await getTransactions({
+            acccountId: state.activeAccountId,
             year: state.selectedDate.getFullYear(),
             month: state.selectedDate.getMonth(),
             date: state.selectedDate.getDate()
         });
+
+        state.selectedDateTransactions.all = transactions;
+        state.selectedDateTransactions.expenses = transactions.filter((t) => t.type === "expenses");
+        state.selectedDateTransactions.income = transactions.filter((t) => t.type === "income");
+    }
+
+    await loadSelectedDateTransactions()
+
+    async function showAllTransactions() {
+        state.ui.activeTab = "all"
         setActive("All");
         update();
     };
 
-    const showExpenses = async () => {
-        state.selectedDateTransactions = await getTransactions({
-            year: state.selectedDate.getFullYear(),
-            month: state.selectedDate.getMonth(),
-            date: state.selectedDate.getDate(),
-            type: "expenses"
-        });
+    async function showExpenses() {
+        state.ui.activeTab = "expenses";
         setActive("Expenses");
         update();
     };
 
-    const showIncome = async () => {
-        state.selectedDateTransactions = await getTransactions({
-            year: state.selectedDate.getFullYear(),
-            month: state.selectedDate.getMonth(),
-            date: state.selectedDate.getDate(),
-            type: "income"
-        });
+    function showIncome() {
+        state.ui.activeTab = "income";
         setActive("Income");
         update();
     };
@@ -104,31 +140,31 @@ export async function calendarView(ctx) {
         });
     };
 
-    const showPrevMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() - 1,
-            1
-        );
-        state.monthTransactions = await getTransactions({
-            year: state.currentDate.getFullYear(),
-            month: state.currentDate.getMonth()
-        });
+    function buildMonthList() {
+        const months = [];
+        let current = new Date(state.minDate.getFullYear(), state.minDate.getMonth(), 1);
+        const end = new Date(state.maxDate.getFullYear(), state.maxDate.getMonth(), 1);
 
-        update()
+        while (current <= end) {
+            months.push({
+                year: current.getFullYear(),
+                month: current.getMonth(),
+                label: current.toLocaleDateString("en-GB", {
+                    month: "long",
+                }),
+            });
+
+            current.setMonth(current.getMonth() + 1);
+        }
+        return months
     }
 
-    const showNextMonth = async () => {
-        state.currentDate = new Date(
-            state.currentDate.getFullYear(),
-            state.currentDate.getMonth() + 1,
-            1
-        );
-        state.monthTransactions = await getTransactions({
-            year: state.currentDate.getFullYear(),
-            month: state.currentDate.getMonth()
-        });
+    async function selectMonth(year, month) {
+        state.currentDate = new Date(year, month, 1)
 
+        await loadMonthTransactions()
+        state.ui.activeTab = "all"
+        setActive("All");
         update()
     }
 
@@ -141,16 +177,43 @@ export async function calendarView(ctx) {
                 day
             );
 
-            state.selectedDateTransactions = await getTransactions({
-                year: state.selectedDate.getFullYear(),
-                month: state.selectedDate.getMonth(),
-                date: state.selectedDate.getDate()
-            });
-
+            await loadSelectedDateTransactions()
+            state.ui.activeTab = "all"
             setActive("All");
             update()
         }
     }
+
+    function getDisplayedTransactions() {
+        const transactionsByDate = {}
+        let transactions = []
+
+        switch (state.ui.activeTab) {
+            case "expenses":
+                transactions = state.selectedDateTransactions.expenses;
+                break
+            case "income":
+                transactions = state.selectedDateTransactions.income;
+                break
+            default:
+                transactions = state.selectedDateTransactions.all;
+        }
+
+
+        for (const transaction of transactions) {
+            const dateKey = formatDate(transaction.date)
+
+            if (transactionsByDate.hasOwnProperty(dateKey)) {
+                transactionsByDate[dateKey].push(transaction)
+            } else {
+                transactionsByDate[dateKey] = [transaction]
+            }
+        }
+
+        return transactionsByDate
+    }
+
+    getDisplayedTransactions()
 
     // Builds an array of date objects to render them later. Each one contains properties like isToday, isSelected etc.
     const buildDates = () => {
@@ -214,24 +277,36 @@ export async function calendarView(ctx) {
 
     function renderDate(dates) {
         return dates.map((d) => html`
-            <li class="${d.startColumn ? `grid-item-${d.startColumn} ` : ""}${d.isToday ? "today " : ""}${d.isSelected ? "selected " : ""}${d.hasTransactions ? "has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
+            <li class="calendar__date ${d.isToday ? "calendar__date--today " : ""}${d.isSelected ? "calendar__date--selected " : ""}${d.hasTransactions ? "calendar__date--has-transactions" : ""}" data-day=${d.day} style="${d.startColumn ? `grid-column: ${d.startColumn}` : ""}">${d.day}</li>
         `);
     }
 
     const update = () => {
         const dates = buildDates();
-
         ctx.render(calendarTemplate({
-            currentDate: state.currentDate,
-            transactions: state.selectedDateTransactions,
-            showPrevMonth,
-            showNextMonth,
+            transactionsByDate: getDisplayedTransactions(),
+            monthList: buildMonthList(),
             selectDate,
+            selectMonth,
             dates: renderDate(dates),
-            filters
-        }
-        ));
-    }
+            filters,
+            state
+        }));
+
+        const monthScroll = document.getElementById('month-scroll');
+
+        // Auto-scroll on every render
+        setTimeout(() => {
+            const active = monthScroll?.querySelector('.calendar__month-item--active');
+            active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 0);
+
+        // Mouse scroll behavior
+        monthScroll.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            monthScroll.scrollLeft += e.deltaY * 0.3;
+        }, { passive: false });
+    };
 
     update();
 }

@@ -1,0 +1,243 @@
+.add-account {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+}
+
+.add-account__header {
+    display: flex;
+    align-items: center;
+}
+
+.add-account__back {
+    font-size: 1.2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 3rem;
+    height: 3rem;
+    padding: 1rem;
+
+    cursor: pointer;
+    transition: color 0.2s;
+
+    color: var(--text-muted);
+    border: none;
+    border-radius: 999px;
+    background: none;
+}
+
+.add-account__back:hover {
+    transition: all 0.5s ease;
+
+    background-color: var(--bg-primary);
+}
+
+.add-account__title {
+    font-size: 1.5rem;
+
+    flex: 1;
+
+    margin: 0;
+
+    text-align: center;
+}
+
+.add-account__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.add-account__label {
+    display: block;
+
+    margin-bottom: 0.5rem;
+
+    color: var(--text-muted);
+}
+
+.add-account__name-input {
+    font-family: inherit;
+    font-size: 22px;
+
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem 0 0.5rem;
+
+    transition: border-color 0.2s;
+
+    color: var(--text-primary);
+    border: none;
+    border-bottom: 1px solid var(--border-secondary);
+    outline: none;
+    background: transparent;
+}
+
+.add-account__name-input::placeholder {
+    color: var(--text-muted);
+}
+
+.add-account__name-input:focus {
+    border-bottom-color: var(--border-primary);
+}
+
+.add-account__starting-balance{
+    display: flex;
+    align-items: baseline;
+
+    margin: 2rem 0 3rem;
+}
+
+.add-account__starting-balance label {
+    color: var(--text-muted);
+}
+
+.add-account__balance-input {
+    font-family: inherit;
+    font-size: 2rem;
+    font-weight: 600;
+
+    max-width: 200px;
+
+    transition: all 0.2s ease;
+
+    color: var(--text-primary);
+    border: none;
+    border-bottom: 1px solid var(--border-secondary);
+    outline: none;
+    background: transparent;
+}
+
+.add-account__balance-input:focus {
+    border-bottom-color: var(--border-primary);
+}
+
+.add-account__currency-prefix {
+    font-size: 2rem;
+    font-weight: 600;
+
+    padding-left: 1rem;
+}
+
+.add-account__starting-balance:has(.add-account__balance-input:placeholder-shown)
+.add-account__currency-prefix {
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.add-account__starting-balance:has(.add-account__balance-input:not(:placeholder-shown))
+.add-account__currency-prefix {
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.add-account__currency-grid {
+    display: grid;
+    overflow-y: auto;
+
+    padding: 0.2rem;
+
+    grid-template-columns: repeat(auto-fill, minmax( 100px, 1fr) );
+    gap: 0.5rem;
+}
+
+.add-account__currency-btn {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 0.8rem;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+
+    border: 1px solid var(--border-secondary);
+    border-radius: 12px;
+    background: var(--bg-primary);
+
+    gap: 0.2rem;
+}
+
+.add-account__currency-btn:hover {
+    border-color: var(--border-primary);
+    background: var(--bg-secondary);
+}
+
+.add-account__currency-btn.selected {
+    border-color: var(--border-primary);
+    outline: 4px solid var(--primary);
+    background: var(--bg-lighter);
+}
+
+.add-account__code {
+    font-weight: 500;
+}
+
+.add-account__sign {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.add-account__country {
+    font-size: 0.7rem;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: var(--text-muted);
+}
+
+.add-account__actions {
+    display: flex;
+
+    margin-top: auto;
+}
+
+.add-account__btn {
+    font-size: 1.2em;
+    font-weight: 700;
+
+    flex: 1;
+
+    padding: 0.6rem;
+
+    transition: all 0.2s ease;
+
+    color: var(--text-primary);
+    border: none;
+    border-radius: 1rem;
+    background: var(--primary);
+    box-shadow: inset 1px 1px 4px 1px rgba(255, 255, 255, 0.3);
+}
+
+.add-account__btn:hover {
+    cursor: pointer;
+
+    border-radius: 999px;
+}
+
+.add-account__btn:disabled {
+    cursor: not-allowed;
+
+    color: rgba(255, 255, 255, 0.3);
+    background: var(--secondary-muted);
+    border-radius: 1rem
+}
+
+/* Hidden actual currency input */
+
+.add-account__currency--hidden {
+    display: none;
+}

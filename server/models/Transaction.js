@@ -4,19 +4,64 @@ import { User } from "./User.js";
 
 const { Schema } = mongoose;
 
+const categoriesList = [
+    // Housing
+    "Rent",
+    "Home Maintenance",
+    "Bills & Utilities",
+
+    // Food
+    "Groceries",
+    "Dining Out",
+
+    // Transport
+    "Fuel",
+    "Public Transport",
+    "Auto Maintenance",
+
+    // Lifestyle
+    "Shopping",
+    "Entertainment",
+    "Personal Care",
+    "Pets",
+    "Travel",
+
+    // Health
+    "Medical",
+    "Fitness",
+
+    // Financial
+    "Insurance",
+    "Taxes",
+    "Savings & Investments",
+    "Loan Repayment",
+    "Bank Fees",
+
+    // Income
+    "Salary",
+    "Side Income",
+    "Refunds",
+    "Bonuses & Gifts",
+
+    "Other"
+];
+
 const transactionSchema = new Schema({
     title: {
         type: String,
         required: [true, "Title is required."],
         trim: true,
-        minlength: [3, "Title must be at least 3 characters."],
-        maxlength: [20, "Title must be 20 characters or fewer."],
+        maxlength: [30, "Title must be 30 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: User,
         required: true,
-        index: true
+    },
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Account",
+        required: true,
     },
     type: {
         type: String,
@@ -25,7 +70,6 @@ const transactionSchema = new Schema({
             message: "Type can be either expenses or income."
         },
         required: [true, "Type is required."],
-        index: true,
     },
     amount: {
         type: Number,
@@ -42,17 +86,26 @@ const transactionSchema = new Schema({
     date: {
         type: Date,
         default: Date.now,
-        index: true,
     },
     category: {
         type: String,
-        trim: true,
-        lowercase: true,
-        minlength: [3, "Category must be at least 3 characters."],
-        maxlength: [14, "Category must be 14 characters or fewer."],
+        enum: {
+            values: categoriesList,
+            message: "Invalid category."
+        },
+        required: true,
+    },
+    note: {
+        type: String,
+        maxlength: [200, "Note is too long"],
+        trim: true
+    },
+    isOpeningBalance: {
+        type: Boolean,
+        default: false
     },
 }, { timestamps: true })
 
-transactionSchema.index({ ownerId: 1, date: -1 });
+transactionSchema.index({ accountId: 1, date: -1 });
 
 export const Transaction = mongoose.model("Transaction", transactionSchema);

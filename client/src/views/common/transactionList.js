@@ -1,12 +1,56 @@
-import { html } from 'https://esm.run/lit-html@1';
-import { navigate } from '../../utils/navigation.js';
+import "../../../styles/transactionList.css"
 
-export const transactionList = (filters, transactions) =>
+
+import { html } from "lit-html";
+
+import { navigate } from '../../utils/navigation.js';
+import { categoriesMasterList } from "../../utils/categoryList.js";
+
+export const transactionList = (filters, transactionsByDate, noTransactionsMessage) =>
     html`
-        <div class="toggle-radio">
-            ${filters.map((f) => html`<input type="radio" name="transactions" .checked=${f.active} id=${f.label.toLowerCase()} @change=${f.onClick}>
-                                    <label for=${f.label.toLowerCase()}>${f.label}</label>`)}
+        <div class="transaction-list">
+            <div class="transaction-list__filters">
+                ${filters.map((f) => html`
+                    <div class="transaction-list__filter">
+                        <input class="transaction-list__radio" type="radio" .checked=${f.active} id="${f.label.toLowerCase()}" @change=${f.onClick}/>
+                        <label class="transaction-list__label" for="${f.label.toLowerCase()}">${f.label}</label>
+                    </div>
+                `)}
+            </div >
+
+            <div class="transaction-list__content">
+                ${Object.entries(transactionsByDate).length !== 0 ? Object.entries(transactionsByDate).map(([date, transactions]) => html`
+                    <div class="transaction-list__group">
+                        <span class="transaction-list__date">${date}</span>
+                        <ul class="transaction-list__items">
+                            ${transactions.map((txn) => html`
+                                <li class="transaction-list__item">
+                                    <a href="/transactions/edit/${txn._id}" class="transaction-list__link" @click=${navigate}>
+                                        <div class="transaction-list__info">
+                                            <span class="transaction-list__title">${txn.title}</span>
+                                            <span class="transaction-list__category" style="--category-color: ${getCategoryColor(txn.category, txn.type)}">${txn.category}</span>
+                                        </div>
+                                        <span class="transaction-list__amount transaction-list__amount--${txn.type === "expenses" ? "negative" : "positive"}">
+                                            ${txn.type === "expenses" ? html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-down"></i>` : html`<i style="font-size: 0.8rem" class="fa-solid fa-caret-up"></i>`}
+                                            $${txn.amount % 1 === 0 ? txn.amount : Number(txn.amount).toFixed(2)}
+                                        </span>
+                                    </a >
+                                </li >
+    `)}
+                        </ul>
+                    </div>
+                `) : html`<p class="transaction-list__empty-message">${noTransactionsMessage}</p>`}
+
+            </div >
         </div >
-        <ul>
-            ${transactions.length ? transactions.map((trs) => html`<li><a class="transaction" @click=${() => navigate(`/transactions/edit/${trs._id}`)}>${trs.title}, ${trs.amount}</a></li>`) : html``}
-        </ul>`;
+    `;
+
+
+function getCategoryColor(txnCategory, txnType) {
+    const category = categoriesMasterList.find(c =>
+        c.name === txnCategory &&
+        c.type === txnType
+    );
+
+    return category?.color ?? "#aaa"
+}

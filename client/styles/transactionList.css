@@ -1,0 +1,145 @@
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+    min-height: 0;
+}
+
+.transaction-list__content {
+    overflow-y: auto;
+    flex: 1;
+
+    min-height: 0;
+    padding-bottom: 0.5rem;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.transaction-list__filters {
+    display: flex;
+
+    border-radius: 0.6rem;
+    background-color: var(--bg-primary);
+}
+
+.transaction-list__filter {
+    display: inline-flex;
+    flex: 1;
+    justify-content: space-evenly;
+}
+
+.transaction-list__radio {
+    display: none;
+}
+
+.transaction-list__label {
+    flex: 1;
+
+    padding: 0.2rem;
+
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+
+    color: var(--text-muted);
+    border-radius: 0.6rem;
+}
+
+.transaction-list__label:hover {
+    background-color: var(--bg-secondary);
+}
+
+.transaction-list__radio:checked + .transaction-list__label {
+    color: var(--text-primary);
+    background-color: var(--bg-lighter);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.transaction-list__group {
+    padding: 0.6rem 0 0;
+}
+
+.transaction-list__item {
+    flex: 1;
+}
+
+.transaction-list__date {
+    font-size: 0.8rem;
+    line-height: 1rem;
+
+    display: block;
+
+    color: var(--text-muted);
+}
+
+.transaction-list__info {
+    justify-items: start;
+}
+
+.transaction-list__link {
+    font-size: 1.1rem;
+
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+
+    padding: 0.2rem 0.8rem;
+
+    cursor: pointer;
+
+    border: none;
+    border-radius: 0.4rem;
+    background-color: transparent;
+}
+
+.transaction-list__title,
+.transaction-list__category,
+.transaction-list__amount {
+    display: block;
+}
+
+.transaction-list__category {
+    font-size: 0.8rem;
+
+    overflow-x: hidden;
+
+    max-width: 100px;
+    padding: 0.1rem 0.5rem;
+
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+
+    color: var(--text-primary);
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var( --category-color) 50%, rgba( 0, 0, 0, 0) );
+}
+
+.transaction-list__amount--positive {
+    font-size: 1.2rem;
+    font-weight: 500;
+
+    color: var(--positive);
+}
+
+.transaction-list__amount--negative {
+    font-size: 1.2rem;
+    font-weight: 500;
+
+    color: var(--negative);
+}
+
+.transaction-list__link:hover {
+    background-color: var(--bg-primary);
+}
+
+.transaction-list__empty-message {
+    padding-top: 2rem;
+
+    text-align: center;
+
+    color: var(--text-muted);
+}

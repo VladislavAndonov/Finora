@@ -1,4 +1,9 @@
-import page from "//unpkg.com/page/page.mjs";
+import '@fortawesome/fontawesome-free/css/all.min.css'
+import "../styles/reset.css";
+import "../styles/variables.css"
+import "../styles/typography.css"
+
+import page from "page";
 
 import { homeView } from "./views/home.js";
 import { loginView } from "./views/login.js";
@@ -10,16 +15,21 @@ import { authGuard, guestGuard } from "./middlewares/guards.js";
 import { transactionsView } from "./views/transactions.js";
 import { addTransactionView } from "./views/addTransaction.js";
 import { editTransactionView } from "./views/editTransaction.js";
+import { addAccountView } from './views/addAccount.js';
+import { editAccountView } from './views/editAccount.js';
 
-page("/", authGuard, withAppShell, homeView);
+page("/", withAppShell, authGuard, homeView);
 page("/index.html", "/");
-page("/calendar", authGuard, withAppShell, calendarView);
-page("/transactions", authGuard, withAppShell, transactionsView);
-page("/transactions/add", authGuard, withAppShell, addTransactionView)
-page("/transactions/edit/:id", authGuard, withAppShell, editTransactionView)
+page("/calendar", withAppShell, authGuard, calendarView);
+page("/transactions", withAppShell, authGuard, transactionsView);
+page("/transactions/add", withAppShell, authGuard, addTransactionView)
+page("/transactions/edit/:id", withAppShell, authGuard, editTransactionView)
+page("/accounts/add", withAppShell, authGuard, addAccountView)
+page("/accounts/edit/:id", withAppShell, authGuard, editAccountView)
 
-page("/auth/login", guestGuard, withoutShell, loginView);
-page("/auth/register", guestGuard, withoutShell, registerView);
+
+page("/auth/login", withoutShell, guestGuard, loginView);
+page("/auth/register", withoutShell, guestGuard, registerView);
 
 page("*", withoutShell, notFoundView);
 

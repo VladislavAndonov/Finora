@@ -1,8 +1,8 @@
-import page from "//unpkg.com/page/page.mjs";
-import { render } from 'https://esm.run/lit-html@1';
+import page from "page";
+import { render } from "lit-html";
 
-import { appLayout } from '../views/common/appLayout.js';
 import { logout } from "../api/api.js";
+import { appLayout } from '../views/common/appLayout.js';
 
 const root = document.querySelector(".app");
 
@@ -16,20 +16,20 @@ export function withAppShell(ctx, next) {
     const username = sessionStorage.getItem("username");
     const currentPath = ctx.path;
 
-    ctx.render = (content) => {
-        uiState.activeView = content;
+    ctx.render = (viewContent) => {
+        uiState.activeView = viewContent;
 
         uiState.renderApp = () => {
-            render(appLayout(
-                uiState.activeView,
+            render(appLayout({
+                content: uiState.activeView,
                 username,
                 currentPath,
-                uiState.logoutModalOpen,
+                logoutModalOpen: uiState.logoutModalOpen,
                 onLogoutClick,
                 onConfirmLogout,
                 onCancelLogout,
                 onAddTransaction
-            ), root);
+            }), root);
         }
 
         uiState.renderApp();
@@ -44,6 +44,22 @@ export function withoutShell(ctx, next) {
     next();
 }
 
+function onLogoutClick() {
+    uiState.logoutModalOpen = true;
+
+    document.addEventListener('keydown', handleEscKey);
+
+    uiState.renderApp();
+}
+
+function onCancelLogout() {
+    uiState.logoutModalOpen = false;
+
+    document.removeEventListener('keydown', handleEscKey);
+
+    uiState.renderApp();
+}
+
 async function onConfirmLogout() {
     try {
         await logout();
@@ -56,16 +72,12 @@ async function onConfirmLogout() {
     }
 }
 
-function onCancelLogout() {
-    uiState.logoutModalOpen = false;
-    uiState.renderApp();
-}
-
-function onLogoutClick() {
-    uiState.logoutModalOpen = true;
-    uiState.renderApp();
+function handleEscKey(e) {
+    if (e.key === 'Escape') {
+        onCancelLogout();
+    }
 }
 
 function onAddTransaction() {
-    page.redirect("/transactions/add")
+    page("/transactions/add")
 }

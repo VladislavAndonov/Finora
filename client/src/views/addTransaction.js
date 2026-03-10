@@ -1,74 +1,114 @@
-import { html } from 'https://esm.run/lit-html@1';
-import { transactionForm } from './common/transactionForm.js';
 import { addTransaction } from '../api/data.js';
-import { utcToLocal } from '../utils/dateUtils.js';
 
-const addTransactionTemplate = ({ onSubmit, transaction, submitLabel, errMessage }) =>
-    html`<div>
-            <header>
-                <h3 style="color: #fff">Add Transaction</h3>
-            </header>
-            ${transactionForm({ onSubmit, transaction, submitLabel, errMessage })}
-        </div>`;
+import { categoriesMasterList } from "../utils/categoryList.js";
+import { utcToLocal } from "../utils/dateUtils.js";
+import { transactionForm } from "./common/transactionForm.js";
 
 export const addTransactionView = (ctx) => {
 
-    const now = utcToLocal(new Date());
-    const defaultType = "expenses";
+    let state = {
+        errMessage: null,
+        isSubmitting: false,
+        submitLabel: "Adding...",
+        selectedType: "expenses",
+        selectedCategory: null,
+        selectedDate: utcToLocal(new Date()),
+        showCategoryModal: false,
+    };
 
-    const renderForm = (ctx, errMessage = {}) => {
-        ctx.render(addTransactionTemplate({
-            onSubmit,
-            transaction: { date: now, type: defaultType },
-            submitLabel: 'Add Transaction',
-            errMessage
-        }));
+    const renderForm = () => ctx.render(transactionForm({
+        onSubmit,
+        onDelete: null,
+        onTypeChange,
+        onCategorySelect,
+        onOpenModal,
+        onCloseModal,
+        onDateChange,
+        transaction: null,
+        state,
+        title: "Add Transaction",
+        submitLabel: "Add Transaction"
+    }));
+
+    renderForm();
+
+    function onTypeChange(event) {
+        state.selectedType = event.target.value;
+        const stillValid = categoriesMasterList.find(c => c.name === state.selectedCategory && c.type === state.selectedType);
+
+        if (!stillValid) {
+            state.selectedCategory = null;
+        }
+        renderForm();
     }
 
-    renderForm(ctx)
+    function onDateChange(event) {
+        state.selectedDate = event.target.value;
+        renderForm();
+    }
+    function onOpenModal() {
+        state.showCategoryModal = true;
+        renderForm();
+    }
+    function onCloseModal() {
+        state.showCategoryModal = false;
+        renderForm();
+    }
+    function onCategorySelect(name) {
+        state.selectedCategory = name;
+        state.showCategoryModal = false;
+        renderForm();
+    }
 
     async function onSubmit(event) {
         event.preventDefault();
-        const formData = new FormData(event.target);
-
-        const createdTransaction = {
-            title: formData.get("title").trim(),
-            type: formData.get("type"),
-            amount: Number(formData.get("amount")),
-            date: formData.get("date"),
-            category: formData.get("category").trim().toLowerCase() ?? undefined
+        if (state.isSubmitting) {
+            return
         }
 
-        if (!createdTransaction.title ||
-            !createdTransaction.type ||
-            !createdTransaction.amount ||
-            !createdTransaction.date) {
-            return renderForm({ errMessage: "Please fill the required fields." })
+        const formData = new FormData(event.currentTarget);
+        const title = formData.get("title")?.trim();
+        const amountStr = formData.get("amount") ?? "";
+        const amount = Number(formData.get("amount"));
+        const note = formData.get("note")?.trim() ?? "";
+        const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
+
+        if (!title || !type || !amount || !date) {
+            state.errMessage = "Please fill the required fields.";
+            return renderForm();
+        }
+        if (title.length > 30) {
+            state.errMessage = "Title must be 30 characters or fewer.";
+            return renderForm();
+        }
+        if (amount < 0.01) {
+            state.errMessage = "Amount must be at least 0.01.";
+            return renderForm();
+        }
+        if (amount > 999999.99) {
+            state.errMessage = "Amount must be a maximum of 999,999.99.";
+            return renderForm();
+        }
+        if (!/^\d+(\.\d{1,2})?$/.test(amountStr)) {
+            state.errMessage = "Amount can have at most two decimal places.";
+            return renderForm();
+        }
+        if (note.length > 200) {
+            state.errMessage = `Note must be 200 characters or fewer. Current: ${note.length}`;
+            return renderForm();
         }
 
-        if (createdTransaction.title.length < 3) {
-            return renderForm({ errMessage: "Title must be at least 3 characters." })
-        }
-        if (createdTransaction.title.length > 20) {
-            return renderForm({ errMessage: "Title must be 20 characters or fewer." })
-        }
-        if (createdTransaction.amount < 0.01) {
-            return renderForm({ errMessage: "Amount must be at least 0.01." })
-        }
-        if (createdTransaction.amount > 999999.99) {
-            return renderForm({ errMessage: "Amount must be a maximum of 999,999.99." })
-        }
-        if (!Number.isInteger(createdTransaction.amount * 100)) {
-            return renderForm({ errMessage: "Amount can have at most two decimals places." })
-        }
-        if (createdTransaction.category.length < 3) {
-            return renderForm({ errMessage: "Category must be at least 3 characters." })
-        }
-        if (createdTransaction.category.length > 14) {
-            return renderForm({ errMessage: "Category must be 14 characters or fewer." })
-        }
+        state.isSubmitting = true;
+        state.errMessage = null;
+        renderForm();
 
-        await addTransaction(createdTransaction);
-        ctx.page.redirect("/");
+        try {
+            await addTransaction({ title, type, amount, date, category, note })
+            ctx.page.redirect("/")
+        } catch (err) {
+            state.errMessage = err.message
+            state.isSubmitting = false
+            renderForm()
+        }
     }
-}
+};

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authService from "../services/authService.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { Account } from "../models/Account.js";
 
 const authController = Router();
 
@@ -10,10 +11,17 @@ authController.post("/register", async (req, res) => {
     try {
         const result = await authService.register(username, email, password);
 
+        await Account.create({
+            name: "Bank",
+            currency: "EUR",
+            balance: 0,
+            ownerId: result.payload._id
+        })
+
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 1000 * 60 * 30
         });
 
@@ -32,7 +40,7 @@ authController.post("/login", async (req, res) => {
         res.cookie("accessToken", result.token, {
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 1000 * 60 * 30
         });
 
@@ -48,7 +56,7 @@ authController.get("/logout", async (req, res) => {
     res.clearCookie('accessToken', {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax'
+        sameSite: 'none',
     });
 
     res.status(204).end();

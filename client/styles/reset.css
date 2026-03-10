@@ -6,6 +6,12 @@
     padding: 0;
 }
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
 ol,
 ul {
     list-style: none;
@@ -19,4 +25,15 @@ a {
 
 img {
     display: block;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    margin: 0;
+
+    -webkit-appearance: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
 }

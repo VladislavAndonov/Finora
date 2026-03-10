@@ -1,17 +1,19 @@
 :root {
+    color-scheme: dark;
     --primary: #1c4fb6;
-    --primary-light: #4071d2;
-    --error: #9b0000;
-
-    /* Dark Theme */
-
+    --secondary: #96afff;
+    --secondary-muted: #3f4258;
+    --positive: #00e27b;
+    --negative: #e06b6b;
+    --error: #840000;
     --text-primary: #f5f5f5;
     --text-secondary: #a0a0a0;
     --text-muted: #6e6e6e;
+    --text-inverted: #0a0a0a;
     --border-primary: #4c4c4c;
-    --border-secondary: #2b2b2b;
-    --bg-lighter: #2c2c2c;
-    --bg-primary: #1b1b1b;
-    --bg-secondary: #2b2b2b;
+    --border-secondary: rgba(50, 50, 50, 0.5);
+    --bg-lighter: #4a4a4a;
+    --bg-primary: #191919;
+    --bg-secondary: #252525;
     --bg-darker: #111111;
 }

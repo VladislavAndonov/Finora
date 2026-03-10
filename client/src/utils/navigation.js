@@ -1,6 +1,10 @@
-import page from "//unpkg.com/page/page.mjs";
+import page from "page";
 
-export function navigate(path) {
+export function navigate(e) {
+    e.preventDefault();
+    const path = e.currentTarget.getAttribute("href");
+
     if (page.current === path) return
+
     page(path);
 }

@@ -9,7 +9,7 @@ export const authMiddleware = (req, res, next) => {
     }
 
     try {
-        const decodedToken = jwt.verify(token, config.jwtSecret);
+        const decodedToken = jwt.verify(token, config.jwtSecret, { algorithms: ["HS256"] });
 
         req.user = decodedToken;
         next();
@@ -17,7 +17,7 @@ export const authMiddleware = (req, res, next) => {
         res.clearCookie('accessToken', {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax'
+            sameSite: 'none',
         });
         res.status(401).end();
     }

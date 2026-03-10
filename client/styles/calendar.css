@@ -1,57 +1,78 @@
 .calendar {
     display: flex;
-
-    gap: 1rem;
-}
-
-.transaction-list {
     flex: 1;
-
-    padding: 2rem;
-
-    color: var(--text-primary);
+    flex-direction: column;
 }
 
-.calendar-wrapper {
-    flex: 1;
+.calendar__title {
+    font-size: clamp(1.2rem, 5vw, 2rem);
 
-    /* max-width: 600px; */
+    margin-bottom: 1rem;
 }
 
-.calendar-header {
+.calendar__content {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    flex: 1;
 
-    padding: 0.5rem 2rem;
-
-    border-bottom: 1px solid var(--text-secondary);
+    gap: 2rem;
 }
 
-.current-date {
-    color: var(--text-primary);
+.calendar__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    min-width: 0;
 }
 
-.prev,
-.next {
-    font-size: 1.5rem;
-    color: var(
-    --text-secondary)
+.calendar__month-scroll {
+    display: flex;
+    overflow-x: auto;
+
+    border-bottom: 2px solid var(--border-primary);
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
 }
 
-.prev:hover,
-.next:hover {
+.calendar__month-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.calendar__month-item {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    justify-content: center;
+
+    padding: 0 1.5rem;
+
     cursor: pointer;
+    transition: color 0.5s ease, border-color 0.5s ease;
 
-    color: var(--text-primary);
+    color: var(--text-muted);
+    border: none;
+    border-bottom: 4px solid transparent;
+    background: transparent;
 }
 
-.weekdays {
-    font-weight: 600;
+.calendar__month-item--active {
+    font-weight: 700;
+
+    color: var(--text-primary);
+    border-bottom: 4px solid var(--text-primary);
+}
+
+.calendar__year-label {
+    font-size: 0.7rem;
+}
+
+.calendar__weekdays {
+    font-weight: 500;
 
     display: grid;
 
-    margin: 5px 0;
+    margin: 0.4rem 0;
 
     text-align: center;
 
@@ -60,17 +81,19 @@
     grid-template-columns: repeat(7, 1fr);
 }
 
-.dates {
+.calendar__dates {
     display: grid;
 
-    color: var(--text-secondary);
+    color: var(--text-primary);
 
     grid-template-columns: repeat(7, 1fr);
     grid-row-start: 1;
-    gap: 5px;
+    gap: 0.4rem;
 }
 
-.dates li {
+.calendar__date {
+    font-weight: 500;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,23 +103,42 @@
     aspect-ratio: 1 / 1;
 }
 
-.dates li:hover {
+.calendar__date--today {
+    background-color: var(--secondary-muted);
+}
+
+.calendar__date:hover {
     cursor: pointer;
 
     background-color: var(--bg-primary);
 }
 
-.dates li.today {
-    background-color: var(--bg-lighter);
+.calendar__date--selected {
+    color: var(--text-inverted);
+    background-color: var(--secondary) !important;
 }
 
-.dates .selected {
-    outline: 4px solid var(
-    --primary)
+.calendar__date--has-transactions {
+    outline: 2px solid #84000050;
+    outline-offset: 1px;
 }
 
-.dates .has-transactions {
-    font-weight: 700;
+.calendar__transactions {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    transition: all 0.3s ease;
 
     color: var(--text-primary);
+}
+
+.calendar__transactions--hidden {
+    pointer-events: none;
+
+    opacity: 0;
+}
+
+.calendar__transactions--active {
+    opacity: 1;
 }

@@ -1,53 +1,125 @@
-.home-header h2 {
-    margin-bottom: 1rem;
+.home {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 
-    color: var(--text-primary);
+    min-height: 0;
 }
 
-.home-layout {
+.home__title {
+    font-size: clamp(1.2rem, 5vw, 2rem);
+
+    margin-bottom: 1rem;
+}
+
+.home__content {
     display: grid;
-    flex-grow: 1;
+    flex: 1;
+
+    min-height: 0;
 
     grid-template-columns: 7fr 5fr;
+    grid-template-rows: auto 1fr;
     gap: 1rem;
 }
 
-.home-layout section {
+.home__section {
+    min-height: 0;
     padding: 1rem;
 
     color: var(--text-primary);
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--border-secondary);
     border-radius: 0.5rem;
-    background-color: var(--bg-primary);
 }
 
-.finance-overview {
-}
+.home__transactions {
+    display: flex;
+    flex-direction: column;
 
-.home-layout .transaction-list {
     grid-row: 1 / 8;
 }
 
-.home-layout .line-graph {
-    grid-row: 2 / 8
+.home__chart {
+    min-width: 0;
+
+    grid-row: 2 / 8;
 }
 
-.budget-chart {
-    font-family: system-ui, sans-serif;
+.home__accounts {
+    position: relative;
 
-    max-width: 700px;
-    margin: 2rem auto;
+    overflow-x: auto;
+
+    padding: 0;
 }
 
-.budget-chart tr:nth-child(odd) {
-    --color: var(--primary-light);
+.home__accounts::after {
+    position: absolute;
+
+    content: "";
+    pointer-events: none;
+
+    box-shadow: inset -12px 0 12px 0px var(--bg-darker);
+
+    inset: 0;
 }
 
-.budget-chart tr:nth-child(even) {
-    --color: var(--primary);
+.home__accounts-scroller {
+    display: flex;
+    overflow-x: auto;
+
+    padding: 1rem;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.5rem;
 }
 
-.charts-css.line {
-    --line-size: 3px;
-    --point-size: 6px;
+.home__btn {
+    padding: 0.6rem 1rem;
+
+    cursor: pointer;
+
+    border-radius: 0.8rem;
+    background-color: var(--bg-lighter);
+}
+
+.home__account {
+    font-weight: 600;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+
+    border: none;
+}
+
+.home__account--active {
+    outline: 4px solid var(--primary);
+}
+
+.home__add-account {
+    color: var(--text-muted);
+    border: 2px solid var(--border-secondary);
+    background-color: transparent;
+}
+
+.home__add-account:hover {
+    color: var(--text-secondary);
+    border: 2px solid var(--border-primary);
+}
+
+.home__account-balance {
+    display: block;
+
+    white-space: nowrap;
+}
+
+.home__account-name {
+    font-size: 1.2rem;
+
+    display: block;
+
+    white-space: nowrap;
 }
