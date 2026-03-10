@@ -16,9 +16,9 @@ const transactionService = {
         session.startTransaction()
 
         try {
-            const transaction = await Transaction.create({ ...transactionData }, { session })
+            const [transaction] = await Transaction.create([transactionData], { session });
 
-            const balanceChange = transactionData.type === "expenses" ? transaction.amount : -transaction.amount;
+            const balanceChange = transactionData.type === "income" ? transaction.amount : -transaction.amount;
 
             await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: balanceChange } }, { session })
 

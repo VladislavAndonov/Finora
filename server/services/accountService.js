@@ -24,7 +24,7 @@ const accountService = {
                     accountId: account._id,
                     type: startingBalance > 0 ? 'income' : 'expense',
                     amount: startingBalance,
-                    category: "other",
+                    category: "Other",
                     note: "Initial account balance",
                     isOpeningBalance: true,
                     date: new Date()

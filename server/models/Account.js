@@ -27,7 +27,7 @@ const accountSchema = new Schema({
         type: String,
         required: [true, "Name is required."],
         trim: true,
-        maxlength: [20, "Name must be 20 characters or fewer."],
+        maxlength: [30, "Name must be 30 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
