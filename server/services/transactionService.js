@@ -25,9 +25,9 @@ const transactionService = {
 
             await session.commitTransaction();
             return transaction;
-        } catch (error) {
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }
@@ -39,10 +39,6 @@ const transactionService = {
         try {
             const oldTransaction = await Transaction.findById(transactionId, null, { session })
 
-            if (!oldTransaction) {
-                throw new Error("Transaction not found")
-            }
-
             const oldBalanceChange = toFixedAmount(oldTransaction.type === "income" ? -oldTransaction.amount : oldTransaction.amount);
             await Account.findByIdAndUpdate(oldTransaction.accountId, { $inc: { balance: oldBalanceChange } }, { session })
 
@@ -53,9 +49,9 @@ const transactionService = {
 
             await session.commitTransaction();
             return updatedTransaction
-        } catch (error) {
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }
@@ -65,21 +61,18 @@ const transactionService = {
         session.startTransaction()
 
         try {
-            const transaction = await Transaction.findById(transactionId).session(session)
-            if (!transaction) {
-                throw new Error("Transaction not found")
-            }
+            const transaction = await Transaction.findById(transactionId, { session })
 
             const balanceChange = toFixedAmount(transaction.type === "income" ? -transaction.amount : transaction.amount);
 
-            await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balance: balanceChange } }).session(session)
+            await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balance: balanceChange } }, { session })
 
-            await Transaction.findByIdAndDelete(transactionId).session(session)
+            await Transaction.findByIdAndDelete(transactionId, { session })
 
             await session.commitTransaction()
-        } catch (error) {
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }

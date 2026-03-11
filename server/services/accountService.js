@@ -34,19 +34,16 @@ const accountService = {
 
             await session.commitTransaction()
             return account
-        } catch (error) {
+        } catch (err) {
             await session.abortTransaction()
-            console.log("Failed to create account", error)
+            throw err
         } finally {
             session.endSession()
         }
 
     },
     async update(accountId, accountData) {
-        return await Account.findByIdAndUpdate(accountId, accountData);
-    },
-    async delete(accountId) {
-        return await Account.findByIdAndDelete(accountId);
+        return await Account.findByIdAndUpdate(accountId, accountData, { new: true });
     }
 }
 

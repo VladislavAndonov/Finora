@@ -3,41 +3,65 @@ import jwt from "jsonwebtoken";
 
 import { User } from "../models/User.js";
 import config from "../config/config.js";
+import mongoose from "mongoose";
+import { Account } from "../models/Account.js";
+import AppError from "../errors/AppError.js";
 
 
 const authService = {
     async register(username, email, password) {
-        const user = await User.findOne({ email });
-        if (user) {
-            throw new Error("This email has already been used")
+        const session = await mongoose.startSession()
+        session.startTransaction()
+
+        try {
+
+            const user = await User.findOne({ email });
+
+            if (user) {
+                throw new AppError("This email has already been used", 409)
+            }
+
+            if (password.length < 6) {
+                throw new AppError("Password should be at least 6 characters", 400)
+            }
+
+            const [createdUser] = await User.create([{ username, email, password }], { session });
+
+            await Account.create([{
+                name: "Bank",
+                currency: "EUR",
+                balance: 0,
+                ownerId: createdUser._id
+            }], { session })
+
+            await session.commitTransaction();
+            return buildAuthResponse(createdUser);
+
+        } catch (err) {
+            await session.abortTransaction()
+            throw err
+        } finally {
+            session.endSession()
         }
-
-        if (password.length < 6) {
-            throw new Error("Password should be at least 6 characters")
-        }
-
-        const createdUser = await User.create({ username, email, password });
-
-        return buildAuthResponse(createdUser);
     },
 
     async login(email, password) {
         const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
-            throw new Error("Invalid credentials");
+            throw new AppError("Invalid credentials", 400);
         }
 
         const isPassValid = await bcrypt.compare(password, user.password);
         if (!isPassValid) {
-            throw new Error("Invalid credentials");
+            throw new AppError("Invalid credentials", 400);
         }
 
         return buildAuthResponse(user);
     },
 
     async logout() {
-        // Invalidate token
+        // TODO: Invalidate token on logout
         return true;
     }
 }
