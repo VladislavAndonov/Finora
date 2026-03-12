@@ -7,22 +7,26 @@ export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id;
     let transaction = null;
 
-    try {
-        const result = await getTransactionById(tId);
-        transaction = { ...result, date: utcToLocal(result.date) };
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    let state = {
+    const state = {
         errMessage: null,
         isSubmitting: false,
         submitLabel: "Submitting...",
-        selectedType: transaction.type,
-        selectedCategory: transaction.category,
-        selectedDate: transaction.date,
+        selectedType: "expenses",
+        selectedCategory: null,
+        selectedDate: null,
         showCategoryModal: false,
     };
+
+    try {
+        const result = await getTransactionById(tId);
+        transaction = { ...result, date: utcToLocal(result.date) };
+
+        state.selectedType = transaction.type;
+        state.selectedCategory = transaction.category
+        state.selectedDate = transaction.date
+    } catch (err) {
+        state.errMessage = err.message
+    }
 
     const renderForm = () => ctx.render(transactionForm({
         onSubmit,
@@ -74,12 +78,11 @@ export const editTransactionView = async (ctx) => {
 
         const formData = new FormData(event.currentTarget);
         const title = formData.get("title")?.trim();
-        const amountStr = formData.get("amount") ?? "";
         const amount = Number(formData.get("amount"));
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-        if (!title || !type || !amount || !date) {
+        if (!title || !type || !amount || !date || !category) {
             state.errMessage = "Please fill the required fields.";
             return renderForm();
         }
@@ -87,16 +90,16 @@ export const editTransactionView = async (ctx) => {
             state.errMessage = "Title must be 30 characters or fewer.";
             return renderForm();
         }
+        if (isNaN(amount)) {
+            state.errMessage = "Please enter a valid amount.";
+            return renderForm();
+        }
         if (amount < 0.01) {
             state.errMessage = "Amount must be at least 0.01.";
             return renderForm();
         }
         if (amount > 999999.99) {
-            state.errMessage = "Amount must be a maximum of 999,999.99.";
-            return renderForm();
-        }
-        if (!/^\d+(\.\d{1,2})?$/.test(amountStr)) {
-            state.errMessage = "Amount can have at most two decimal places.";
+            state.errMessage = "Amount must be at most 999,999.99.";
             return renderForm();
         }
         if (note.length > 200) {

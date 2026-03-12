@@ -6,7 +6,7 @@ import { transactionForm } from "./common/transactionForm.js";
 
 export const addTransactionView = (ctx) => {
 
-    let state = {
+    const state = {
         errMessage: null,
         isSubmitting: false,
         submitLabel: "Adding...",
@@ -68,12 +68,11 @@ export const addTransactionView = (ctx) => {
 
         const formData = new FormData(event.currentTarget);
         const title = formData.get("title")?.trim();
-        const amountStr = formData.get("amount") ?? "";
         const amount = Number(formData.get("amount"));
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-        if (!title || !type || !amount || !date) {
+        if (!title || !type || !amount || !date || !category) {
             state.errMessage = "Please fill the required fields.";
             return renderForm();
         }
@@ -81,16 +80,16 @@ export const addTransactionView = (ctx) => {
             state.errMessage = "Title must be 30 characters or fewer.";
             return renderForm();
         }
+        if (isNaN(amount)) {
+            state.errMessage = "Please enter a valid amount.";
+            return renderForm();
+        }
         if (amount < 0.01) {
             state.errMessage = "Amount must be at least 0.01.";
             return renderForm();
         }
         if (amount > 999999.99) {
-            state.errMessage = "Amount must be a maximum of 999,999.99.";
-            return renderForm();
-        }
-        if (!/^\d+(\.\d{1,2})?$/.test(amountStr)) {
-            state.errMessage = "Amount can have at most two decimal places.";
+            state.errMessage = "Amount must be at most 999,999.99.";
             return renderForm();
         }
         if (note.length > 200) {
