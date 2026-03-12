@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-import { User } from "./User.js";
-
 const { Schema } = mongoose;
 
 const currencies = [
@@ -27,11 +25,12 @@ const accountSchema = new Schema({
         type: String,
         required: [true, "Name is required."],
         trim: true,
+        minlength: [1, "Name must not be empty."],
         maxlength: [30, "Name must be 30 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: "User",
         required: true,
     },
     currency: {
@@ -43,7 +42,7 @@ const accountSchema = new Schema({
             message: "Invalid currency."
         },
     },
-    balance: {
+    balanceCents: {
         type: Number,
         required: true,
         default: 0
