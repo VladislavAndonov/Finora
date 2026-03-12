@@ -21,16 +21,12 @@ const authService = {
                 throw new AppError("This email has already been used", 409)
             }
 
-            if (password.length < 6) {
-                throw new AppError("Password should be at least 6 characters", 400)
-            }
-
             const [createdUser] = await User.create([{ username, email, password }], { session });
 
             await Account.create([{
                 name: "Bank",
                 currency: "EUR",
-                balance: 0,
+                balanceCents: 0,
                 ownerId: createdUser._id
             }], { session })
 

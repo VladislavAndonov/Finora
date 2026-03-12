@@ -5,35 +5,57 @@ import { Transaction } from "../models/Transaction.js";
 
 const accountService = {
     async getAccounts(filters) {
-        return await Account.find(filters);
+        const accounts = await Account.find(filters);
+
+        const formattedAccounts = accounts.map((account) => {
+            const accountObject = account.toObject();
+            accountObject.balance = accountObject.balanceCents / 100;
+            delete accountObject.balanceCents;
+            return accountObject;
+        });
+
+        return formattedAccounts;
     },
     async getOne(accountId) {
-        return await Account.findById(accountId)
+        const account = await Account.findById(accountId);
+
+        if (!account) {
+            return null
+        }
+
+        const accountObject = account.toObject();
+        accountObject.balance = accountObject.balanceCents / 100;
+        delete accountObject.balanceCents;
+        return accountObject;
     },
-    async create({ name, ownerId, currency, startingBalance = 0 }) {
+    async create({ name, ownerId, currency, startingBalanceCents = 0 }) {
         const session = await mongoose.startSession()
         session.startTransaction()
 
         try {
-            const [account] = await Account.create([{ name, ownerId, currency, balance: 0 }], { session })
+            const [account] = await Account.create([{ name, ownerId, currency, balanceCents: 0 }], { session })
 
-            if (startingBalance !== 0)
+            if (startingBalanceCents !== 0)
                 await Transaction.create([{
                     title: "Opening Balance",
                     ownerId,
                     accountId: account._id,
-                    type: startingBalance > 0 ? 'income' : 'expense',
-                    amount: startingBalance,
+                    type: startingBalanceCents > 0 ? 'income' : 'expenses',
+                    amountCents: Math.abs(startingBalanceCents),
                     category: "Other",
                     note: "Initial account balance",
                     isOpeningBalance: true,
                     date: new Date()
                 }], { session });
 
-            await Account.findByIdAndUpdate(account._id, { $inc: { balance: startingBalance } }, { session });
+            await Account.findByIdAndUpdate(account._id, { $inc: { balanceCents: startingBalanceCents } }, { session });
 
             await session.commitTransaction()
-            return account
+
+            const accountObject = account.toObject();
+            accountObject.balance = accountObject.balanceCents / 100;
+            delete accountObject.balanceCents;
+            return accountObject;
         } catch (err) {
             await session.abortTransaction()
             throw err
@@ -43,7 +65,16 @@ const accountService = {
 
     },
     async update(accountId, accountData) {
-        return await Account.findByIdAndUpdate(accountId, accountData, { new: true });
+        const account = await Account.findByIdAndUpdate(accountId, accountData, { new: true });
+
+        if (!account) {
+            return null
+        }
+
+        const accountObject = account.toObject();
+        accountObject.balance = accountObject.balanceCents / 100;
+        delete accountObject.balanceCents;
+        return accountObject;
     }
 }
 
