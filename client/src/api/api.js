@@ -8,25 +8,24 @@ export const settings = {
 
 async function request(url, options) {
     const response = await fetch(settings.host + url, options);
-    if (response.status === 401) {
-        clearAuth();
-        page.redirect("/auth/login");
-        throw new Error("Unauthorized");
-    }
-
-    if (response.status === 404) {
-        throw new Error("Not Found")
-    }
-
-    if (!response.ok) {
-        throw new Error("Request failed");
-    }
 
     if (response.status === 204) {
         return null
     }
 
-    return response.json();
+    const data = await response.json().catch(() => null);
+
+    if (response.status === 401) {
+        clearAuth();
+        page.redirect("/auth/login");
+        throw new Error(data?.error || "Unauthorized");
+    }
+
+    if (!response.ok) {
+        throw new Error(data?.error || "Request failed");
+    }
+
+    return data;
 }
 
 function getOptions(method = "get", body) {
