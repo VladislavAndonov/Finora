@@ -5,7 +5,7 @@ import { html } from "lit-html";
 import { getAccountById, editAccount } from "../api/data.js";
 import { currencies } from "../utils/currencies.js";
 
-const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput, isArchived, onToggleArchive }) =>
+const editAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, onToggleArchive, state }) =>
     html`
         <div class="edit-account">
             <header class="edit-account__header">
@@ -17,14 +17,14 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameV
 
             <div class="edit-account__content">
                 <form @submit=${onSubmit} id="edit-account__form">
-                    <input class="edit-account__currency--hidden" type="text" name="currency" .value=${selectedCurrency} readonly/>
+                    <input class="edit-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly/>
 
                     <label class="edit-account__label" for="name">Name</label>
-                    <input class="edit-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" .value=${nameValue} @input=${onNameInput}/>
+                    <input class="edit-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" .value=${state.nameValue} @input=${onNameInput}/>
 
                     <div class="edit-account__currency-grid">
                         ${currencies.map((c) => html`
-                            <button type="button" class="edit-account__currency-btn ${selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
+                            <button type="button" class="edit-account__currency-btn ${state.selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
                                 <span class="edit-account__code">${c.code}</span>
                                 <span class="edit-account__sign">${c.sign}</span>
                                 <span class="edit-account__country">${c.country}</span>
@@ -38,18 +38,20 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameV
                     <p class="edit-account__archive-description">Archived accounts are hidden from your main view.</p>
                     <button
                         type="button"
-                        class="edit-account__toggle ${isArchived ? "active" : ""}"
+                        class="edit-account__toggle ${state.isArchived ? "active" : ""}"
                         @click=${onToggleArchive}
                         role="switch"
-                        aria-checked=${isArchived}
+                        aria-checked=${state.isArchived}
                     >
                         <span class="edit-account__toggle-thumb"></span>
                     </button>
                 </div>
+
+                ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
                 
                 <div class="edit-account__actions">
-                    <button class="edit-account__btn" type="submit" form="edit-account__form" ?disabled=${!nameValue.trim()}>
-                        Save Account (${selectedCurrency})
+                    <button class="edit-account__btn" type="submit" form="edit-account__form" ?disabled=${!state.nameValue.trim() || state.isSubmitting}>
+                        Save Account (${state.selectedCurrency})
                     </button>
                 </div>
 
@@ -59,57 +61,71 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameV
 
 export const editAccountView = async (ctx) => {
     const accId = ctx.params.id;
-    let selectedCurrency = "USD";
-    let nameValue = "";
-    let isArchived = false;
+    const state = {
+        selectedCurrency: "USD",
+        nameValue: "",
+        isArchived: false,
+        isSubmitting: false,
+        errMessage: null
+    }
 
     try {
         const account = await getAccountById(accId);
-        selectedCurrency = account.currency ?? "USD";
-        nameValue = account.name ?? "";
-        isArchived = account.isArchived ?? false;
+        state.selectedCurrency = account.currency ?? "USD";
+        state.nameValue = account.name ?? "";
+        state.isArchived = account.isArchived ?? false;
     } catch (err) {
-        console.error(err.message);
+        state.errMessage = err.message
+        renderForm()
     }
 
     function selectCurrency(code) {
-        if (selectedCurrency === code) return;
-        selectedCurrency = code;
+        if (state.selectedCurrency === code) return;
+        state.selectedCurrency = code;
         renderForm();
     }
 
     function onNameInput(event) {
-        nameValue = event.target.value;
+        state.nameValue = event.target.value;
         renderForm();
     }
 
     function onToggleArchive() {
-        isArchived = !isArchived;
+        state.isArchived = !isArchived;
         renderForm();
     }
 
     async function onSubmit(event) {
         event.preventDefault();
+        if (state.isSubmitting) return;
 
         const formData = new FormData(event.target);
-        const updatedAccount = {
-            name: formData.get("name").trim(),
-            currency: selectedCurrency,
-            isArchived,
-        };
+        const name = formData.get("name").trim();
+        const currency = state.selectedCurrency
+        const isArchived = state.isArchived
+
+        if (!name) {
+            state.errMessage = "Account name is required.";
+            return renderForm();
+        }
+
+        state.isSubmitting = true;
+        state.errMessage = null;
+        renderForm();
 
         try {
-            await editAccount(accId, updatedAccount);
+            await editAccount(accId, { name, currency, isArchived });
             ctx.page.redirect("/");
-        } catch (error) {
-            console.error(error);
-            renderForm();
+        } catch (err) {
+            state.errMessage = err.message
+            state.isSubmitting = false;
+            renderForm()
         }
     }
 
     function renderForm() {
         ctx.render(
-            editAccountTemplate({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput, isArchived, onToggleArchive })
+            editAccountTemplate({ onSubmit, selectCurrency, onNameInput, onToggleArchive, state })
         );
     }
 

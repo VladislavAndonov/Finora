@@ -5,8 +5,8 @@ import { html } from "lit-html";
 import { addAccount } from "../api/data.js";
 import { currencies } from "../utils/currencies.js";
 
-const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput }) => {
-    const currencySign = currencies.find((c) => c.code === selectedCurrency)?.sign ?? "$";
+const addAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, state }) => {
+    const currencySign = currencies.find((c) => c.code === state.selectedCurrency)?.sign ?? "$";
 
     return html`
         <div class="add-account">
@@ -19,7 +19,7 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
 
             <div class="add-account__content">
                 <form @submit=${onSubmit} id="add-account__form">
-                    <input class="add-account__currency--hidden" type="text" name="currency" .value=${selectedCurrency} readonly/>
+                    <input class="add-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly/>
 
                     <label class="add-account__label" for="name">Name</label>
                     <input class="add-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" @input=${onNameInput}/>
@@ -32,7 +32,7 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
 
                     <div class="add-account__currency-grid">
                         ${currencies.map((c) => html`
-                        <button type="button" class="add-account__currency-btn ${selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
+                        <button type="button" class="add-account__currency-btn ${state.selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
                             <span class="add-account__code">${c.code}</span>
                             <span class="add-account__sign">${c.sign}</span>
                             <span class="add-account__country">${c.country}</span>
@@ -41,9 +41,11 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
                     </div>
                 </form>
 
+                ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
+
                 <div class="add-account__actions">
-                    <button class="add-account__btn" type="submit" form="add-account__form" ?disabled=${!nameValue.trim()}>
-                        Add Account (${selectedCurrency})
+                    <button class="add-account__btn" type="submit" form="add-account__form" ?disabled=${!state.nameValue.trim() || state.isSubmitting}>
+                        Add Account (${state.selectedCurrency})
                     </button>
                 </div>
             </div>
@@ -51,47 +53,66 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, selectedCurrency, nameVa
 `};
 
 export const addAccountView = (ctx) => {
-    const DEFAULT_CURRENCY = "USD";
-    let selectedCurrency = DEFAULT_CURRENCY;
-    let nameValue = "";
+    const state = {
+        selectedCurrency: "USD",
+        nameValue: "",
+        isSubmitting: false,
+        errMessage: null
+    }
 
     function selectCurrency(code) {
-        if (selectedCurrency === code) {
+        if (state.selectedCurrency === code) {
             return
         }
 
-        selectedCurrency = code;
+        state.selectedCurrency = code;
         renderForm();
     }
 
     function onNameInput(event) {
-        nameValue = event.target.value;
+        state.nameValue = event.target.value;
         renderForm();
     }
 
     async function onSubmit(event) {
         event.preventDefault();
+        if (state.isSubmitting) return;
 
         const formData = new FormData(event.target);
-        const createdAccount = {
-            name: formData.get("name").trim(),
-            currency: selectedCurrency,
-            startingBalance: Number(formData.get("startingBalance")) || 0,
-        };
+        const name = formData.get("name").trim();
+        const currency = state.selectedCurrency
+        const startingBalance = Number(formData.get("startingBalance")) || 0;
+
+        if (!name) {
+            state.errMessage = "Account name is required.";
+            return renderForm();
+        }
+        if (isNaN(startingBalance)) {
+            state.errMessage = "Please enter a valid starting balance.";
+            return renderForm();
+        }
+        if (startingBalance < -999999.99 || startingBalance > 999999.99) {
+            state.errMessage = "Starting balance must be between -999,999.99 and 999,999.99.";
+            return renderForm();
+        }
+
+        state.isSubmitting = true;
+        state.errMessage = null;
+        renderForm();
 
         try {
-            await addAccount(createdAccount);
-
+            await addAccount({ name, currency, startingBalance });
             ctx.page.redirect("/")
-        } catch (error) {
-            console.error(error)
-            renderForm()
+        } catch (err) {
+            state.errMessage = err.message;
+            state.isSubmitting = false;
+            renderForm();
         }
     }
 
     function renderForm() {
         ctx.render(
-            addAccountTemplate({ onSubmit, selectCurrency, selectedCurrency, nameValue, onNameInput })
+            addAccountTemplate({ onSubmit, selectCurrency, onNameInput, state })
         );
     }
 
