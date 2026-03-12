@@ -75,7 +75,7 @@ export async function registerView(ctx) {
         const confirmPassword = formData.get("confirmPassword").trim();
 
         if (!username || !email || !password || !confirmPassword) {
-            errMessage = "All fields are required";
+            errMessage = "Please fill all fields.";
         }
         if (username.length < 3) {
             errMessage = "Username must be at least 3 characters.";
@@ -86,11 +86,11 @@ export async function registerView(ctx) {
             return render()
         }
         if (!emailValidator(email)) {
-            errMessage = "Email format is invalid.";
+            errMessage = "Please enter a valid email address.";
             return render()
         }
         if (password !== confirmPassword) {
-            errMessage = "Passwords must match!";
+            errMessage = "Passwords must match.";
             return render()
         }
         if (password.length < 6) {

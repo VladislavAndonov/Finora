@@ -4,6 +4,7 @@ import { html } from "lit-html";
 
 import { login } from "../api/data.js"
 import { navigate } from "../utils/navigation.js";
+import { emailValidator } from "../utils/emailValidator.js";
 
 export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =>
     html`
@@ -15,7 +16,6 @@ export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =
                         <h2 class="login__title">Sign in</h2>
                         <p class="login__subtitle">Welcome back</p>
                     </header>
-
 
                     <fieldset class="login__fieldset">
                         <label class="login__label" for="email">Email</label>
@@ -70,8 +70,12 @@ export async function loginView(ctx) {
         const password = formData.get("password").trim();
 
         if (!email || !password) {
-            errMessage = "All fields are required.";
+            errMessage = "Please fill all fields.";
             return render()
+        }
+        if (!emailValidator(email)) {
+            errMessage = "Please enter a valid email address.";
+            return render();
         }
 
         isSubmitting = true;
