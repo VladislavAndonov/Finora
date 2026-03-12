@@ -91,7 +91,7 @@ transactionController.post("/", async (req, res, next) => {
             throw new AppError("Missing required transaction fields", 400);
         }
 
-        const transaction = await transactionService.create({ title, accountId, ownerId: userId, type, amount, date, category, note });
+        const transaction = await transactionService.create({ title, accountId, ownerId: userId, type, amountCents: Math.round(amount * 100), date, category, note });
 
         res.status(201).json(transaction);
 
@@ -136,7 +136,11 @@ transactionController.put("/:id", async (req, res, next) => {
 
         const { title, accountId, type, amount, date, category, note } = req.body
 
-        const newTransaction = await transactionService.update(req.params.id, { title, accountId, ownerId: userId, type, amount, date, category, note });
+        if (!title || !accountId || !type || !amount || !date || !category) {
+            throw new AppError("Missing required transaction fields", 400);
+        }
+
+        const newTransaction = await transactionService.update(req.params.id, { title, accountId, ownerId: userId, type, amountCents: Math.round(amount * 100), date, category, note });
 
         res.json(newTransaction);
 
