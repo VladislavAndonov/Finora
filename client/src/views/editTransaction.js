@@ -15,6 +15,7 @@ export const editTransactionView = async (ctx) => {
         selectedCategory: null,
         selectedDate: null,
         showCategoryModal: false,
+        unfilledInputs: []
     };
 
     try {
@@ -82,10 +83,28 @@ export const editTransactionView = async (ctx) => {
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-        if (!title || !type || !amount || !date || !category) {
-            state.errMessage = "Please fill the required fields.";
+
+        if (!title) {
+            state.unfilledInputs.push("title");
+        }
+        if (!type) {
+            state.unfilledInputs.push("type");
+        }
+        if (!amount) {
+            state.unfilledInputs.push("amount");
+        }
+        if (!date) {
+            state.unfilledInputs.push("date");
+        }
+        if (!category) {
+            state.unfilledInputs.push("category");
+        }
+        if (state.unfilledInputs.length > 0) {
+            state.errMessage = `Please fill ${state.unfilledInputs.join(", ")}`;
             return renderForm();
         }
+
+
         if (title.length > 30) {
             state.errMessage = "Title must be 30 characters or fewer.";
             return renderForm();

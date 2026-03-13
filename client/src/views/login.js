@@ -5,6 +5,7 @@ import { html } from "lit-html";
 import { login } from "../api/data.js"
 import { navigate } from "../utils/navigation.js";
 import { emailValidator } from "../utils/emailValidator.js";
+import { showToast } from "../utils/toast.js";
 
 export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =>
     html`
@@ -84,6 +85,7 @@ export async function loginView(ctx) {
 
         try {
             await login(email, password);
+            showToast("Logged in successfully!");
             ctx.page.redirect("/");
         } catch (err) {
             errMessage = err.message;
@@ -101,9 +103,10 @@ export async function loginView(ctx) {
 
         try {
             await login("demo@gmail.com", "123456");
+            showToast("Logged in successfully!");
             ctx.page.redirect("/");
         } catch (err) {
-            errMessage = err.message;
+            showToast(err.message, "error");
             isSubmitting = false;
             render();
         }

@@ -2,6 +2,7 @@ import { addTransaction } from '../api/data.js';
 
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { utcToLocal } from "../utils/dateUtils.js";
+import { showToast } from '../utils/toast.js';
 import { transactionForm } from "./common/transactionForm.js";
 
 export const addTransactionView = (ctx) => {
@@ -14,6 +15,7 @@ export const addTransactionView = (ctx) => {
         selectedCategory: null,
         selectedDate: utcToLocal(new Date()),
         showCategoryModal: false,
+        unfilledInputs: []
     };
 
     const renderForm = () => ctx.render(transactionForm({
@@ -72,10 +74,27 @@ export const addTransactionView = (ctx) => {
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-        if (!title || !type || !amount || !date || !category) {
-            state.errMessage = "Please fill the required fields.";
+        if (!title) {
+            state.unfilledInputs.push("title");
+        }
+        if (!type) {
+            state.unfilledInputs.push("type");
+        }
+        if (!amount) {
+            state.unfilledInputs.push("amount");
+        }
+        if (!date) {
+            state.unfilledInputs.push("date");
+        }
+        if (!category) {
+            state.unfilledInputs.push("category");
+        }
+        if (state.unfilledInputs.length > 0) {
+            state.errMessage = `Please fill ${state.unfilledInputs.join(", ")}`;
             return renderForm();
         }
+
+
         if (title.length > 30) {
             state.errMessage = "Title must be 30 characters or fewer.";
             return renderForm();
@@ -103,9 +122,10 @@ export const addTransactionView = (ctx) => {
 
         try {
             await addTransaction({ title, type, amount, date, category, note })
+            showToast("Transaction successfully added!")
             ctx.page.redirect("/")
         } catch (err) {
-            state.errMessage = err.message
+            showToast(err.message, "error");
             state.isSubmitting = false
             renderForm()
         }
