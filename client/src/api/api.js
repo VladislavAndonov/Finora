@@ -1,6 +1,7 @@
 import page from "page";
 
 import { clearAuth, setAuth } from '../state/authState.js';
+import { showToast } from "../utils/toast.js";
 
 export const settings = {
     host: ""
@@ -17,6 +18,7 @@ async function request(url, options) {
 
     if (response.status === 401) {
         clearAuth();
+        showToast("Your session has expired. Please sign in again.", "error", 4000);
         page.redirect("/auth/login");
         throw new Error(data?.error || "Unauthorized");
     }
