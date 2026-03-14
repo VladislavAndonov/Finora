@@ -2,6 +2,7 @@ import { deleteTransaction, editTransaction, getTransactionById } from '../api/d
 import { utcToLocal } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { transactionForm } from "./common/transactionForm.js";
+import { showToast } from '../utils/toast.js';
 
 export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id;
@@ -26,7 +27,9 @@ export const editTransactionView = async (ctx) => {
         state.selectedCategory = transaction.category
         state.selectedDate = transaction.date
     } catch (err) {
-        state.errMessage = err.message
+        showToast("Transaction not found!", "error");
+        ctx.page.redirect("/");
+        return
     }
 
     const renderForm = () => ctx.render(transactionForm({
@@ -132,9 +135,10 @@ export const editTransactionView = async (ctx) => {
 
         try {
             await editTransaction(tId, { title, type, amount, date, category, note });
+            showToast("Transaction successfully updated!")
             ctx.page.redirect("/");
         } catch (err) {
-            state.errMessage = err.message
+            showToast("Failed to update transaction!", "error");
             state.isSubmitting = false
             renderForm()
         }
@@ -146,9 +150,10 @@ export const editTransactionView = async (ctx) => {
         renderForm();
         try {
             await deleteTransaction(tId)
+            showToast("Transaction successfully deleted!")
             ctx.page.redirect("/")
         } catch (err) {
-            state.errMessage = err.message
+            showToast("Failed to delete transaction!", "error");
             state.isSubmitting = false
             renderForm()
         }

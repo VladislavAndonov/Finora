@@ -4,6 +4,7 @@ import { html } from "lit-html";
 
 import { addAccount } from "../api/data.js";
 import { currencies } from "../utils/currencies.js";
+import { showToast } from "../utils/toast.js";
 
 const addAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, state }) => {
     const currencySign = currencies.find((c) => c.code === state.selectedCurrency)?.sign ?? "$";
@@ -102,9 +103,10 @@ export const addAccountView = (ctx) => {
 
         try {
             await addAccount({ name, currency, startingBalance });
+            showToast("Account successfully created!")
             ctx.page.redirect("/")
         } catch (err) {
-            state.errMessage = err.message;
+            showToast("Failed to create account!", "error");
             state.isSubmitting = false;
             renderForm();
         }

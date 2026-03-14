@@ -88,7 +88,7 @@ export async function loginView(ctx) {
             showToast("Logged in successfully!");
             ctx.page.redirect("/");
         } catch (err) {
-            errMessage = err.message;
+            showToast("Something went wrong! Please, try again later.", "error");
             isSubmitting = false;
             render()
         }
@@ -106,7 +106,7 @@ export async function loginView(ctx) {
             showToast("Logged in successfully!");
             ctx.page.redirect("/");
         } catch (err) {
-            showToast(err.message, "error");
+            showToast("Something went wrong! Please, try again later.", "error");
             isSubmitting = false;
             render();
         }

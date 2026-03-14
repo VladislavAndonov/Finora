@@ -4,6 +4,7 @@ import { html } from "lit-html";
 
 import { getAccountById, editAccount } from "../api/data.js";
 import { currencies } from "../utils/currencies.js";
+import { showToast } from "../utils/toast.js";
 
 const editAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, onToggleArchive, state }) =>
     html`
@@ -75,7 +76,8 @@ export const editAccountView = async (ctx) => {
         state.nameValue = account.name ?? "";
         state.isArchived = account.isArchived ?? false;
     } catch (err) {
-        state.errMessage = err.message
+        showToast("Account not found!", "error");
+        ctx.page.redirect("/")
         renderForm()
     }
 
@@ -115,9 +117,10 @@ export const editAccountView = async (ctx) => {
 
         try {
             await editAccount(accId, { name, currency, isArchived });
+            showToast("Account successfully updated!")
             ctx.page.redirect("/");
         } catch (err) {
-            state.errMessage = err.message
+            showToast("Failed to update account!", "error");
             state.isSubmitting = false;
             renderForm()
         }

@@ -125,7 +125,7 @@ export const addTransactionView = (ctx) => {
             showToast("Transaction successfully added!")
             ctx.page.redirect("/")
         } catch (err) {
-            showToast(err.message, "error");
+            showToast("Failed to add transaction!", "error");
             state.isSubmitting = false
             renderForm()
         }
