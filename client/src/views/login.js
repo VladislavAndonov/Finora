@@ -85,10 +85,10 @@ export async function loginView(ctx) {
 
         try {
             await login(email, password);
-            showToast("Logged in successfully!");
+            showToast("Logged in successfully.");
             ctx.page.redirect("/");
         } catch (err) {
-            showToast("Something went wrong! Please, try again later.", "error");
+            showToast("Login failed. Please, try again later.", "error");
             isSubmitting = false;
             render()
         }
@@ -103,10 +103,10 @@ export async function loginView(ctx) {
 
         try {
             await login("demo@gmail.com", "123456");
-            showToast("Logged in successfully!");
+            showToast("Logged in with demo account. Data is for demonstration purposes only.");
             ctx.page.redirect("/");
         } catch (err) {
-            showToast("Something went wrong! Please, try again later.", "error");
+            showToast("Login failed. Please, try again later.", "error");
             isSubmitting = false;
             render();
         }

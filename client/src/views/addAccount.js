@@ -103,10 +103,10 @@ export const addAccountView = (ctx) => {
 
         try {
             await addAccount({ name, currency, startingBalance });
-            showToast("Account successfully created!")
+            showToast("Account successfully created.")
             ctx.page.redirect("/")
         } catch (err) {
-            showToast("Failed to create account!", "error");
+            showToast("Failed to create account.", "error");
             state.isSubmitting = false;
             renderForm();
         }

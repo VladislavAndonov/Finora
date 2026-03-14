@@ -108,7 +108,7 @@ export async function registerView(ctx) {
             showToast("Welcome to Finora!");
             ctx.page.redirect("/");
         } catch (err) {
-            showToast("Something went wrong! Please, try again later.", "error");
+            showToast("Register failed. Please, try again later.", "error");
             isSubmitting = false;
             render()
         }

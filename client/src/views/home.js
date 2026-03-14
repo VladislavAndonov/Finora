@@ -318,18 +318,44 @@ export async function homeView(ctx) {
         state.graphInstance.update();
     }
 
+    const crosshairPlugin = {
+        id: 'crosshair',
+        afterDatasetsDraw(chart) {
+            const activeElements = chart.getActiveElements();
+
+            if (activeElements.length > 0) {
+                const { ctx, chartArea: { top, bottom, left, right } } = chart;
+                const { x, y } = activeElements[0].element;
+
+                ctx.save();
+                ctx.beginPath();
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.setLineDash([5, 5]);
+
+                ctx.moveTo(x, top);
+                ctx.lineTo(x, bottom);
+                ctx.moveTo(left, y);
+                ctx.lineTo(right, y);
+
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
     let width, height, gradient;
     function getGradient(ctx, chartArea) {
         const chartWidth = chartArea.right - chartArea.left;
         const chartHeight = chartArea.bottom - chartArea.top;
         if (!gradient || width !== chartWidth || height !== chartHeight) {
-            // Create the gradient because this is either the first render or the size of the chart has changed
             width = chartWidth;
             height = chartHeight;
             gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, "#00000000");
-            gradient.addColorStop(0.5, "#96afff40");
-            gradient.addColorStop(1, "#96afff70");
+            gradient.addColorStop(0, 'rgba(150, 175, 255, 0)');
+            gradient.addColorStop(0.35, 'rgba(150, 175, 255, 0.05)');
+            gradient.addColorStop(0.75, 'rgba(150, 175, 255, 0.15)');
+            gradient.addColorStop(1, 'rgba(150, 175, 255, 0.35)');
         }
 
         return gradient;
@@ -340,6 +366,7 @@ export async function homeView(ctx) {
             canvas,
             {
                 type: 'line',
+                plugins: [crosshairPlugin],
                 data: {
                     labels: [],
                     datasets: [{
@@ -359,17 +386,43 @@ export async function homeView(ctx) {
                         },
                         borderColor: '#96afff',
                         tension: 0.1,
+                        pointRadius: 0,
+                        pointHitRadius: 12,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#96afff',
+                        pointHoverBorderColor: 'rgba(150, 175, 255, 0.4)',
+                        pointHoverBorderWidth: 8,
                     }]
                 },
                 options: {
-                    pointRadius: 0,
-                    pointHitRadius: 10,
-                    pointHoverRadius: 8,
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
-                        legend: {
-                            display: false
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.08)',
+                            borderWidth: 1,
+                            titleColor: '#94a3b8',
+                            bodyColor: '#f1f5f9',
+                            bodyFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: (item) => {
+                                    return `${getActiveCurrencySign()} ${item.parsed.y.toLocaleString()}`;
+                                }
+                            }
                         }
-                    }, scales: {
+                    },
+                    scales: {
                         x: {
                             ticks: {
                                 callback: function (val, index) {
@@ -378,12 +431,19 @@ export async function homeView(ctx) {
                                 }
                             },
                             grid: {
-                                color: "#ffffff10",
-                            }
+                                color: '#ffffff10'
+                            },
                         },
                         y: {
+                            position: "right",
+                            border: { display: false },
+                            ticks: {
+                                callback: (val) => {
+                                    return `${getActiveCurrencySign()} ${val.toLocaleString()}`;
+                                },
+                            },
                             grid: {
-                                color: "#ffffff10",
+                                color: '#ffffff10'
                             },
                         }
                     }

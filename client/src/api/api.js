@@ -24,7 +24,7 @@ async function request(url, options) {
     }
 
     if (!response.ok) {
-        throw new Error(data?.error || "Request failed");
+        throw new Error(data?.error || "Something went wrong");
     }
 
     return data;

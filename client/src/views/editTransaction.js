@@ -27,7 +27,7 @@ export const editTransactionView = async (ctx) => {
         state.selectedCategory = transaction.category
         state.selectedDate = transaction.date
     } catch (err) {
-        showToast("Transaction not found!", "error");
+        showToast("Transaction not found.", "error");
         ctx.page.redirect("/");
         return
     }
@@ -135,10 +135,10 @@ export const editTransactionView = async (ctx) => {
 
         try {
             await editTransaction(tId, { title, type, amount, date, category, note });
-            showToast("Transaction successfully updated!")
+            showToast("Transaction successfully updated.")
             ctx.page.redirect("/");
         } catch (err) {
-            showToast("Failed to update transaction!", "error");
+            showToast("Failed to update transaction.", "error");
             state.isSubmitting = false
             renderForm()
         }
@@ -150,10 +150,10 @@ export const editTransactionView = async (ctx) => {
         renderForm();
         try {
             await deleteTransaction(tId)
-            showToast("Transaction successfully deleted!")
+            showToast("Transaction successfully deleted.")
             ctx.page.redirect("/")
         } catch (err) {
-            showToast("Failed to delete transaction!", "error");
+            showToast("Failed to delete transaction.", "error");
             state.isSubmitting = false
             renderForm()
         }
