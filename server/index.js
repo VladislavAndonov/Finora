@@ -5,6 +5,7 @@ import cors from "cors";
 
 import routes from "./routes.js";
 import config from './config/config.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const PORT = 3000
 
@@ -37,3 +38,5 @@ mongoose.connect(config.dbURL, { dbName: "finora_dev" }) // Change DB in product
 app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
 })
+
+app.use(errorHandler)

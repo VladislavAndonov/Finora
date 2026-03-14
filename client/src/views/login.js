@@ -4,6 +4,8 @@ import { html } from "lit-html";
 
 import { login } from "../api/data.js"
 import { navigate } from "../utils/navigation.js";
+import { emailValidator } from "../utils/emailValidator.js";
+import { showToast } from "../utils/toast.js";
 
 export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =>
     html`
@@ -15,7 +17,6 @@ export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =
                         <h2 class="login__title">Sign in</h2>
                         <p class="login__subtitle">Welcome back</p>
                     </header>
-
 
                     <fieldset class="login__fieldset">
                         <label class="login__label" for="email">Email</label>
@@ -70,8 +71,12 @@ export async function loginView(ctx) {
         const password = formData.get("password").trim();
 
         if (!email || !password) {
-            errMessage = "All fields are required.";
+            errMessage = "Please fill all fields.";
             return render()
+        }
+        if (!emailValidator(email)) {
+            errMessage = "Please enter a valid email address.";
+            return render();
         }
 
         isSubmitting = true;
@@ -80,9 +85,10 @@ export async function loginView(ctx) {
 
         try {
             await login(email, password);
+            showToast("Logged in successfully.");
             ctx.page.redirect("/");
         } catch (err) {
-            errMessage = err.message;
+            showToast("Login failed. Please, try again later.", "error");
             isSubmitting = false;
             render()
         }
@@ -97,9 +103,10 @@ export async function loginView(ctx) {
 
         try {
             await login("demo@gmail.com", "123456");
+            showToast("Logged in with demo account. Data is for demonstration purposes only.");
             ctx.page.redirect("/");
         } catch (err) {
-            errMessage = err.message;
+            showToast("Login failed. Please, try again later.", "error");
             isSubmitting = false;
             render();
         }

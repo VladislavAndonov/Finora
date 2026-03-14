@@ -23,7 +23,7 @@ const userSchema = new Schema({
         lowercase: true,
         validate: {
             validator: function (value) {
-                EMAIL_REGEX.test(value)
+                return EMAIL_REGEX.test(value)
             },
             message: "Email format is invalid."
         },
@@ -31,18 +31,13 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: [true, "Password is required."],
+        minlength: [6, "Password must be at least 6 characters."],
         select: false,
     },
-    monthlyGoal: {
+    monthlyGoalCents: {
         type: Number,
-        min: [10, "Monthly goal must be at least 10."],
-        max: [999999.99, "Monthly goal must be maximum of 999,999.99."],
-        validate: {
-            validator: (value) => {
-                return Number.isInteger(value * 100);
-            },
-            message: "Monthly goal can have at most two decimals places."
-        },
+        min: [1000, "Monthly goal must be at least 10."],
+        max: [99999999, "Monthly goal must be maximum of 999,999.99."],
         default: null
     }
 }, { timestamps: true });

@@ -32,6 +32,7 @@ const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filt
             </section>
 
             <section class="transactions__section transactions__charts">
+                
                 <div class="transactions__chart ${state.ui.activeTab === "expenses" || state.ui.activeTab === "all" ? "transactions__chart--active" : "transactions__chart--inactive"}">
                     <canvas id="expenses-chart" class="transactions__canvas" aria-label="Expenses chart"></canvas>
                 </div>
@@ -57,7 +58,6 @@ export const transactionsView = async (ctx) => {
             expenses: [],
             income: []
         },
-
         ui: {
             activeTab: "all",
             expensesGraphInstance: null,
@@ -252,43 +252,113 @@ export const transactionsView = async (ctx) => {
         graph.data.datasets[0].data = result.data;
         graph.data.datasets[0].backgroundColor = result.colors;
 
-        // Disable interactions if empty
         graph.options.plugins.tooltip.enabled = !result.isEmpty;
         graph.options.hover.mode = result.isEmpty ? null : 'nearest';
         graph.options.hover.animationDuration = result.isEmpty ? 0 : 400;
 
-        // Update title
-        graph.options.plugins.title.text = result.isEmpty
-            ? "No transactions this month"
-            : type === "expenses"
-                ? "Expenses distribution by category"
-                : "Income distribution by category";
-
+        graph.config._config.customData = result;
         graph.update();
     }
+
+    const centerTextPlugin = {
+        id: 'centerText',
+        afterDraw(chart) {
+            const { ctx, chartArea: { left, top, width, height } } = chart;
+            const result = chart.config._config.customData;
+
+            if (!result || result.isEmpty) return;
+
+            ctx.save();
+            const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+            const centerX = left + width / 2;
+            const centerY = top + height / 2.1;
+
+            // Total Label
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText('TOTAL', centerX, centerY - 10);
+
+            // Amount
+            ctx.font = 'bold 20px sans-serif';
+            ctx.fillStyle = '#f1f5f9';
+            ctx.fillText(`$${total.toLocaleString()}`, centerX, centerY + 15);
+            ctx.restore();
+        }
+    };
 
     function createGraph(canvas, titleText) {
         return new Chart(
             canvas,
             {
                 type: 'doughnut',
+                plugins: [centerTextPlugin],
                 data: {
                     datasets: [{
                         labels: [],
                         data: [],
-                        borderColor: "#ffffff00",
+                        backgroundColor: [],
+                        borderRadius: 4,
+                        borderColor: "#00000050",
                         hoverOffset: 20,
+                        hoverBorderColor: 'transparent',
                     }]
                 },
                 options: {
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    radius: "75%",
                     plugins: {
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.08)',
+                            borderWidth: 1,
+                            boxHeight: 12,
+                            boxWidth: 12,
+                            boxPadding: 4,
+                            usePointStyle: true,
+                            titleColor: '#94a3b8',
+                            bodyColor: '#f1f5f9',
+                            bodyFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            cornerRadius: 8,
+                            callbacks: {
+                                title: (items) => items[0].label,
+                                label: (item) => {
+                                    const dataset = item.dataset;
+                                    const total = dataset.data.reduce((a, b) => a + b, 0);
+                                    const percent = ((item.parsed / total) * 100).toFixed(1);
+                                    const value = item.parsed.toLocaleString();
+                                    return `$${value} (${percent}%)`;
+                                },
+                                labelTextColor: () => '#f1f1f1',
+                            }
+                        },
                         title: {
                             display: true,
                             text: titleText,
+                            font: {
+                                size: 16
+                            },
+                            color: "#b1b1b1"
                         },
                         legend: {
                             position: "bottom",
                             align: "start",
+                            labels: {
+                                color: '#94a3b8',
+                                boxWidth: 14,
+                                boxHeight: 14,
+                                borderRadius: 7,
+                                useBorderRadius: true,
+                                font: {
+                                    size: 14
+                                },
+                                padding: 12,
+                            },
                             onHover: (e, legendItem, legend) => {
                                 const chart = legend.chart;
                                 const index = legendItem.index;
@@ -300,6 +370,7 @@ export const transactionsView = async (ctx) => {
                                     { datasetIndex: 0, index: index }
                                 ]);
                                 chart.update();
+
                             },
                             onLeave: (e, legendItem, legend) => {
                                 const chart = legend.chart;
@@ -309,11 +380,6 @@ export const transactionsView = async (ctx) => {
                                 chart.update();
                             }
                         },
-                    },
-                    maintainAspectRatio: false,
-                    radius: "75%",
-                    layout: {
-                        padding: 0
                     }
                 }
             });

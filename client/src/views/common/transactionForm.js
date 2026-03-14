@@ -83,8 +83,6 @@ export const transactionForm = ({
                         name="note" maxlength="200" placeholder="Note">${transaction?.note ?? ''}</textarea>
                 </div>
 
-                ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
-
                 <div class="transaction-form__datetime-row"
                     @click=${() => document.getElementById('date').showPicker()}>
                     <div class="transaction-form__calendar-icon">
@@ -101,6 +99,8 @@ export const transactionForm = ({
                         type="datetime-local" id="date" name="date"
                         value=${state.selectedDate ?? ''} @change=${onDateChange}>
                 </div>
+
+                ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
 
                 <div class="transaction-form__actions">
                     <button class="transaction-form__save-btn" type="submit"

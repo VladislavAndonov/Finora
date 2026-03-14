@@ -5,6 +5,12 @@
     --secondary-muted: #3f4258;
     --positive: #00e27b;
     --negative: #e06b6b;
+
+    /* Toast notifactions */
+
+    --success-accent: #22c55e;
+    --error-accent: #ef4444;
+    --info-accent: #3b82f6;
     --error: #840000;
     --text-primary: #f5f5f5;
     --text-secondary: #a0a0a0;

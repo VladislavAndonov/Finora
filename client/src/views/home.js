@@ -3,7 +3,7 @@ import "../../styles/home.css"
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
 
-import { getAllUserAccounts, getTransactions } from '../api/data.js';
+import { getAccountById, getAllUserAccounts, getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 import { formatDate } from "../utils/dateUtils.js";
 import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js";
@@ -61,7 +61,7 @@ export async function homeView(ctx) {
             income: []
         },
         activeAccounts: null,
-        activeAccountId: getActiveAccountId() || null,
+        selectedAccount: null,
         ui: {
             activeTab: "all",
             graphInstance: null,
@@ -70,6 +70,8 @@ export async function homeView(ctx) {
     }
 
     state.activeAccounts = await getAllUserAccounts({ isArchived: false });
+    const activeId = getActiveAccountId();
+    state.selectedAccount = activeId ? await getAccountById(activeId) : state.activeAccounts[0];
 
     function getCurrency(accountCurrency) {
 
@@ -78,13 +80,16 @@ export async function homeView(ctx) {
         return currency?.sign
     }
 
+    function getActiveCurrencySign() {
+        return getCurrency(state.selectedAccount?.currency) ?? state.selectedAccount?.currency ?? '$';
+    }
+
     async function selectAccount(e) {
         const accountId = e.currentTarget.dataset.id;
+        if (accountId === state.selectedAccount?._id) return;
 
-        if (accountId === state.activeAccountId) return
-
-        setActiveAccountId(accountId)
-        state.activeAccountId = accountId
+        setActiveAccountId(accountId);
+        state.selectedAccount = await getAccountById(accountId);
 
         await loadTransactions();
         update();
@@ -155,7 +160,7 @@ export async function homeView(ctx) {
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
     async function loadTransactions() {
-        if (!state.activeAccountId) return;
+        if (!state.selectedAccount) return;
 
         const result = await getTransactions({
             startDate: state.thirtyDaysAgo.toISOString().split("T")[0],
@@ -274,8 +279,7 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        const activeAccount = state.activeAccounts.find(a => a._id === state.activeAccountId);
-        let currentBalance = activeAccount?.balance || 0;
+        let currentBalance = state.selectedAccount?.balance || 0;
 
         let currentDate = new Date(state.today);
         const endDate = state.thirtyDaysAgo;
@@ -314,18 +318,44 @@ export async function homeView(ctx) {
         state.graphInstance.update();
     }
 
+    const crosshairPlugin = {
+        id: 'crosshair',
+        afterDatasetsDraw(chart) {
+            const activeElements = chart.getActiveElements();
+
+            if (activeElements.length > 0) {
+                const { ctx, chartArea: { top, bottom, left, right } } = chart;
+                const { x, y } = activeElements[0].element;
+
+                ctx.save();
+                ctx.beginPath();
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.setLineDash([5, 5]);
+
+                ctx.moveTo(x, top);
+                ctx.lineTo(x, bottom);
+                ctx.moveTo(left, y);
+                ctx.lineTo(right, y);
+
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
     let width, height, gradient;
     function getGradient(ctx, chartArea) {
         const chartWidth = chartArea.right - chartArea.left;
         const chartHeight = chartArea.bottom - chartArea.top;
         if (!gradient || width !== chartWidth || height !== chartHeight) {
-            // Create the gradient because this is either the first render or the size of the chart has changed
             width = chartWidth;
             height = chartHeight;
             gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, "#00000000");
-            gradient.addColorStop(0.5, "#96afff40");
-            gradient.addColorStop(1, "#96afff70");
+            gradient.addColorStop(0, 'rgba(150, 175, 255, 0)');
+            gradient.addColorStop(0.35, 'rgba(150, 175, 255, 0.05)');
+            gradient.addColorStop(0.75, 'rgba(150, 175, 255, 0.15)');
+            gradient.addColorStop(1, 'rgba(150, 175, 255, 0.35)');
         }
 
         return gradient;
@@ -336,6 +366,7 @@ export async function homeView(ctx) {
             canvas,
             {
                 type: 'line',
+                plugins: [crosshairPlugin],
                 data: {
                     labels: [],
                     datasets: [{
@@ -355,17 +386,43 @@ export async function homeView(ctx) {
                         },
                         borderColor: '#96afff',
                         tension: 0.1,
+                        pointRadius: 0,
+                        pointHitRadius: 12,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#96afff',
+                        pointHoverBorderColor: 'rgba(150, 175, 255, 0.4)',
+                        pointHoverBorderWidth: 8,
                     }]
                 },
                 options: {
-                    pointRadius: 0,
-                    pointHitRadius: 10,
-                    pointHoverRadius: 8,
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
-                        legend: {
-                            display: false
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.08)',
+                            borderWidth: 1,
+                            titleColor: '#94a3b8',
+                            bodyColor: '#f1f5f9',
+                            bodyFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: (item) => {
+                                    return `${getActiveCurrencySign()} ${item.parsed.y.toLocaleString()}`;
+                                }
+                            }
                         }
-                    }, scales: {
+                    },
+                    scales: {
                         x: {
                             ticks: {
                                 callback: function (val, index) {
@@ -374,12 +431,19 @@ export async function homeView(ctx) {
                                 }
                             },
                             grid: {
-                                color: "#ffffff10",
-                            }
+                                color: '#ffffff10'
+                            },
                         },
                         y: {
+                            position: "right",
+                            border: { display: false },
+                            ticks: {
+                                callback: (val) => {
+                                    return `${getActiveCurrencySign()} ${val.toLocaleString()}`;
+                                },
+                            },
                             grid: {
-                                color: "#ffffff10",
+                                color: '#ffffff10'
                             },
                         }
                     }
@@ -395,7 +459,7 @@ export async function homeView(ctx) {
             noTransactionsMessage: "No transactions for the last 30 days.",
 
             accounts: state.activeAccounts,
-            activeAccountId: state.activeAccountId,
+            activeAccountId: state.selectedAccount?._id,
             selectAccount,
 
             isAccountModalOpen: state.ui.isAccountModalOpen,
@@ -415,11 +479,14 @@ export async function homeView(ctx) {
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
 
-        // Mouse scroll behavior
-        accountScroller.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            accountScroller.scrollLeft += e.deltaY * 0.3;
-        }, { passive: false });
+        if (accountScroller && !accountScroller.dataset.listenerActive) {
+            accountScroller.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                accountScroller.scrollLeft += e.deltaY * 0.3;
+            }, { passive: false });
+
+            accountScroller.dataset.listenerActive = "true";
+        }
 
     }
 

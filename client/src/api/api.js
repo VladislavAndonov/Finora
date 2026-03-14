@@ -1,6 +1,7 @@
 import page from "page";
 
 import { clearAuth, setAuth } from '../state/authState.js';
+import { showToast } from "../utils/toast.js";
 
 export const settings = {
     host: ""
@@ -8,25 +9,25 @@ export const settings = {
 
 async function request(url, options) {
     const response = await fetch(settings.host + url, options);
-    if (response.status === 401) {
-        clearAuth();
-        page.redirect("/auth/login");
-        throw new Error("Unauthorized");
-    }
-
-    if (response.status === 404) {
-        throw new Error("Not Found")
-    }
-
-    if (!response.ok) {
-        throw new Error("Request failed");
-    }
 
     if (response.status === 204) {
         return null
     }
 
-    return response.json();
+    const data = await response.json().catch(() => null);
+
+    if (response.status === 401) {
+        clearAuth();
+        showToast("Your session has expired. Please sign in again.", "error", 4000);
+        page.redirect("/auth/login");
+        throw new Error(data?.error || "Unauthorized");
+    }
+
+    if (!response.ok) {
+        throw new Error(data?.error || "Something went wrong");
+    }
+
+    return data;
 }
 
 function getOptions(method = "get", body) {

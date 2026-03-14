@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-import { User } from "./User.js";
-
 const { Schema } = mongoose;
 
 const categoriesList = [
@@ -51,11 +49,12 @@ const transactionSchema = new Schema({
         type: String,
         required: [true, "Title is required."],
         trim: true,
+        minlength: [1, "Title must not be empty."],
         maxlength: [30, "Title must be 30 characters or fewer."],
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: User,
+        ref: "User",
         required: true,
     },
     accountId: {
@@ -71,17 +70,11 @@ const transactionSchema = new Schema({
         },
         required: [true, "Type is required."],
     },
-    amount: {
+    amountCents: {
         type: Number,
         required: [true, "Amount is required."],
-        min: [0.01, "Amount must be at least 0.01."],
-        max: [999999.99, "Amount must be a maximum of 999,999.99."],
-        validate: {
-            validator: (value) => {
-                return Number.isInteger(value * 100);
-            },
-            message: "Amount can have at most two decimals places."
-        }
+        min: [1, "Amount must be at least 0.01."],
+        max: [99999999, "Amount must be a maximum of 999,999.99."],
     },
     date: {
         type: Date,

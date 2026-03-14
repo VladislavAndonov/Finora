@@ -80,13 +80,13 @@
     right: 0;
     bottom: 0.6em;
 
-    width: 3px;
+    width: 4px;
 
     content: '';
 
-    border-radius: 2rem;
+    border-radius: 2rem 0 0 2rem;
     background: var(--primary);
-    box-shadow: 0 0 8px 2px var(--primary);
+    box-shadow: 0 0 6px 2px var(--primary);
 }
 
 .app-layout__nav-link:focus-visible {

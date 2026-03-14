@@ -2,27 +2,35 @@ import { deleteTransaction, editTransaction, getTransactionById } from '../api/d
 import { utcToLocal } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { transactionForm } from "./common/transactionForm.js";
+import { showToast } from '../utils/toast.js';
 
 export const editTransactionView = async (ctx) => {
     const tId = ctx.params.id;
     let transaction = null;
 
-    try {
-        const result = await getTransactionById(tId);
-        transaction = { ...result, date: utcToLocal(result.date) };
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    let state = {
+    const state = {
         errMessage: null,
         isSubmitting: false,
         submitLabel: "Submitting...",
-        selectedType: transaction.type,
-        selectedCategory: transaction.category,
-        selectedDate: transaction.date,
+        selectedType: "expenses",
+        selectedCategory: null,
+        selectedDate: null,
         showCategoryModal: false,
+        unfilledInputs: []
     };
+
+    try {
+        const result = await getTransactionById(tId);
+        transaction = { ...result, date: utcToLocal(result.date) };
+
+        state.selectedType = transaction.type;
+        state.selectedCategory = transaction.category
+        state.selectedDate = transaction.date
+    } catch (err) {
+        showToast("Transaction not found.", "error");
+        ctx.page.redirect("/");
+        return
+    }
 
     const renderForm = () => ctx.render(transactionForm({
         onSubmit,
@@ -74,17 +82,38 @@ export const editTransactionView = async (ctx) => {
 
         const formData = new FormData(event.currentTarget);
         const title = formData.get("title")?.trim();
-        const amountStr = formData.get("amount") ?? "";
         const amount = Number(formData.get("amount"));
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
-        if (!title || !type || !amount || !date) {
-            state.errMessage = "Please fill the required fields.";
+
+        if (!title) {
+            state.unfilledInputs.push("title");
+        }
+        if (!type) {
+            state.unfilledInputs.push("type");
+        }
+        if (!amount) {
+            state.unfilledInputs.push("amount");
+        }
+        if (!date) {
+            state.unfilledInputs.push("date");
+        }
+        if (!category) {
+            state.unfilledInputs.push("category");
+        }
+        if (state.unfilledInputs.length > 0) {
+            state.errMessage = `Please fill ${state.unfilledInputs.join(", ")}`;
             return renderForm();
         }
+
+
         if (title.length > 30) {
             state.errMessage = "Title must be 30 characters or fewer.";
+            return renderForm();
+        }
+        if (isNaN(amount)) {
+            state.errMessage = "Please enter a valid amount.";
             return renderForm();
         }
         if (amount < 0.01) {
@@ -92,11 +121,7 @@ export const editTransactionView = async (ctx) => {
             return renderForm();
         }
         if (amount > 999999.99) {
-            state.errMessage = "Amount must be a maximum of 999,999.99.";
-            return renderForm();
-        }
-        if (!/^\d+(\.\d{1,2})?$/.test(amountStr)) {
-            state.errMessage = "Amount can have at most two decimal places.";
+            state.errMessage = "Amount must be at most 999,999.99.";
             return renderForm();
         }
         if (note.length > 200) {
@@ -110,9 +135,10 @@ export const editTransactionView = async (ctx) => {
 
         try {
             await editTransaction(tId, { title, type, amount, date, category, note });
+            showToast("Transaction successfully updated.")
             ctx.page.redirect("/");
         } catch (err) {
-            state.errMessage = err.message
+            showToast("Failed to update transaction.", "error");
             state.isSubmitting = false
             renderForm()
         }
@@ -124,9 +150,10 @@ export const editTransactionView = async (ctx) => {
         renderForm();
         try {
             await deleteTransaction(tId)
+            showToast("Transaction successfully deleted.")
             ctx.page.redirect("/")
         } catch (err) {
-            state.errMessage = err.message
+            showToast("Failed to delete transaction.", "error");
             state.isSubmitting = false
             renderForm()
         }

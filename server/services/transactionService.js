@@ -2,15 +2,32 @@ import mongoose from "mongoose";
 import { Transaction } from "../models/Transaction.js";
 import { Account } from "../models/Account.js";
 
-// Helper function to avoid floating point imprecision
-const toFixedAmount = (amount) => Math.round(amount * 100) / 100;
-
 const transactionService = {
     async getTransactions(filter, limit) {
-        return await Transaction.find(filter).sort({ "date": "desc" }).limit(limit);
+        const transactions = await Transaction.find(filter).sort({ "date": "desc" }).limit(limit);
+
+        const formattedTransactions = transactions.map((transaction) => {
+            const transactionObject = transaction.toObject();
+            transactionObject.amount = transactionObject.amountCents / 100;
+            delete transactionObject.amountCents;
+            return transactionObject;
+        });
+
+        return formattedTransactions
     },
     async getOne(transactionId) {
-        return await Transaction.findById(transactionId);
+        const transaction = await Transaction.findById(transactionId);
+
+        if (!transaction) {
+            return null
+        }
+
+        const transactionObject = transaction.toObject();
+        transactionObject.amount = transactionObject.amountCents / 100;
+        delete transactionObject.amountCents;
+
+        return transactionObject;
+
     },
     async create(transactionData) {
         const session = await mongoose.startSession()
@@ -19,15 +36,20 @@ const transactionService = {
         try {
             const [transaction] = await Transaction.create([transactionData], { session });
 
-            const balanceChange = toFixedAmount(transactionData.type === "income" ? transaction.amount : -transaction.amount);
+            const balanceChange = transactionData.type === "income" ? transaction.amountCents : -transaction.amountCents;
 
-            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: balanceChange } }, { session })
+            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balanceCents: balanceChange } }, { session })
 
             await session.commitTransaction();
-            return transaction;
-        } catch (error) {
+
+            const transactionObject = transaction.toObject();
+            transactionObject.amount = transactionObject.amountCents / 100;
+            delete transactionObject.amountCents;
+            return transactionObject;
+
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }
@@ -39,23 +61,24 @@ const transactionService = {
         try {
             const oldTransaction = await Transaction.findById(transactionId, null, { session })
 
-            if (!oldTransaction) {
-                throw new Error("Transaction not found")
-            }
+            const oldBalanceChange = oldTransaction.type === "income" ? -oldTransaction.amountCents : oldTransaction.amountCents;
+            await Account.findByIdAndUpdate(oldTransaction.accountId, { $inc: { balanceCents: oldBalanceChange } }, { session })
 
-            const oldBalanceChange = toFixedAmount(oldTransaction.type === "income" ? -oldTransaction.amount : oldTransaction.amount);
-            await Account.findByIdAndUpdate(oldTransaction.accountId, { $inc: { balance: oldBalanceChange } }, { session })
-
-            const newBalanceChange = toFixedAmount(transactionData.type === "income" ? transactionData.amount : -transactionData.amount);
-            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balance: newBalanceChange } }, { session })
+            const newBalanceChange = transactionData.type === "income" ? transactionData.amountCents : -transactionData.amountCents;
+            await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balanceCents: newBalanceChange } }, { session })
 
             const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, { ...transactionData }, { new: true, session })
 
             await session.commitTransaction();
-            return updatedTransaction
-        } catch (error) {
+
+            const transactionObject = updatedTransaction.toObject();
+            transactionObject.amount = transactionObject.amountCents / 100;
+            delete transactionObject.amountCents;
+            return transactionObject;
+
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }
@@ -65,21 +88,18 @@ const transactionService = {
         session.startTransaction()
 
         try {
-            const transaction = await Transaction.findById(transactionId).session(session)
-            if (!transaction) {
-                throw new Error("Transaction not found")
-            }
+            const transaction = await Transaction.findById(transactionId, null, { session })
 
-            const balanceChange = toFixedAmount(transaction.type === "income" ? -transaction.amount : transaction.amount);
+            const balanceChange = transaction.type === "income" ? -transaction.amountCents : transaction.amountCents;
 
-            await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balance: balanceChange } }).session(session)
+            await Account.findByIdAndUpdate(transaction.accountId, { $inc: { balanceCents: balanceChange } }, { session })
 
-            await Transaction.findByIdAndDelete(transactionId).session(session)
+            await Transaction.findByIdAndDelete(transactionId, { session })
 
             await session.commitTransaction()
-        } catch (error) {
+        } catch (err) {
             await session.abortTransaction()
-            throw error
+            throw err
         } finally {
             session.endSession()
         }
