@@ -3,7 +3,7 @@ import "../../styles/home.css"
 import { html } from "lit-html";
 import { Chart } from "chart.js/auto";
 
-import { getAllUserAccounts, getTransactions } from '../api/data.js';
+import { getAccountById, getAllUserAccounts, getTransactions } from '../api/data.js';
 import { transactionList } from './common/transactionList.js';
 import { formatDate } from "../utils/dateUtils.js";
 import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js";
@@ -61,7 +61,7 @@ export async function homeView(ctx) {
             income: []
         },
         activeAccounts: null,
-        activeAccountId: getActiveAccountId() || null,
+        selectedAccount: null,
         ui: {
             activeTab: "all",
             graphInstance: null,
@@ -70,6 +70,8 @@ export async function homeView(ctx) {
     }
 
     state.activeAccounts = await getAllUserAccounts({ isArchived: false });
+    const activeId = getActiveAccountId();
+    state.selectedAccount = activeId ? await getAccountById(activeId) : state.activeAccounts[0];
 
     function getCurrency(accountCurrency) {
 
@@ -78,13 +80,16 @@ export async function homeView(ctx) {
         return currency?.sign
     }
 
+    function getActiveCurrencySign() {
+        return getCurrency(state.selectedAccount?.currency) ?? state.selectedAccount?.currency ?? '$';
+    }
+
     async function selectAccount(e) {
         const accountId = e.currentTarget.dataset.id;
+        if (accountId === state.selectedAccount?._id) return;
 
-        if (accountId === state.activeAccountId) return
-
-        setActiveAccountId(accountId)
-        state.activeAccountId = accountId
+        setActiveAccountId(accountId);
+        state.selectedAccount = await getAccountById(accountId);
 
         await loadTransactions();
         update();
@@ -155,7 +160,7 @@ export async function homeView(ctx) {
     state.thirtyDaysAgo.setDate(state.today.getDate() - 30);
 
     async function loadTransactions() {
-        if (!state.activeAccountId) return;
+        if (!state.selectedAccount) return;
 
         const result = await getTransactions({
             startDate: state.thirtyDaysAgo.toISOString().split("T")[0],
@@ -274,8 +279,7 @@ export async function homeView(ctx) {
 
         // Iterate backward through dates and build balance movement
         const balances = [];
-        const activeAccount = state.activeAccounts.find(a => a._id === state.activeAccountId);
-        let currentBalance = activeAccount?.balance || 0;
+        let currentBalance = state.selectedAccount?.balance || 0;
 
         let currentDate = new Date(state.today);
         const endDate = state.thirtyDaysAgo;
@@ -395,7 +399,7 @@ export async function homeView(ctx) {
             noTransactionsMessage: "No transactions for the last 30 days.",
 
             accounts: state.activeAccounts,
-            activeAccountId: state.activeAccountId,
+            activeAccountId: state.selectedAccount?._id,
             selectAccount,
 
             isAccountModalOpen: state.ui.isAccountModalOpen,
@@ -415,11 +419,14 @@ export async function homeView(ctx) {
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
 
-        // Mouse scroll behavior
-        accountScroller.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            accountScroller.scrollLeft += e.deltaY * 0.3;
-        }, { passive: false });
+        if (accountScroller && !accountScroller.dataset.listenerActive) {
+            accountScroller.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                accountScroller.scrollLeft += e.deltaY * 0.3;
+            }, { passive: false });
+
+            accountScroller.dataset.listenerActive = "true";
+        }
 
     }
 
