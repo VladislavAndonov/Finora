@@ -2,19 +2,36 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+
+    min-height: 0;
+}
+
+.calendar__header {
+    padding: calc(var( --space-5) - var( --lk-lineh-trim) ) var( --space-5);
+
+    border-bottom: 1px solid var(--border-muted);
 }
 
 .calendar__title {
-    font-size: clamp(1.2rem, 5vw, 2rem);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    line-height: var(--leading-tight);
 
-    margin-bottom: 1rem;
+    color: var(--text-primary);
 }
 
 .calendar__content {
     display: flex;
     flex: 1;
 
-    gap: 2rem;
+    min-height: 0;
+    padding: var(--space-4);
+
+    gap: var(--space-4);
+}
+
+.calendar__section {
+    padding: var(--space-4);
 }
 
 .calendar__body {
@@ -23,16 +40,19 @@
     flex-direction: column;
 
     min-width: 0;
+    min-height: 0;
 }
 
 .calendar__month-scroll {
     display: flex;
     overflow-x: auto;
+    flex-shrink: 0;
 
-    border-bottom: 2px solid var(--border-primary);
+    border-bottom: 1px solid var(--border-muted);
 
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-1);
 }
 
 .calendar__month-scroll::-webkit-scrollbar {
@@ -40,87 +60,171 @@
 }
 
 .calendar__month-item {
+    font-size: var(--text-sm);
+    font-weight: 500;
+
+    position: relative;
+
     display: flex;
+    align-items: center;
     flex-direction: column;
     flex-shrink: 0;
     justify-content: center;
 
-    padding: 0 1.5rem;
+    min-width: var(--space-8);
+    padding: var(--space-2) var( --space-4);
 
     cursor: pointer;
-    transition: color 0.5s ease, border-color 0.5s ease;
+    transition: all 0.2s ease;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 
     color: var(--text-muted);
     border: none;
-    border-bottom: 4px solid transparent;
+    border-radius: var(--radius-md) var( --radius-md) 0 0;
     background: transparent;
+}
+
+.calendar__month-item:hover {
+    color: var(--text-secondary);
+    background: var(--hover-overlay);
+}
+
+.calendar__month-item::after {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+
+    width: 0;
+    height: 3px;
+
+    content: '';
+    transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) , left 0.3s cubic-bezier( 0.34, 1.56, 0.64, 1);
+    transform: translateX(-50%);
+
+    border-radius: var(--radius-pill);
+    background: var(--primary);
 }
 
 .calendar__month-item--active {
     font-weight: 700;
 
     color: var(--text-primary);
-    border-bottom: 4px solid var(--text-primary);
+}
+
+.calendar__month-item--active::after {
+    left: 50%;
+
+    width: 100%;
 }
 
 .calendar__year-label {
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
+    font-weight: 400;
+
+    margin-top: var(--space-1);
+
+    color: var(--text-muted);
+}
+
+.calendar__grid {
+    display: flex;
+    flex-direction: column;
+
+    padding-top: var(--space-4);
+
+    gap: var(--space-3);
 }
 
 .calendar__weekdays {
+    font-size: var(--text-xs);
     font-weight: 500;
 
     display: grid;
 
-    margin: 0.4rem 0;
-
     text-align: center;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 
     color: var(--text-muted);
 
     grid-template-columns: repeat(7, 1fr);
 }
 
+.calendar__weekday {
+    padding: var(--space-1) 0;
+}
+
 .calendar__dates {
     display: grid;
 
-    color: var(--text-primary);
-
     grid-template-columns: repeat(7, 1fr);
-    grid-row-start: 1;
-    gap: 0.4rem;
+    gap: var(--space-2);
 }
 
 .calendar__date {
-    font-weight: 500;
+    font-size: var(--text-sm);
+
+    position: relative;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
 
     aspect-ratio: 1 / 1;
 }
 
-.calendar__date--today {
-    background-color: var(--secondary-muted);
+.calendar__date:hover {
+    transform: scale(1.05);
+
+    color: var(--text-primary);
+    background: var(--hover-overlay);
 }
 
-.calendar__date:hover {
-    cursor: pointer;
+.calendar__date--today {
+    font-weight: 600;
 
-    background-color: var(--bg-primary);
+    color: var(--primary-hover);
+    background: var(--primary-subtle);
 }
 
 .calendar__date--selected {
-    color: var(--text-inverted);
-    background-color: var(--secondary) !important;
+    font-weight: 600;
+
+    color: var(--bg-dark) !important;
+    background: var(--primary);
+    box-shadow: 0 4px 16px rgba(var( --blue-400-raw) , 0.35) , 0 1px 4px rgba( var( --blue-400-raw) , 0.2);
 }
 
-.calendar__date--has-transactions {
-    outline: 2px solid #84000050;
-    outline-offset: 1px;
+.calendar__date--selected:hover {
+    transform: scale(1.05);
+
+    background: var(--primary-hover);
+}
+
+.calendar__date--has-transactions::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    content: '';
+    transform: translate(-50%, var( --space-3) );
+
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+}
+
+.calendar__date--selected.calendar__date--has-transactions::after {
+    background-color: rgba(var( --gray-950-raw) , 0.5);
 }
 
 .calendar__transactions {
@@ -128,17 +232,48 @@
     flex: 1;
     flex-direction: column;
 
-    transition: all 0.3s ease;
-
-    color: var(--text-primary);
+    transition: all 0.2s ease;
+    min-height: 0
 }
 
 .calendar__transactions--hidden {
+    transform: translateY(var( --space-2) );
     pointer-events: none;
 
     opacity: 0;
 }
 
 .calendar__transactions--active {
+    transform: translateY(0);
+
     opacity: 1;
+}
+
+@media(max-width: 1024px) {
+    .calendar__content {
+        overflow-y: auto;
+        flex-direction: column;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .calendar__content::-webkit-scrollbar {
+        display: none;
+    }
+
+    .calendar__body {
+        flex: 0 0 auto;
+
+        width: 100%;
+    }
+
+    .calendar__transactions {
+        flex: 1 0 auto;
+
+        padding-bottom: var(--space-6);
+    }
+
+    .calendar__dates {
+        gap: var(--space-1);
+    }
 }
