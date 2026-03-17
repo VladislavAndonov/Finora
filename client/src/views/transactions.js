@@ -9,7 +9,7 @@ import { formatDate } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { getActiveAccountId } from "../state/sessionState.js";
 
-const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filters, state, noTransactionsMessage }) =>
+const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, noTransactionsMessage, selectMonth, handleWheel }) =>
     html`
     <div class="transactions">
         <header class="transactions__header">
@@ -19,7 +19,7 @@ const transactionsTemplate = ({ transactionsByDate, monthList, selectMonth, filt
         <div class="transactions__content">
 
             <section class="transactions__section transactions__body">
-                <div class="transactions__month-scroll" id="month-scroll">
+                <div class="transactions__month-scroll" id="month-scroll" @wheel=${handleWheel}>
                     ${monthList.map((m) => html`
                         <button 
                             class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
@@ -189,7 +189,7 @@ export const transactionsView = async (ctx) => {
                 isEmpty: true,
                 labels: ["No data"],
                 data: [1],
-                colors: ["#252525"]
+                colors: ["rgb(18, 18, 18)"]
             };
         }
 
@@ -274,14 +274,14 @@ export const transactionsView = async (ctx) => {
             const centerY = top + height / 2.1;
 
             // Total Label
-            ctx.font = '12px sans-serif';
+            ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#94a3b8';
+            ctx.fillStyle = 'rgb(163, 163, 163)';
             ctx.fillText('TOTAL', centerX, centerY - 10);
 
             // Amount
             ctx.font = 'bold 20px sans-serif';
-            ctx.fillStyle = '#f1f5f9';
+            ctx.fillStyle = 'rgb(250, 250, 250)';
             ctx.fillText(`$${total.toLocaleString()}`, centerX, centerY + 15);
             ctx.restore();
         }
@@ -299,7 +299,7 @@ export const transactionsView = async (ctx) => {
                         data: [],
                         backgroundColor: [],
                         borderRadius: 4,
-                        borderColor: "#00000050",
+                        borderColor: "rgba(0, 0, 0, 0.5)",
                         hoverOffset: 20,
                         hoverBorderColor: 'transparent',
                     }]
@@ -310,18 +310,21 @@ export const transactionsView = async (ctx) => {
                     radius: "75%",
                     plugins: {
                         tooltip: {
-                            backgroundColor: '#1e293b',
+                            backgroundColor: 'rgb(18, 18, 18)',
                             padding: 12,
-                            borderColor: 'rgba(255,255,255,0.08)',
+                            borderColor: 'rgba(255,255,255,0.15)',
                             borderWidth: 1,
                             boxHeight: 12,
                             boxWidth: 12,
                             boxPadding: 4,
                             usePointStyle: true,
-                            titleColor: '#94a3b8',
-                            bodyColor: '#f1f5f9',
+                            titleColor: 'rgb(163, 163, 163)',
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyColor: 'rgb(250, 250, 250)',
                             bodyFont: {
-                                size: 14,
+                                size: 16,
                                 weight: 'bold'
                             },
                             cornerRadius: 8,
@@ -334,7 +337,7 @@ export const transactionsView = async (ctx) => {
                                     const value = item.parsed.toLocaleString();
                                     return `$${value} (${percent}%)`;
                                 },
-                                labelTextColor: () => '#f1f1f1',
+                                labelTextColor: () => 'rgb(250, 250, 250)',
                             }
                         },
                         title: {
@@ -343,19 +346,20 @@ export const transactionsView = async (ctx) => {
                             font: {
                                 size: 16
                             },
-                            color: "#b1b1b1"
+                            color: "rgb(213, 213, 213)"
                         },
                         legend: {
                             position: "bottom",
                             align: "start",
                             labels: {
-                                color: '#94a3b8',
-                                boxWidth: 14,
-                                boxHeight: 14,
+                                color: 'rgb(163, 163, 163)',
+                                boxWidth: 12,
+                                boxHeight: 12,
                                 borderRadius: 7,
                                 useBorderRadius: true,
                                 font: {
-                                    size: 14
+                                    size: 12,
+                                    weight: "bold"
                                 },
                                 padding: 12,
                             },
@@ -385,14 +389,22 @@ export const transactionsView = async (ctx) => {
             });
     }
 
+    const handleWheel = (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            e.currentTarget.scrollLeft += e.deltaY;
+        }
+    };
+
     const update = () => {
         ctx.render(transactionsTemplate({
             transactionsByDate: getDisplayedTransactions(),
             monthList: buildMonthList(),
-            selectMonth,
             filters,
             state,
-            noTransactionsMessage: "No transactions this month."
+            noTransactionsMessage: "No transactions this month.",
+            selectMonth,
+            handleWheel
         }));
 
         renderExpensesGraph()
@@ -405,12 +417,6 @@ export const transactionsView = async (ctx) => {
             const active = monthScroll?.querySelector('.transactions__month-item--active');
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
-
-        // Mouse scroll behavior
-        monthScroll.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            monthScroll.scrollLeft += e.deltaY * 0.3;
-        }, { passive: false });
     }
 
     update();

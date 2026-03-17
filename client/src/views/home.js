@@ -10,7 +10,7 @@ import { getActiveAccountId, setActiveAccountId } from "../state/sessionState.js
 import { navigate } from "../utils/navigation.js";
 import { currencies } from "../utils/currencies.js";
 
-const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, onAddAccountClick, noTransactionsMessage, addAccountModal, activeAccountId, getCurrency, isAccountModalOpen }) =>
+const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, onAddAccountClick, noTransactionsMessage, addAccountModal, activeAccountId, getCurrency, isAccountModalOpen, handleWheel }) =>
     html`
     <div class="home">
         <header class="home__header">
@@ -19,11 +19,12 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
 
         <div class="home__content">
 
-            <section class="home__section home__accounts">
-                <div class="home__accounts-scroller" id="accountScroller">
+            <section class="home__section home__accounts" aria-label="Accounts">
+                <div class="home__accounts-scroller" id="accountScroller" @wheel=${handleWheel}>
                     ${accounts.length > 0 ? accounts.map((a) => html`
                         <button type="button"
                             class="home__btn home__account ${a._id === activeAccountId ? "home__account--active" : ""}"
+                            aria-pressed="${a._id === activeAccountId}"
                             data-id=${a._id}
                             @click=${selectAccount}>
                             <span class="home__account-name">${a.name}</span>
@@ -31,7 +32,7 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
                         </button>
                     `) : null}
                     <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
-                        <i class="fa-solid fa-file-circle-plus"></i>
+                        <i class="ph ph-file-plus home__icon" aria-hidden="true"></i>
                         Account
                     </button>
                 </div>
@@ -39,14 +40,14 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
 
             ${isAccountModalOpen ? addAccountModal() : ""}
 
-            <section class="home__section home__chart"> 
+            <section class="home__section home__chart">
                 <canvas id="balance-chart" class="home__canvas" aria-label="Balance chart"></canvas>
             </section>
 
             <section class="home__section home__transactions">
                 ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
             </section>
-            
+
         </div>
     </div>`;
 
@@ -130,12 +131,10 @@ export async function homeView(ctx) {
                                 <li class="modal__account-item">
                                     <a href="/accounts/edit/${a._id}" class="modal__account-link" @click=${navigate}>
                                         <div class="modal__account-info">
-                                            <div class="modal__account-status">
-                                                <span class="modal__account-name">${a.name}</span>
-                                                ${a.isArchived ? html`<span class="modal__account-status--archived">Archived</span>` : html`<span class="modal__account-status--active">Active</span>`}
-                                            </div>
-                                           <span class="modal__account-currency">${a.currency}</span>
+                                            <span class="modal__account-name">${a.name}</span>
+                                            <span class="modal__account-currency">${a.currency}</span>
                                         </div>
+                                        ${a.isArchived ? html`<span class="modal__account-status--archived">Archived</span>` : html`<span class="modal__account-status--active">Active</span>`}
                                     </a>
                                 </li>
                             `)}
@@ -352,10 +351,11 @@ export async function homeView(ctx) {
             width = chartWidth;
             height = chartHeight;
             gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, 'rgba(150, 175, 255, 0)');
-            gradient.addColorStop(0.35, 'rgba(150, 175, 255, 0.05)');
-            gradient.addColorStop(0.75, 'rgba(150, 175, 255, 0.15)');
-            gradient.addColorStop(1, 'rgba(150, 175, 255, 0.35)');
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            gradient.addColorStop(0.25, 'rgba(93, 180, 253, 0.06)');
+            gradient.addColorStop(0.5, 'rgba(93, 180, 253, 0.14)');
+            gradient.addColorStop(0.75, 'rgba(93, 180, 253, 0.28)');
+            gradient.addColorStop(1, 'rgba(93, 180, 253, 0.5)');
         }
 
         return gradient;
@@ -384,13 +384,13 @@ export async function homeView(ctx) {
 
                             return getGradient(ctx, chartArea);
                         },
-                        borderColor: '#96afff',
+                        borderColor: 'rgb(93, 180, 253)',
                         tension: 0.1,
                         pointRadius: 0,
                         pointHitRadius: 12,
                         pointHoverRadius: 5,
-                        pointHoverBackgroundColor: '#96afff',
-                        pointHoverBorderColor: 'rgba(150, 175, 255, 0.4)',
+                        pointHoverBackgroundColor: 'rgb(56, 148, 249)',
+                        pointHoverBorderColor: 'rgba(93, 180, 253, 0.4)',
                         pointHoverBorderWidth: 8,
                     }]
                 },
@@ -403,14 +403,17 @@ export async function homeView(ctx) {
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#1e293b',
-                            padding: 12,
-                            borderColor: 'rgba(255,255,255,0.08)',
+                            backgroundColor: 'rgb(18, 18, 18)',
+                            padding: 14,
+                            borderColor: 'rgba(255,255,255,0.15)',
                             borderWidth: 1,
-                            titleColor: '#94a3b8',
-                            bodyColor: '#f1f5f9',
+                            titleColor: 'rgb(163, 163, 163)',
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyColor: 'rgb(250, 250, 250)',
                             bodyFont: {
-                                size: 14,
+                                size: 16,
                                 weight: 'bold'
                             },
                             cornerRadius: 8,
@@ -431,7 +434,7 @@ export async function homeView(ctx) {
                                 }
                             },
                             grid: {
-                                color: '#ffffff10'
+                                color: 'rgba(255, 255, 255, 0.07)'
                             },
                         },
                         y: {
@@ -443,7 +446,7 @@ export async function homeView(ctx) {
                                 },
                             },
                             grid: {
-                                color: '#ffffff10'
+                                color: 'rgba(255, 255, 255, 0.07)'
                             },
                         }
                     }
@@ -451,6 +454,10 @@ export async function homeView(ctx) {
             });
 
     }
+
+    const handleWheel = (e) => {
+        e.currentTarget.scrollLeft += e.deltaY * 0.3;
+    };
 
     const update = () => {
         ctx.render(homeTemplate({
@@ -466,7 +473,8 @@ export async function homeView(ctx) {
             onAddAccountClick,
             addAccountModal,
 
-            getCurrency
+            getCurrency,
+            handleWheel
         }));
 
         renderGraph()
@@ -478,16 +486,6 @@ export async function homeView(ctx) {
             const active = accountScroller?.querySelector('.home__account--active');
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
-
-        if (accountScroller && !accountScroller.dataset.listenerActive) {
-            accountScroller.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                accountScroller.scrollLeft += e.deltaY * 0.3;
-            }, { passive: false });
-
-            accountScroller.dataset.listenerActive = "true";
-        }
-
     }
 
     update()
