@@ -13,6 +13,7 @@ const uiState = {
 }
 
 export function withAppShell(ctx, next) {
+    const email = sessionStorage.getItem("email")
     const username = sessionStorage.getItem("username");
     const currentPath = ctx.path;
 
@@ -22,6 +23,7 @@ export function withAppShell(ctx, next) {
         uiState.renderApp = () => {
             render(appLayout({
                 content: uiState.activeView,
+                email,
                 username,
                 currentPath,
                 logoutModalOpen: uiState.logoutModalOpen,

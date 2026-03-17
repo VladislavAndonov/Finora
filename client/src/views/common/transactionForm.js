@@ -18,22 +18,22 @@ export const transactionForm = ({
     submitLabel
 }) => {
     const selectedCategory = categoriesMasterList.find(c => c.name === state.selectedCategory && c.type === state.selectedType);
-    const cardColor = selectedCategory?.color ?? "#aaa";
+    const cardColor = selectedCategory?.color ?? "rgb(170, 170, 170)";
 
     return html`
         <div class="transaction-form">
 
             <nav class="transaction-form__nav">
                 <button class="transaction-form__nav-btn" type="button" @click=${() => history.back()}>
-                    <i class="fa-solid fa-arrow-left"></i>
+                    <i class="ph-bold ph-arrow-left"></i>
                 </button>
                 <h1 class="transaction-form__title">${title}</h1>
                 ${onDelete ? html`
                     <button class="transaction-form__nav-btn transaction-form__nav-btn--danger" type="button"
                         @click=${onDelete} ?disabled=${state.isSubmitting}>
-                        <i class="fa-solid fa-trash"></i>
+                        <i class="ph-fill ph-trash"></i>
                     </button>
-                ` : html`<div style="width: 3rem"></div>`}
+                ` : html`<div class="transaction-form__nav-spacer"></div>`}
             </nav>
 
             <form class="transaction-form__body" @submit=${onSubmit}>
@@ -42,12 +42,12 @@ export const transactionForm = ({
                     <div class="transaction-form__type-toggle">
                         <label class="transaction-form__type-option ${state.selectedType === 'expenses' ? 'active' : ''}">
                             <input type="radio" name="type" value="expenses" .checked=${state.selectedType === 'expenses'} @change=${onTypeChange}>
-                            <i style="font-size: 0.8rem" class="fa-solid fa-caret-down"></i>
+                            <i class="transaction-form__card-icon ph-fill ph-caret-down"></i>
                             Expense
                         </label>
                         <label class="transaction-form__type-option ${state.selectedType === 'income' ? 'active' : ''}">
                             <input type="radio" name="type" value="income" .checked=${state.selectedType === 'income'} @change=${onTypeChange}>
-                            <i style="font-size: 0.8rem" class="fa-solid fa-caret-up"></i>
+                            <i class="transaction-form__card-icon ph-fill ph-caret-up"></i>
                             Income
                         </label>
                     </div>
@@ -56,7 +56,7 @@ export const transactionForm = ({
                             <div class="transaction-form__currency-row">
                                 <span class="prefix">$</span>
                                 <input class="transaction-form__amount-input" type="number" name="amount"
-                                    inputmode="numeric" step="0.01" placeholder="0.00" autocomplete="off"
+                                    inputmode="numeric" step="any" placeholder="0.00" autocomplete="off"
                                     value=${transaction?.amount != null ? (transaction.amount % 1 === 0 ? transaction.amount : Number(transaction.amount).toFixed(2)) : ""}>
                             </div>
                             <span class="transaction-form__card-category-text">
@@ -64,7 +64,7 @@ export const transactionForm = ({
                             </span>
                         </div>
                         <button class="transaction-form__card-category-btn" type="button" @click=${onOpenModal}>
-                            <i class=${selectedCategory?.icon ?? 'fa-solid fa-tag'}></i>
+                            <i class=${selectedCategory?.icon ?? 'ph-duotone ph-tag'}></i>
                         </button>
                     </div>
                 </div>
@@ -72,21 +72,21 @@ export const transactionForm = ({
                 <input type="hidden" name="category" value=${state.selectedCategory ?? ''}>
 
                 <div class="input-wrapper">
-                    <i class="fa-solid fa-t"></i>
-                    <input class="transaction-form__flat-input" maxlength="30" type="text" name="title"
+                    <i class="transaction-form__input-icon ph-bold ph-text-t"></i>
+                    <input class="transaction-form__input" maxlength="30" type="text" name="title"
                         placeholder="Title" value=${transaction?.title ?? ''}>
                 </div>
 
                 <div class="input-wrapper">
-                    <i class="fa-regular fa-note-sticky"></i>
-                    <textarea class="transaction-form__flat-input transaction-form__flat-input--textarea"
+                    <i class="transaction-form__input-icon ph-bold ph-note"></i>
+                    <textarea class="transaction-form__input transaction-form__input--textarea"
                         name="note" maxlength="200" placeholder="Note">${transaction?.note ?? ''}</textarea>
                 </div>
 
                 <div class="transaction-form__datetime-row"
                     @click=${() => document.getElementById('date').showPicker()}>
                     <div class="transaction-form__calendar-icon">
-                        <i class="fa-regular fa-calendar-days"></i>
+                        <i class="ph ph-calendar-blank"></i>
                     </div>
                     <span class="transaction-form__date-label">${formatDate(state.selectedDate)}</span>
                     <div class="transaction-form__time-display">

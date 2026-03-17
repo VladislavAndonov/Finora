@@ -15,7 +15,6 @@ export const addTransactionView = (ctx) => {
         selectedCategory: null,
         selectedDate: utcToLocal(new Date()),
         showCategoryModal: false,
-        unfilledInputs: []
     };
 
     const renderForm = () => ctx.render(transactionForm({
@@ -70,33 +69,43 @@ export const addTransactionView = (ctx) => {
 
         const formData = new FormData(event.currentTarget);
         const title = formData.get("title")?.trim();
-        const amount = Number(formData.get("amount"));
+        const amountInput = formData.get("amount")?.trim();
+        const amount = Number(amountInput);
         const note = formData.get("note")?.trim() ?? "";
         const { selectedDate: date, selectedType: type, selectedCategory: category } = state;
 
         if (!title) {
-            state.unfilledInputs.push("title");
+            state.errMessage = `Please enter a transaction title.`
+            return renderForm();
         }
         if (!type) {
-            state.unfilledInputs.push("type");
+            state.errMessage = `Please, select transaction type`
+            return renderForm();
         }
         if (!amount) {
-            state.unfilledInputs.push("amount");
+            state.errMessage = `Please, enter transaction amount`
+            return renderForm();
         }
         if (!date) {
-            state.unfilledInputs.push("date");
+            state.errMessage = `Please, select transaction date`
+            return renderForm();
         }
         if (!category) {
-            state.unfilledInputs.push("category");
-        }
-        if (state.unfilledInputs.length > 0) {
-            state.errMessage = `Please fill ${state.unfilledInputs.join(", ")}`;
+            state.errMessage = `Please, select transaction category`
             return renderForm();
         }
 
-
         if (title.length > 30) {
             state.errMessage = "Title must be 30 characters or fewer.";
+            return renderForm();
+        }
+
+        if (!amountInput) {
+            state.errMessage = "Please enter a transaction amount.";
+            return renderForm();
+        }
+        if (!/^\d+(\.\d{1,2})?$/.test(amountInput)) {
+            state.errMessage = "Amount can have at most 2 decimal places.";
             return renderForm();
         }
         if (isNaN(amount)) {
@@ -111,6 +120,7 @@ export const addTransactionView = (ctx) => {
             state.errMessage = "Amount must be at most 999,999.99.";
             return renderForm();
         }
+
         if (note.length > 200) {
             state.errMessage = `Note must be 200 characters or fewer. Current: ${note.length}`;
             return renderForm();

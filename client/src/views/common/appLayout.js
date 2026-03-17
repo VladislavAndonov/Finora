@@ -7,6 +7,7 @@ import { modalTemplate } from "./logoutModal.js";
 
 export const appLayout = ({
     content,
+    email,
     username,
     currentPath,
     onLogoutClick,
@@ -21,31 +22,44 @@ export const appLayout = ({
     return html`
         <div class="app-layout">
             <aside class="app-layout__sidebar">
-                <p class="app-layout__username">${username}</p>
+
+                <div class="app-layout__profile">
+                    <div class="app-layout__avatar">#</div>
+                    <div class="app-layout__profile-info">
+                        <span class="app-layout__username">${username}</span>
+                        <span class="app-layout__email">${email}</span>
+                    </div>
+                </div>
+
+                <div class="app-layout__divider"></div>
+
                 <nav class="app-layout__nav">
                     <a 
-                    href="/"
-                    @click=${navigate}
-                    class="app-layout__nav-link ${currentPath === "/" ? "app-layout__nav-link--active" : ""}">
-                    <i class="fa-solid fa-home app__nav-icon"></i>
-                    Home
+                        href="/"
+                        @click=${navigate}
+                        class="app-layout__nav-link ${currentPath === "/" ? "app-layout__nav-link--active" : ""}">
+                        <i class="ph ph-house app-layout__icon"></i>
+                        Home
                     </a>
                     <a
                         href="/transactions"
                         @click=${navigate} 
                         class="app-layout__nav-link ${currentPath === "/transactions" ? "app-layout__nav-link--active" : ""}">
-                    <i class="fa-solid fa-list app__nav-icon"></i>
-                    Transactions
+                        <i class="ph ph-list-bullets app-layout__icon"></i>
+                        Transactions
                     </a>
                     <a 
                         href="/calendar"
                         @click=${navigate} 
                         class="app-layout__nav-link ${currentPath === "/calendar" ? "app-layout__nav-link--active" : ""}">
-                    <i class="fa-regular fa-calendar-days app__nav-icon"></i>
-                    Calendar
+                        <i class="ph ph-calendar-blank app-layout__icon"></i>
+                        Calendar
                     </a>
+
+                    <div class="app-layout__divider"></div>
+
                     <button @click=${onLogoutClick} class="app-layout__nav-link">
-                    <i class="fa-solid fa-right-from-bracket app__nav-icon"></i>
+                    <i class="ph ph-sign-out app-layout__icon"></i>
                     Logout
                     </button>
                 </nav>
@@ -53,7 +67,11 @@ export const appLayout = ({
 
             <main class="app-layout__main">
                 ${content}
-                ${showFab ? html`<button @click=${onAddTransaction} class="app-layout__fab" title="Add Transaction">+</button>` : ""} 
+                ${showFab ? html`
+                    <button @click=${onAddTransaction} class="app-layout__fab" title="Add Transaction">
+                        <i class="ph-bold ph-plus"></i>
+                    </button>
+                ` : ""} 
             </main>
 
             ${logoutModalOpen
