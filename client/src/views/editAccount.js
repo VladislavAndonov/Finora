@@ -9,37 +9,69 @@ import { showToast } from "../utils/toast.js";
 const editAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, onToggleArchive, state }) =>
     html`
         <div class="edit-account">
+ 
             <header class="edit-account__header">
                 <button class="edit-account__back" @click=${() => history.back()} type="button">
-                    <i class="fa-solid fa-arrow-left"></i>
+                    <i class="ph-bold ph-arrow-left"></i>
                 </button>
                 <h1 class="edit-account__title">Edit Account</h1>
             </header>
-
+ 
             <div class="edit-account__content">
-                <form @submit=${onSubmit} id="edit-account__form">
-                    <input class="edit-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly/>
-
-                    <label class="edit-account__label" for="name">Name</label>
-                    <input class="edit-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" .value=${state.nameValue} @input=${onNameInput}/>
-
-                    <div class="edit-account__currency-grid">
-                        ${currencies.map((c) => html`
-                            <button type="button" class="edit-account__currency-btn ${state.selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
-                                <span class="edit-account__code">${c.code}</span>
-                                <span class="edit-account__sign">${c.sign}</span>
-                                <span class="edit-account__country">${c.country}</span>
-                            </button>
-                        `)}
+                <form @submit=${onSubmit} id="edit-account__form" class="edit-account__form">
+ 
+                    <input class="edit-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly />
+ 
+                    <!-- ── Account Details ── -->
+                    <div class="edit-account__section">
+                        <div class="edit-account__field">
+                            <label class="edit-account__label" for="name">Name</label>
+                            <input
+                                class="edit-account__name-input"
+                                id="name"
+                                type="text"
+                                name="name"
+                                placeholder="Account name"
+                                maxlength="30"
+                                autocomplete="off"
+                                .value=${state.nameValue}
+                                @input=${onNameInput}
+                            />
+                        </div>
                     </div>
+ 
+                    <div class="edit-account__divider"></div>
+ 
+                    <!-- ── Currency ── -->
+                    <div class="edit-account__section">
+                        <div class="edit-account__currency-grid">
+                            ${currencies.map((c) => html`
+                                <button
+                                    type="button"
+                                    class="edit-account__currency-btn ${state.selectedCurrency === c.code ? 'selected' : ''}"
+                                    @click=${() => selectCurrency(c.code)}
+                                >
+                                    <span class="edit-account__code">${c.code}</span>
+                                    <span class="edit-account__sign">${c.sign}</span>
+                                    <span class="edit-account__country">${c.country}</span>
+                                </button>
+                            `)}
+                        </div>
+                    </div>
+ 
                 </form>
-
+ 
+                <div class="edit-account__divider"></div>
+ 
+                <!-- ── Archive ── -->
                 <div class="edit-account__archive">
-                    <span class="edit-account__label">Archive Account</span>
-                    <p class="edit-account__archive-description">Archived accounts are hidden from your main view.</p>
+                    <div class="edit-account__archive-text">
+                        <label class="edit-account__label">Archive Account</label>
+                        <p class="edit-account__archive-description">Archived accounts are hidden from your main view.</p>
+                    </div>
                     <button
                         type="button"
-                        class="edit-account__toggle ${state.isArchived ? "active" : ""}"
+                        class="edit-account__toggle ${state.isArchived ? 'active' : ''}"
                         @click=${onToggleArchive}
                         role="switch"
                         aria-checked=${state.isArchived}
@@ -47,15 +79,20 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, onToggleAr
                         <span class="edit-account__toggle-thumb"></span>
                     </button>
                 </div>
-
-                ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
-                
+ 
+                ${state.errMessage ? html`<p class="edit-account__error">${state.errMessage}</p>` : null}
+ 
                 <div class="edit-account__actions">
-                    <button class="edit-account__btn" type="submit" form="edit-account__form" ?disabled=${!state.nameValue.trim() || state.isSubmitting}>
-                        Save Account (${state.selectedCurrency})
+                    <button
+                        class="edit-account__btn"
+                        type="submit"
+                        form="edit-account__form"
+                        ?disabled=${!state.nameValue.trim() || state.isSubmitting}
+                    >
+                        Save ${state.selectedCurrency} Account
                     </button>
                 </div>
-
+ 
             </div>
         </div>
     `;
@@ -93,7 +130,7 @@ export const editAccountView = async (ctx) => {
     }
 
     function onToggleArchive() {
-        state.isArchived = !isArchived;
+        state.isArchived = !state.isArchived;
         renderForm();
     }
 
