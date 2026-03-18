@@ -114,16 +114,17 @@ export async function homeView(ctx) {
         html`
         <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onClose()}>
             <div class="modal__content">
+ 
                 <div class="modal__header">
                     <div>
                         <p class="modal__title">Accounts</p>
                         <p class="modal__subtitle">${allAccounts.length} linked account${allAccounts.length !== 1 ? 's' : ''}</p>
                     </div>
-                    <button class="modal__close" @click=${onClose}>
-                        <i class="fa-solid fa-xmark"></i>
+                    <button class="modal__close" type="button" @click=${onClose}>
+                        <i class="ph-bold ph-x"></i>
                     </button>
                 </div>
-
+ 
                 ${allAccounts.length > 0
                 ? html`
                         <ul class="modal__account-list">
@@ -134,7 +135,10 @@ export async function homeView(ctx) {
                                             <span class="modal__account-name">${a.name}</span>
                                             <span class="modal__account-currency">${a.currency}</span>
                                         </div>
-                                        ${a.isArchived ? html`<span class="modal__account-status--archived">Archived</span>` : html`<span class="modal__account-status--active">Active</span>`}
+                                        ${a.isArchived
+                        ? html`<span class="modal__account-status--archived">Archived</span>`
+                        : html`<span class="modal__account-status--active">Active</span>`
+                    }
                                     </a>
                                 </li>
                             `)}
@@ -146,12 +150,14 @@ export async function homeView(ctx) {
                         </div>
                     `
             }
-
+ 
                 <div class="modal__actions">
                     <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>
+                        <i class="ph ph-file-plus home__icon" aria-hidden="true"></i>
                         Create Account
                     </a>
                 </div>
+ 
             </div>
         </div>
     `
