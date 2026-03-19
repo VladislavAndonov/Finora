@@ -9,7 +9,8 @@ const root = document.querySelector(".app");
 const uiState = {
     renderApp: null,
     activeView: null,
-    logoutModalOpen: false
+    logoutModalOpen: false,
+    profileDropdownOpen: false // Add this
 }
 
 export function withAppShell(ctx, next) {
@@ -27,10 +28,12 @@ export function withAppShell(ctx, next) {
                 username,
                 currentPath,
                 logoutModalOpen: uiState.logoutModalOpen,
+                profileDropdownOpen: uiState.profileDropdownOpen,
                 onLogoutClick,
                 onConfirmLogout,
                 onCancelLogout,
-                onAddTransaction
+                onAddTransaction,
+                onToggleProfileDropdown
             }), root);
         }
 
@@ -46,8 +49,14 @@ export function withoutShell(ctx, next) {
     next();
 }
 
+function onToggleProfileDropdown() {
+    uiState.profileDropdownOpen = !uiState.profileDropdownOpen;
+    uiState.renderApp();
+}
+
 function onLogoutClick() {
     uiState.logoutModalOpen = true;
+    uiState.profileDropdownOpen = false;
 
     document.addEventListener('keydown', handleEscKey);
 

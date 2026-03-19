@@ -14,7 +14,9 @@ export const appLayout = ({
     logoutModalOpen,
     onConfirmLogout,
     onCancelLogout,
-    onAddTransaction
+    onAddTransaction,
+    profileDropdownOpen,
+    onToggleProfileDropdown,
 }) => {
     const hiddenFabRoutes = ['/add', '/edit/'];
     const showFab = !hiddenFabRoutes.some(route => currentPath.includes(route));
@@ -102,7 +104,27 @@ export const appLayout = ({
                     <span class="app-layout__mobile-nav-label">Profile</span>
                 </button>
             </nav>
-            
+
+            <!-- Profile dropdown (mobile) -->
+            ${profileDropdownOpen ? html`
+                <div class="app-layout__dropdown-backdrop" @click=${onToggleProfileDropdown}></div>
+                <div class="app-layout__profile-dropdown">
+                    <div class="app-layout__profile">
+                        <div class="app-layout__avatar">#</div>
+                        <div class="app-layout__profile-info">
+                            <span class="app-layout__username">${username}</span>
+                            <span class="app-layout__email">${email}</span>
+                        </div>
+                    </div>
+                    <div class="app-layout__divider"></div>
+                    <button class="app-layout__dropdown-logout" @click=${onLogoutClick}>
+                        <i class="ph ph-sign-out"></i>
+                        Sign Out
+                    </button>
+                </div>
+            ` : ""}
+
+            ${logoutModalOpen ? modalTemplate({ onConfirmLogout, onCancelLogout }) : ""}
         </div>
     `;
 }
