@@ -9,10 +9,12 @@ const root = document.querySelector(".app");
 const uiState = {
     renderApp: null,
     activeView: null,
-    logoutModalOpen: false
+    logoutModalOpen: false,
+    profileDropdownOpen: false // Add this
 }
 
 export function withAppShell(ctx, next) {
+    const email = sessionStorage.getItem("email")
     const username = sessionStorage.getItem("username");
     const currentPath = ctx.path;
 
@@ -22,13 +24,16 @@ export function withAppShell(ctx, next) {
         uiState.renderApp = () => {
             render(appLayout({
                 content: uiState.activeView,
+                email,
                 username,
                 currentPath,
                 logoutModalOpen: uiState.logoutModalOpen,
+                profileDropdownOpen: uiState.profileDropdownOpen,
                 onLogoutClick,
                 onConfirmLogout,
                 onCancelLogout,
-                onAddTransaction
+                onAddTransaction,
+                onToggleProfileDropdown
             }), root);
         }
 
@@ -44,8 +49,14 @@ export function withoutShell(ctx, next) {
     next();
 }
 
+function onToggleProfileDropdown() {
+    uiState.profileDropdownOpen = !uiState.profileDropdownOpen;
+    uiState.renderApp();
+}
+
 function onLogoutClick() {
     uiState.logoutModalOpen = true;
+    uiState.profileDropdownOpen = false;
 
     document.addEventListener('keydown', handleEscKey);
 

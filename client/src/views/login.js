@@ -10,43 +10,78 @@ import { showToast } from "../utils/toast.js";
 export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =>
     html`
         <main class="login">
-            <div class="login__content">
+            <div class="login__card">
 
-                <form class="login__form" @submit=${onSubmit}>
-                    <header class="login__header">
-                        <h2 class="login__title">Sign in</h2>
-                        <p class="login__subtitle">Welcome back</p>
-                    </header>
+            <div class="login__panel login__panel--visual" aria-hidden="true">
+                    <div class="login__panel-overlay"></div>
 
-                    <fieldset class="login__fieldset">
-                        <label class="login__label" for="email">Email</label>
-                        <input class="login__input" type="text" name="email" id="email" inputmode="email" autocomplete="email">
-                    </fieldset>
-
-                    <fieldset class="login__fieldset">
-                        <label class="login__label" for="password">Password</label>
-                        <input class="login__input" type="password" name="password" id="password">
-                    </fieldset>
-                    
-                    ${errMessage ? html`<p class="login__error">${errMessage}</p>` : null}
-
-                    <div class="login__demo-section">
-
-                        <div class="login__actions">
-                            <button type="submit" class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing in..." : "Sign in"}</button>
-                            <p class="login__signup-prompt">
-                                Don't have an account yet?
-                                <a href="/auth/register" class="login__nav-link" @click=${navigate}>Sign up</a>
-                            </p>
-                        </div>
-
-                        <div class="login__divider">try without an account</div>
-
-                        <button type="button" class="login__btn login__btn--demo" @click=${onDemoLogin} ?disabled=${isSubmitting}>Demo Login</button>
+                    <div class="login__branding">
+                        <span class="login__brand-label">Finora</span>
                     </div>
 
-                </form>
-                
+                    <div class="login__panel-copy">
+                        <p class="login__panel-eyebrow">Your money,</p>
+                        <h1 class="login__panel-headline">Fully in control</h1>
+                        <p class="login__panel-body">Track spending, manage accounts, and understand where your money goes — all in one place.</p>
+                    </div>
+                </div>
+
+                <div class="login__panel login__panel--form">
+                    <div class="login__form-inner">
+
+                        <header class="login__header">
+                            <h2 class="login__title">Welcome back</h2>
+                            <p class="login__subtitle">Sign in to your account to continue</p>
+                        </header>
+
+                        <form class="login__form" @submit=${onSubmit}>
+
+                            <div class="login__fieldset">
+                                <label class="login__label" for="email">Email</label>
+                                <input class="login__input" type="text" name="email" id="email"
+                                    inputmode="email" autocomplete="email" placeholder="johndoe@gmail.com">
+                            </div>
+
+                            <div class="login__fieldset">
+                                <label class="login__label" for="password">Password</label>
+                                <input class="login__input" type="password" name="password" id="password"
+                                    placeholder="••••••••">
+                            </div>
+
+                           <div class="login__error-slot">
+                                ${errMessage ? html`
+                                    <p class="login__error">
+                                        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+                                        ${errMessage}
+                                    </p>
+                                ` : null}
+                            </div>
+
+                            <div class="login__actions">
+                                <button type="submit"
+                                    class="login__btn login__btn--primary ${isSubmitting ? 'login__btn--loading' : ''}"
+                                    ?disabled=${isSubmitting}>
+                                    ${isSubmitting ? "Signing in..." : "Sign in"}
+                                </button>
+
+                                <div class="login__divider">or</div>
+
+                                <button type="button" class="login__btn login__btn--demo"
+                                    @click=${onDemoLogin} ?disabled=${isSubmitting}>
+                                    Try the demo
+                                </button>
+                            </div>
+
+                        </form>
+
+                        <p class="login__signup-prompt">
+                            Don't have an account?
+                            <a href="/auth/register" class="login__nav-link" @click=${navigate}>Sign up</a>
+                        </p>
+
+                    </div>
+                </div>
+
             </div>
         </main>
     `;

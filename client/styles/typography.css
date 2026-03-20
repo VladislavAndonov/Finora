@@ -1,7 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 html {
     font: 16px/1.6 "Rubik", sans-serif;
+}
+
+:root {
+    --font-display: "Fraunces", serif;
 }
 
 body,
@@ -12,25 +16,25 @@ textarea {
 }
 
 h1 {
-    font-size: 2.8rem;
+    font-size: 2rem;
 }
 
 h2 {
-    font-size: 2.2rem;
-}
-
-h3 {
     font-size: 1.8rem;
 }
 
+h3 {
+    font-size: 1.6rem;
+}
+
 h4 {
-    font-size: 1.4rem;
+    font-size: 1.42rem;
 }
 
 h5 {
-    font-size: 1.2rem;
+    font-size: 1.26rem;
 }
 
 h6 {
-    font-size: 1.0rem;
+    font-size: 1.12rem;
 }

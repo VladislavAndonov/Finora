@@ -1,25 +1,202 @@
 :root {
     color-scheme: dark;
-    --primary: #1c4fb6;
-    --secondary: #96afff;
-    --secondary-muted: #3f4258;
-    --positive: #00e27b;
-    --negative: #e06b6b;
 
-    /* Toast notifactions */
+    /* Blue */
 
-    --success-accent: #22c55e;
-    --error-accent: #ef4444;
-    --info-accent: #3b82f6;
-    --error: #840000;
-    --text-primary: #f5f5f5;
-    --text-secondary: #a0a0a0;
-    --text-muted: #6e6e6e;
-    --text-inverted: #0a0a0a;
-    --border-primary: #4c4c4c;
-    --border-secondary: rgba(50, 50, 50, 0.5);
-    --bg-lighter: #4a4a4a;
-    --bg-primary: #191919;
-    --bg-secondary: #252525;
-    --bg-darker: #111111;
+    --blue-50-raw: 239, 248, 255;
+    --blue-100-raw: 218, 238, 255;
+    --blue-200-raw: 190, 225, 255;
+    --blue-300-raw: 145, 208, 255;
+    --blue-400-raw: 93, 180, 253;
+    --blue-500-raw: 56, 148, 249;
+    --blue-600-raw: 33, 118, 239;
+    --blue-700-raw: 26, 95, 219;
+    --blue-800-raw: 28, 79, 182;
+    --blue-900-raw: 28, 68, 140;
+    --blue-950-raw: 22, 42, 85;
+
+    /* Gray */
+
+    --gray-50-raw: 250, 250, 251;
+    --gray-100-raw: 244, 244, 245;
+    --gray-200-raw: 228, 228, 229;
+    --gray-300-raw: 213, 213, 214;
+    --gray-400-raw: 163, 163, 165;
+    --gray-500-raw: 114, 114, 116;
+    --gray-600-raw: 85, 85, 87;
+    --gray-700-raw: 65, 65, 67;
+    --gray-750-raw: 52, 52, 54;
+    --gray-800-raw: 41, 41, 43;
+    --gray-850-raw: 30, 30, 32;
+    --gray-900-raw: 24, 24, 26;
+    --gray-950-raw: 18, 18, 20;
+
+    /* Primary */
+
+    --primary: rgb(var( --blue-400-raw) );
+    --primary-hover: rgb(var( --blue-300-raw) );
+    --primary-subtle: rgba(var( --blue-500-raw) , 0.15);
+
+    /* Background */
+
+    --bg-black: rgb(0, 0, 0);
+    --bg-dark: rgb(var( --gray-950-raw) );
+    --bg-primary: rgb(var( --gray-900-raw) );
+    --bg-secondary: rgb(var( --gray-850-raw) );
+    --bg-light: rgb(var( --gray-800-raw) );
+
+    /* Strokes & Borders */
+
+    --border-emphasized: rgba(var( --gray-50-raw) , 0.2);
+    --border-default: rgba(var( --gray-50-raw) , 0.15);
+    --border-muted: rgba(var( --gray-50-raw) , 0.09);
+
+    /* Text */
+
+    --text-primary: rgba(var( --gray-50-raw) , 1);
+    --text-secondary: rgba(var( --gray-50-raw) , 0.7);
+    --text-muted: rgba(var( --gray-50-raw) , 0.5);
+
+    /* Feedback */
+
+    --success-raw: 0, 226, 123;
+    --success-text: rgba(var( --success-raw) , 0.8);
+    --success-subtle: rgba(var( --success-raw) , 0.1);
+    --error-raw: 233, 87, 87;
+    --error-text: rgba(var( --error-raw) , 0.8);
+    --error-subtle: rgba(var( --error-raw) , 0.1);
+
+    /* Hover */
+
+    --hover-overlay: rgba(255, 255, 255, 0.04);
+    --overlay-dark: rgba(0, 0, 1, 0.15);
+}
+
+*:focus-visible {
+    outline: 2px solid rgb(var( --blue-300-raw) );
+}
+
+/* Spacing System - LiftKit inspired */
+
+:root {
+    --lk-base: 1rem;
+    --lk-scale-factor: 1;
+}
+
+:root {
+    /* Spacing */
+
+    --space-1: calc(var( --lk-base) * 0.236 * var( --lk-scale-factor) ); /* ~4px */
+    --space-2: calc(var( --lk-base) * 0.382 * var( --lk-scale-factor) ); /* ~6px */
+    --space-3: calc(var( --lk-base) * 0.618 * var( --lk-scale-factor) ); /* ~10px */
+    --space-4: calc(var( --lk-base) * 1 * var( --lk-scale-factor) ); /* ~16px */
+    --space-5: calc(var( --lk-base) * 1.618 * var( --lk-scale-factor) ); /* ~26px */
+    --space-6: calc(var( --lk-base) * 2.618 * var( --lk-scale-factor) ); /* ~42px */
+    --space-7: calc(var( --lk-base) * 4.236 * var( --lk-scale-factor) ); /* ~68px */
+    --space-8: calc(var( --lk-base) * 6.854 * var( --lk-scale-factor) ); /* ~110px */
+    --space-9: calc(var( --lk-base) * 11.09 * var( --lk-scale-factor) ); /* ~177px */
+}
+
+:root {
+    /* Typography */
+
+    --text-xs: calc(var( --lk-base) * 0.618); /* ~10px */
+    --text-sm: calc(var( --lk-base) * 0.786); /* ~13px */
+    --text-base: calc(var( --lk-base) * 1); /* ~16px */
+    --text-md: calc(var( --lk-base) * 1.272); /* ~20px */
+    --text-lg: calc(var( --lk-base) * 1.618); /* ~26px */
+    --text-xl: calc(var( --lk-base) * 2.618); /* ~42px */
+    --text-2xl: calc(var( --lk-base) * 4.236); /* ~68px */
+    --text-3xl: calc(var( --lk-base) * 6.854); /* ~110px */
+}
+
+:root {
+    /* Line height */
+
+    --leading-tight: 1.2;
+    --leading-snug: 1.382;
+    --leading-normal: 1.618;
+    --leading-relaxed: 1.854;
+}
+
+:root {
+    /* Border radius */
+
+    --radius-sm: calc(var( --space-2) * 0.618);
+    --radius-md: var(--space-2);
+    --radius-lg: var(--space-3);
+    --radius-xl: var(--space-4);
+    --radius-2xl: var(--space-5);
+    --radius-pill: 9999px;
+    --radius-none: 0;
+}
+
+:root {
+    /* Optical corrections */
+
+    --lk-lineh-trim: calc(( var( --leading-normal) - 1) * var( --text-base) * 0.5);
+    --lk-icon-pad-correction: calc(var( --space-4) * 0.25);
+    --lk-border-pad-correction: 1px;
+    --lk-focus-ring-offset: var(--space-1);
+    --lk-focus-ring-width: 2px;
+    --lk-focus-ring-color: rgba(var( --blue-400-raw) , 0.6);
+}
+
+:root {
+    /* Buttons */
+
+    --btn-padding-block: var(--space-3);
+    --btn-padding-inline: var(--space-5);
+    --btn-gap: var(--space-2);
+    --btn-radius: var(--radius-pill);
+
+    /* Inputs */
+
+    --input-padding-block: var(--space-3);
+    --input-padding-inline: var(--space-4);
+    --input-radius: var(--radius-md);
+    --input-gap: var(--space-2);
+
+    /* Cards */
+
+    --card-padding: var(--space-5);
+    --card-gap: var(--space-4);
+    --card-radius: var(--radius-lg);
+
+    /* Modals / Panels */
+
+    --modal-padding: var(--space-6);
+    --modal-gap: var(--space-5);
+    --modal-radius: var(--radius-xl);
+
+    /* Lists */
+
+    --list-item-padding-block: var(--space-3);
+    --list-item-padding-inline: var(--space-4);
+    --list-item-gap: var(--space-3);
+
+    /* Navigation */
+
+    --nav-item-padding-block: var(--space-2);
+    --nav-item-padding-inline: var(--space-4);
+    --nav-gap: var(--space-1);
+
+    /* Page Layout */
+
+    --page-padding-inline: var(--space-6);
+    --section-gap: var(--space-8);
+    --content-max-width: 72rem;
+}
+
+@media(max-width: 640px) {
+    :root {
+        --lk-scale-factor: 0.85;
+        --page-padding-inline: var(--space-4);
+    }
+}
+
+@media(min-width: 1280px) {
+    :root {
+        --lk-scale-factor: 1.05;
+    }
 }

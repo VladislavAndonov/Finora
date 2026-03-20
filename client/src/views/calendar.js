@@ -7,7 +7,7 @@ import { getTransactions } from '../api/data.js';
 import { formatDate } from '../utils/dateUtils.js';
 import { getActiveAccountId } from "../state/sessionState.js";
 
-const calendarTemplate = ({ transactionsByDate, selectDate, dates, filters, selectMonth, monthList, state }) =>
+const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state, selectDate, selectMonth, handleWheel }) =>
     html`
     <div class="calendar">
         <header class="calendar__header">
@@ -17,13 +17,15 @@ const calendarTemplate = ({ transactionsByDate, selectDate, dates, filters, sele
         <div class="calendar__content">
 
             <section class="calendar__section calendar__body">
-                <div class="calendar__month-scroll" id="month-scroll">
-                    ${monthList.map((m) => html`
-                        <button 
-                            class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
-                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
-                            ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
-                        </button>`)}
+                <div class="calendar__months">
+                    <div class="calendar__month-scroll" id="month-scroll" @wheel=${handleWheel}>
+                        ${monthList.map((m) => html`
+                            <button 
+                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                                @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                                ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
+                            </button>`)}
+                    </div>
                 </div>
 
                 <div class="calendar__grid">
@@ -81,7 +83,7 @@ export async function calendarView(ctx) {
         if (!state.activeAccountId) return;
 
         state.monthTransactions = await getTransactions({
-            acccountId: state.activeAccountId,
+            accountId: state.activeAccountId,
             year: state.currentDate.getFullYear(),
             month: state.currentDate.getMonth()
         })
@@ -93,7 +95,7 @@ export async function calendarView(ctx) {
         if (!state.activeAccountId) return;
 
         const transactions = await getTransactions({
-            acccountId: state.activeAccountId,
+            accountId: state.activeAccountId,
             year: state.selectedDate.getFullYear(),
             month: state.selectedDate.getMonth(),
             date: state.selectedDate.getDate()
@@ -281,32 +283,34 @@ export async function calendarView(ctx) {
         `);
     }
 
+    const handleWheel = (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            e.currentTarget.scrollLeft += e.deltaY;
+        }
+    };
+
     const update = () => {
         const dates = buildDates();
         ctx.render(calendarTemplate({
             transactionsByDate: getDisplayedTransactions(),
             monthList: buildMonthList(),
-            selectDate,
-            selectMonth,
             dates: renderDate(dates),
             filters,
-            state
+            state,
+            selectDate,
+            selectMonth,
+            handleWheel
         }));
 
-        const monthScroll = document.getElementById('month-scroll');
 
-        // Auto-scroll on every render
+        const monthScroll = document.getElementById('month-scroll');
         setTimeout(() => {
             const active = monthScroll?.querySelector('.calendar__month-item--active');
             active?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 0);
 
-        // Mouse scroll behavior
-        monthScroll.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            monthScroll.scrollLeft += e.deltaY * 0.3;
-        }, { passive: false });
-    };
+    }
 
     update();
 }

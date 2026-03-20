@@ -6,10 +6,18 @@
     min-height: 0;
 }
 
-.home__title {
-    font-size: clamp(1.2rem, 5vw, 2rem);
+.home__header {
+    padding: calc(var( --space-5) - var( --lk-lineh-trim) ) var( --space-5);
 
-    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.home__title {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+
+    color: var(--text-primary);
 }
 
 .home__content {
@@ -17,24 +25,22 @@
     flex: 1;
 
     min-height: 0;
+    padding: var(--space-4);
 
-    grid-template-columns: 7fr 5fr;
+    gap: var(--space-4);
+    grid-template-columns: 8fr 5fr;
     grid-template-rows: auto 1fr;
-    gap: 1rem;
 }
 
 .home__section {
     min-height: 0;
-    padding: 1rem;
-
-    color: var(--text-primary);
-    border: 1px solid var(--border-secondary);
-    border-radius: 0.5rem;
 }
 
 .home__transactions {
-    display: flex;
+    flex: 1;
     flex-direction: column;
+
+    padding: var(--space-4);
 
     grid-row: 1 / 8;
 }
@@ -46,80 +52,141 @@
 }
 
 .home__accounts {
-    position: relative;
+    overflow: hidden;
 
-    overflow-x: auto;
-
-    padding: 0;
-}
-
-.home__accounts::after {
-    position: absolute;
-
-    content: "";
-    pointer-events: none;
-
-    box-shadow: inset -12px 0 12px 0px var(--bg-darker);
-
-    inset: 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, var( --bg-black) var( --space-4) , var( --bg-black) calc( 100% - var( --space-4) ) , transparent);
+    mask-image: linear-gradient(to right, transparent, var( --bg-black) var( --space-4) , var( --bg-black) calc( 100% - var( --space-4) ) , transparent);
 }
 
 .home__accounts-scroller {
     display: flex;
     overflow-x: auto;
 
-    padding: 1rem;
+    padding: var(--space-4);
 
-    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--border-muted);
+
+    gap: var(--space-2);
     scrollbar-width: none;
-    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.home__accounts-scroller::-webkit-scrollbar {
+    display: none;
 }
 
 .home__btn {
-    padding: 0.6rem 1rem;
+    flex-shrink: 0;
+
+    padding: var(--space-3) var( --space-4);
 
     cursor: pointer;
+    transition: all 0.2s ease;
 
-    border-radius: 0.8rem;
-    background-color: var(--bg-lighter);
+    border-radius: var(--radius-lg);
 }
 
 .home__account {
-    font-weight: 600;
-
     display: flex;
     flex-direction: column;
 
     text-align: left;
 
-    border: none;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+    background: transparent;
+
+    gap: var(--space-1);
+}
+
+.home__account:hover {
+    color: var(--text-primary);
+    border-color: var(--border-emphasized);
+    background: var(--hover-overlay);
 }
 
 .home__account--active {
-    outline: 4px solid var(--primary);
+    border-color: rgba(var( --blue-400-raw) , 0.5) !important;
+    background: var(--primary-subtle) !important;
+    box-shadow: 0 0 0 2px rgba(var( --blue-400-raw) , 0.2) inset;
 }
 
-.home__add-account {
-    color: var(--text-muted);
-    border: 2px solid var(--border-secondary);
-    background-color: transparent;
+.home__account--active .home__account-name {
+    color: rgb(var( --blue-300-raw) );
 }
 
-.home__add-account:hover {
-    color: var(--text-secondary);
-    border: 2px solid var(--border-primary);
-}
-
-.home__account-balance {
-    display: block;
-
-    white-space: nowrap;
+.home__account--active .home__account-balance {
+    color: rgb(var( --blue-200-raw) );
 }
 
 .home__account-name {
-    font-size: 1.2rem;
+    font-size: var(--text-xs);
+    font-weight: 500;
 
     display: block;
 
     white-space: nowrap;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+
+    color: var(--text-muted);
+}
+
+.home__account-balance {
+    font-size: var(--text-md);
+    font-weight: 600;
+
+    display: block;
+
+    white-space: nowrap;
+
+    color: inherit;
+}
+
+.home__add-account {
+    display: flex;
+    align-items: center;
+
+    color: var(--text-muted);
+    border: 1px dashed var(--border-emphasized);
+    background: transparent;
+
+    gap: var(--space-2);
+}
+
+.home__add-account:hover {
+    z-index: 100;
+
+    color: var(--text-secondary);
+    background: var(--hover-overlay);
+}
+
+.home__icon {
+    font-size: var(--text-md);
+    line-height: 1;
+}
+
+@media(max-width: 1024px) {
+    .home__content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+    }
+
+    .home__accounts {
+        grid-row: 1;
+    }
+
+    .home__chart {
+        grid-row: 2;
+    }
+
+    .home__transactions {
+        grid-row: 3;
+    }
+}
+
+@media(max-width: 640px) {
+    .home__content {
+        padding-bottom: calc(var( --mobile-nav-height) + env( safe-area-inset-bottom) );
+    }
 }

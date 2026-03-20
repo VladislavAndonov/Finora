@@ -10,48 +10,91 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, state }) =>
     const currencySign = currencies.find((c) => c.code === state.selectedCurrency)?.sign ?? "$";
 
     return html`
-        <div class="add-account">
-            <header class="add-account__header">
-                <button class="add-account__back" @click=${() => history.back()} type="button">
-                <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <h1 class="add-account__title">Add Account</h1>
-            </header>
-
-            <div class="add-account__content">
-                <form @submit=${onSubmit} id="add-account__form">
-                    <input class="add-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly/>
-
-                    <label class="add-account__label" for="name">Name</label>
-                    <input class="add-account__name-input" type="text" name="name" placeholder="Account name" maxlength="30" autocomplete="off" @input=${onNameInput}/>
-
-                    <div class="add-account__starting-balance">
-                        <label for="startingBalance">Starting at</label>
-                        <span class="add-account__currency-prefix">${currencySign}</span>
-                        <input class="add-account__balance-input" type="number" name="startingBalance" autocomplete="off" placeholder="0" step="0.01"/>
+    <div class="add-account">
+ 
+        <header class="add-account__header">
+            <button class="add-account__back" @click=${() => history.back()} type="button">
+                <i class="ph-bold ph-arrow-left"></i>
+            </button>
+            <h1 class="add-account__title">Add Account</h1>
+        </header>
+ 
+        <div class="add-account__content">
+            <form @submit=${onSubmit} class="add-account__form" id="add-account-form">
+ 
+                <input class="add-account__currency--hidden" type="text" name="currency" .value=${state.selectedCurrency} readonly />
+ 
+                <div class="add-account__section">
+ 
+                    <div class="add-account__field">
+                        <label class="add-account__label" for="accountName">Name</label>
+                        <input
+                            class="add-account__name-input"
+                            id="accountName"
+                            type="text"
+                            name="name"
+                            placeholder="e.g. Savings, Wallet…"
+                            maxlength="30"
+                            autocomplete="off"
+                            @input=${onNameInput}
+                        />
                     </div>
-
+ 
+                    <div class="add-account__field">
+                        <label class="add-account__label" for="startingBalance">Starting balance</label>
+                        <div class="add-account__starting-balance">
+                            <span class="add-account__currency-prefix">${currencySign}</span>
+                            <input
+                                class="add-account__balance-input"
+                                id="startingBalance"
+                                type="number"
+                                name="startingBalance"
+                                autocomplete="off"
+                                placeholder="0.00"
+                                step="0.01"
+                            />
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="add-account__divider"></div>
+ 
+                <div class="add-account__section">
+ 
                     <div class="add-account__currency-grid">
                         ${currencies.map((c) => html`
-                        <button type="button" class="add-account__currency-btn ${state.selectedCurrency === c.code ? "selected" : ""}" @click=${() => selectCurrency(c.code)}>
-                            <span class="add-account__code">${c.code}</span>
-                            <span class="add-account__sign">${c.sign}</span>
-                            <span class="add-account__country">${c.country}</span>
-                        </button>
-                    `)}
+                            <button
+                                type="button"
+                                class="add-account__currency-btn ${state.selectedCurrency === c.code ? 'selected' : ''}"
+                                @click=${() => selectCurrency(c.code)}
+                            >
+                                <span class="add-account__code">${c.code}</span>
+                                <span class="add-account__sign">${c.sign}</span>
+                                <span class="add-account__country">${c.country}</span>
+                            </button>
+                        `)}
                     </div>
-                </form>
-
-                ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
-
-                <div class="add-account__actions">
-                    <button class="add-account__btn" type="submit" form="add-account__form" ?disabled=${!state.nameValue.trim() || state.isSubmitting}>
-                        Add Account (${state.selectedCurrency})
-                    </button>
                 </div>
+ 
+            </form>
+ 
+            ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
+ 
+            <div class="add-account__actions">
+                <button
+                    class="add-account__btn"
+                    type="submit"
+                    form="add-account-form"
+                    ?disabled=${!state.nameValue.trim() || state.isSubmitting}
+                >
+                    Add ${state.selectedCurrency} Account
+                </button>
             </div>
         </div>
-`};
+ 
+    </div>
+`;
+}
 
 export const addAccountView = (ctx) => {
     const state = {
