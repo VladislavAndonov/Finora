@@ -17,25 +17,25 @@
 
     /* Gray */
 
-    --gray-50-raw: 250, 250, 250;
-    --gray-100-raw: 244, 244, 244;
-    --gray-200-raw: 228, 228, 228;
-    --gray-300-raw: 213, 213, 213;
-    --gray-400-raw: 163, 163, 163;
-    --gray-500-raw: 114, 114, 114;
-    --gray-600-raw: 85, 85, 85;
-    --gray-700-raw: 65, 65, 65;
-    --gray-750-raw: 52, 52, 52;
-    --gray-800-raw: 41, 41, 41;
-    --gray-850-raw: 30, 30, 30;
-    --gray-900-raw: 24, 24, 24;
-    --gray-950-raw: 18, 18, 18;
+    --gray-50-raw: 250, 250, 251;
+    --gray-100-raw: 244, 244, 245;
+    --gray-200-raw: 228, 228, 229;
+    --gray-300-raw: 213, 213, 214;
+    --gray-400-raw: 163, 163, 165;
+    --gray-500-raw: 114, 114, 116;
+    --gray-600-raw: 85, 85, 87;
+    --gray-700-raw: 65, 65, 67;
+    --gray-750-raw: 52, 52, 54;
+    --gray-800-raw: 41, 41, 43;
+    --gray-850-raw: 30, 30, 32;
+    --gray-900-raw: 24, 24, 26;
+    --gray-950-raw: 18, 18, 20;
 
     /* Primary */
 
     --primary: rgb(var( --blue-400-raw) );
     --primary-hover: rgb(var( --blue-300-raw) );
-    --primary-subtle: rgba(var( --blue-500-raw) , 0.25);
+    --primary-subtle: rgba(var( --blue-500-raw) , 0.15);
 
     /* Background */
 
@@ -69,7 +69,7 @@
     /* Hover */
 
     --hover-overlay: rgba(255, 255, 255, 0.04);
-    --hover-overlay-dark: rgba(0, 0, 0, 0.2);
+    --overlay-dark: rgba(0, 0, 1, 0.15);
 }
 
 *:focus-visible {

@@ -32,7 +32,7 @@ const homeTemplate = ({ filters, transactionsByDate, accounts, selectAccount, on
                         </button>
                     `) : null}
                     <button type="button" class="home__btn home__add-account" @click=${onAddAccountClick}>
-                        <i class="ph ph-file-plus home__icon" aria-hidden="true"></i>
+                        <i class="ph ph-list-plus home__icon"></i>
                         Account
                     </button>
                 </div>
@@ -152,10 +152,7 @@ export async function homeView(ctx) {
             }
  
                 <div class="modal__actions">
-                    <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>
-                        <i class="ph ph-file-plus home__icon" aria-hidden="true"></i>
-                        Create Account
-                    </a>
+                    <a href="/accounts/add" class="modal__btn modal__btn--primary" @click=${navigate}>Create Account</a>
                 </div>
  
             </div>
@@ -462,7 +459,10 @@ export async function homeView(ctx) {
     }
 
     const handleWheel = (e) => {
-        e.currentTarget.scrollLeft += e.deltaY * 0.3;
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault();
+            e.currentTarget.scrollLeft += e.deltaY;
+        }
     };
 
     const update = () => {

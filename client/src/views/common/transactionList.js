@@ -14,7 +14,7 @@ export const transactionList = (filters, transactionsByDate, noTransactionsMessa
                     <div class="transaction-list__filter">
                         <input class="transaction-list__radio" type="radio" .checked=${f.active} id="${f.label.toLowerCase()}" @change=${f.onClick}/>
                         <label class="transaction-list__label" for="${f.label.toLowerCase()}">
-                            ${f.label === "Income" ? html `<i class="transaction-list__icon ph-fill ph-caret-up"></i>`  : f.label === "Expenses" ? html `<i class="transaction-list__icon ph-fill ph-caret-down"></i>` : null}
+                            ${f.label === "Income" ? html`<i class="transaction-list__icon ph-fill ph-caret-up"></i>` : f.label === "Expenses" ? html`<i class="transaction-list__icon ph-fill ph-caret-down"></i>` : null}
                             ${f.label}
                         </label>
                     </div>
@@ -55,5 +55,5 @@ function getCategoryColor(txnCategory, txnType) {
         c.type === txnType
     );
 
-    return category?.color ?? "#aaa"
+    return category?.color ?? "rgb(163, 163, 165)"
 }

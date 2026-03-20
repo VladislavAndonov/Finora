@@ -9,7 +9,7 @@ export const modalTemplate = ({ onConfirmLogout, onCancelLogout }) =>
         <div class="modal__content">
  
             <div class="modal__header">
-                <p class="modal__title">Are you sure you want to logout?</p>
+                <p class="modal__title">Are you sure you want to sign out?</p>
                 <button class="modal__close" type="button" @click=${onCancelLogout}>
                     <i class="ph-bold ph-x"></i>
                 </button>
@@ -18,7 +18,7 @@ export const modalTemplate = ({ onConfirmLogout, onCancelLogout }) =>
             <div class="modal__actions">
                 <button class="modal__btn modal__btn--primary" type="button" @click=${onConfirmLogout}>
                     <i class="ph-bold ph-sign-out app-layout__icon"></i>
-                    Confirm
+                    Sign Out
                 </button>
                 <button class="modal__btn modal__btn--secondary" type="button" @click=${onCancelLogout}>Cancel</button>
             </div>

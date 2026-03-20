@@ -52,30 +52,17 @@
 }
 
 .home__accounts {
-    position: relative;
-
     overflow: hidden;
 
-    padding: 0;
-}
-
-.home__accounts::after {
-    position: absolute;
-
-    content: "";
-    pointer-events: none;
-
-    background: linear-gradient(to right, transparent 95%, rgba( 0, 0, 0) 100%);
-
-    inset: 0;
+    -webkit-mask-image: linear-gradient(to right, transparent, var( --bg-black) var( --space-4) , var( --bg-black) calc( 100% - var( --space-4) ) , transparent);
+    mask-image: linear-gradient(to right, transparent, var( --bg-black) var( --space-4) , var( --bg-black) calc( 100% - var( --space-4) ) , transparent);
 }
 
 .home__accounts-scroller {
     display: flex;
     overflow-x: auto;
-    align-items: stretch;
 
-    padding: var(--space-4) var( --space-4);
+    padding: var(--space-4);
 
     border-bottom: 1px solid var(--border-muted);
 
@@ -119,9 +106,17 @@
 }
 
 .home__account--active {
-    color: var(--text-primary);
-    border: 1px solid rgba(var( --blue-300-raw) , 0.35) !important;
+    border-color: rgba(var( --blue-400-raw) , 0.5) !important;
     background: var(--primary-subtle) !important;
+    box-shadow: 0 0 0 2px rgba(var( --blue-400-raw) , 0.2) inset;
+}
+
+.home__account--active .home__account-name {
+    color: rgb(var( --blue-300-raw) );
+}
+
+.home__account--active .home__account-balance {
+    color: rgb(var( --blue-200-raw) );
 }
 
 .home__account-name {
@@ -187,5 +182,11 @@
 
     .home__transactions {
         grid-row: 3;
+    }
+}
+
+@media(max-width: 640px) {
+    .home__content {
+        padding-bottom: calc(var( --mobile-nav-height) + env( safe-area-inset-bottom) );
     }
 }

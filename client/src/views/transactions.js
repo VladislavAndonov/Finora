@@ -19,13 +19,15 @@ const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, n
         <div class="transactions__content">
 
             <section class="transactions__section transactions__body">
-                <div class="transactions__month-scroll" id="month-scroll" @wheel=${handleWheel}>
-                    ${monthList.map((m) => html`
-                        <button 
-                            class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
-                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
-                            ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
-                        </button>`)}
+                <div class="transactions__months">
+                    <div class="transactions__month-scroll" id="month-scroll" @wheel=${handleWheel}>
+                        ${monthList.map((m) => html`
+                            <button 
+                                class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
+                                @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                                ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
+                            </button>`)}
+                    </div>
                 </div>
 
                 ${transactionList(filters, transactionsByDate, noTransactionsMessage)}

@@ -17,13 +17,15 @@ const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state
         <div class="calendar__content">
 
             <section class="calendar__section calendar__body">
-                <div class="calendar__month-scroll" id="month-scroll" @wheel=${handleWheel}>
-                    ${monthList.map((m) => html`
-                        <button 
-                            class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
-                            @click=${() => selectMonth(m.year, m.month)}>${m.label}
-                            ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
-                        </button>`)}
+                <div class="calendar__months">
+                    <div class="calendar__month-scroll" id="month-scroll" @wheel=${handleWheel}>
+                        ${monthList.map((m) => html`
+                            <button 
+                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                                @click=${() => selectMonth(m.year, m.month)}>${m.label}
+                                ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
+                            </button>`)}
+                    </div>
                 </div>
 
                 <div class="calendar__grid">
