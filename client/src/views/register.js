@@ -10,46 +10,83 @@ import { showToast } from "../utils/toast.js";
 export const registerTemplate = (onSubmit, errMessage, isSubmitting) =>
     html`
         <main class="register">
-            <div class="register__content">
+            <div class="register__card">
 
-                <form class="register__form" @submit=${onSubmit}>
-                    <header class="register__header">
-                        <h2 class="register__title">Sign up</h2>
-                        <p class="register__subtitle">Welcome to Finora</p>
-                    </header>
+                <div class="register__panel register__panel--form">
+                    <div class="register__form-inner">
 
-                    <fieldset class="register__fieldset">
-                        <label class="register__label" for="username">Username</label>
-                        <input class="register__input" type="text" name="username" id="username" autocomplete="username">
-                    </fieldset>
+                        <header class="register__header">
+                            <h2 class="register__title">Create account</h2>
+                            <p class="register__subtitle">Start tracking your finances today</p>
+                        </header>
 
-                    <fieldset class="register__fieldset">
-                        <label class="register__label" for="email">Email</label>
-                        <input class="register__input" type="text" name="email" id="email" inputmode="email" autocomplete="email">
-                    </fieldset>
+                        <form class="register__form" @submit=${onSubmit}>
 
-                    <fieldset class="register__fieldset">
-                        <label class="register__label" for="password">Password</label>
-                        <input class="register__input" type="password" name="password" id="password">
-                    </fieldset>
+                            <div class="register__fieldset">
+                                <label class="register__label" for="username">Username</label>
+                                <input class="register__input" type="text" name="username" id="username"
+                                    autocomplete="username" placeholder="john.doe">
+                            </div>
 
-                    <fieldset class="register__fieldset">
-                        <label class="register__label" for="confirmPassword">Confirm Password</label>
-                        <input class="register__input" type="password" name="confirmPassword" id="confirmPassword">
-                    </fieldset>
+                            <div class="register__fieldset">
+                                <label class="register__label" for="email">Email</label>
+                                <input class="register__input" type="text" name="email" id="email"
+                                    inputmode="email" autocomplete="email" placeholder="johndoe@gmail.com">
+                            </div>
 
-                    ${errMessage ? html`<p class="register__error">${errMessage}</p>` : null}
+                            <div class="register__fieldset">
+                                <label class="register__label" for="password">Password</label>
+                                <input class="register__input" type="password" name="password" id="password"
+                                    placeholder="••••••••">
+                            </div>
 
+                            <div class="register__fieldset">
+                                <label class="register__label" for="confirmPassword">Confirm Password</label>
+                                <input class="register__input" type="password" name="confirmPassword" id="confirmPassword"
+                                    placeholder="••••••••">
+                            </div>
 
-                    <div class="register__actions">
-                        <button type="submit" class="register__btn register__btn--primary ${isSubmitting ? 'register__btn--loading' : ''}" ?disabled=${isSubmitting}>${isSubmitting ? "Signing up..." : "Sign up"}</button>
+                            <div class="register__error-slot">
+                                ${errMessage ? html`
+                                    <p class="register__error">
+                                        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+                                        ${errMessage}
+                                    </p>
+                                ` : null}
+                            </div>
+
+                            <div class="register__actions">
+                                <button type="submit"
+                                    class="register__btn register__btn--primary ${isSubmitting ? 'register__btn--loading' : ''}"
+                                    ?disabled=${isSubmitting}>
+                                    ${isSubmitting ? "Signing up..." : "Create account"}
+                                </button>
+                            </div>
+
+                        </form>
+
                         <p class="register__signup-prompt">
                             Already have an account?
                             <a href="/auth/login" class="register__nav-link" @click=${navigate}>Sign in</a>
                         </p>
+
+                    </div>
+                </div>
+
+                <div class="register__panel register__panel--visual" aria-hidden="true">
+                    <div class="register__panel-overlay"></div>
+
+                    <div class="register__branding">
+                        <span class="register__brand-label">Finora</span>
                     </div>
 
-                </form>
+                    <div class="register__panel-copy">
+                        <p class="register__panel-eyebrow">Take the first step,</p>
+                        <h1 class="register__panel-headline">Know your numbers</h1>
+                        <p class="register__panel-body">Join thousands who've taken back control of their finances. It only takes a minute to get started.</p>
+                    </div>
+                </div>
+
             </div>
         </main>
     `;
@@ -77,6 +114,7 @@ export async function registerView(ctx) {
 
         if (!username || !email || !password || !confirmPassword) {
             errMessage = "Please fill all fields.";
+            return render()
         }
         if (username.length < 3) {
             errMessage = "Username must be at least 3 characters.";
