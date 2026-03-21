@@ -8,8 +8,18 @@
 
 html,
 body {
+    overflow: auto;
+
     height: 100%;
     margin: 0;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+html::-webkit-scrollbar {
+    display: none;
 }
 
 ol,

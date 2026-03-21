@@ -361,3 +361,9 @@
 .edit-account__currency--hidden {
     display: none;
 }
+
+@media(max-width: 640px) {
+    .edit-account__content {
+        padding-bottom: calc(var( --mobile-nav-height) + env( safe-area-inset-bottom) );
+    }
+}

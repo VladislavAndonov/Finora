@@ -12,7 +12,7 @@ export const loginTemplate = (onSubmit, onDemoLogin, errMessage, isSubmitting) =
         <main class="login">
             <div class="login__card">
 
-            <div class="login__panel login__panel--visual" aria-hidden="true">
+                <div class="login__panel login__panel--visual" aria-hidden="true">
                     <div class="login__panel-overlay"></div>
 
                     <div class="login__branding">

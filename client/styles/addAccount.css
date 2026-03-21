@@ -337,3 +337,9 @@
 .add-account__currency--hidden {
     display: none;
 }
+
+@media(max-width: 640px) {
+    .add-account__content {
+        padding-bottom: calc(var( --mobile-nav-height) + env( safe-area-inset-bottom) );
+    }
+}

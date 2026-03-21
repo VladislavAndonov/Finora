@@ -63,14 +63,12 @@ export const appLayout = ({
             </aside>
 
             <main class="app-layout__main">
-                <div class="app-layout__content-wrapper">
-                    ${content}
-                    ${showFab ? html`
-                        <button @click=${onAddTransaction} class="app-layout__fab" title="Add Transaction">
-                            <i class="ph-bold ph-plus"></i>
-                        </button>
-                    ` : ""}
-                </div>
+                ${content}
+                ${showFab ? html`
+                    <button @click=${onAddTransaction} class="app-layout__fab" title="Add Transaction">
+                        <i class="ph-bold ph-plus"></i>
+                    </button>
+                ` : ""}
             </main>
 
             <!-- Mobile bottom navigation -->

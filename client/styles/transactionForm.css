@@ -565,3 +565,9 @@
 
     color: var(--text-primary);
 }
+
+@media(max-width: 640px) {
+    .transaction-form__body {
+        padding-bottom: calc(var( --mobile-nav-height) + env( safe-area-inset-bottom) );
+    }
+}
