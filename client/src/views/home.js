@@ -72,7 +72,17 @@ export async function homeView(ctx) {
 
     state.activeAccounts = await getAllUserAccounts({ isArchived: false });
     const activeId = getActiveAccountId();
-    state.selectedAccount = activeId ? await getAccountById(activeId) : state.activeAccounts[0];
+
+    if (activeId) {
+        try {
+            state.selectedAccount = await getAccountById(activeId);
+        } catch {
+            setActiveAccountId(null);
+            state.selectedAccount = state.activeAccounts[0] || null;
+        }
+    } else {
+        state.selectedAccount = state.activeAccounts[0] || null;
+    }
 
     function getCurrency(accountCurrency) {
 
@@ -89,11 +99,15 @@ export async function homeView(ctx) {
         const accountId = e.currentTarget.dataset.id;
         if (accountId === state.selectedAccount?._id) return;
 
-        setActiveAccountId(accountId);
-        state.selectedAccount = await getAccountById(accountId);
-
-        await loadTransactions();
-        update();
+        try {
+            const account = await getAccountById(accountId);
+            setActiveAccountId(accountId);
+            state.selectedAccount = account;
+            await loadTransactions();
+            update();
+        } catch {
+            showToast("Could not load account", "error");
+        }
     }
 
     function onAddAccountClick() {
