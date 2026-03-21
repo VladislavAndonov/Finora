@@ -21,7 +21,7 @@ const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state
                     <div class="calendar__month-scroll" id="month-scroll" @wheel=${handleWheel}>
                         ${monthList.map((m) => html`
                             <button 
-                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""} ${state.today.getFullYear() === m.year && state.today.getMonth() === m.month ? "calendar__month-item--current" : ""}" 
                                 @click=${() => selectMonth(m.year, m.month)}>${m.label}
                                 ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
                             </button>`)}
@@ -100,6 +100,8 @@ export async function calendarView(ctx) {
             month: state.selectedDate.getMonth(),
             date: state.selectedDate.getDate()
         });
+
+        if (!transactions) return;
 
         state.selectedDateTransactions.all = transactions;
         state.selectedDateTransactions.expenses = transactions.filter((t) => t.type === "expenses");

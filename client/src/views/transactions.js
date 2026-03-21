@@ -23,7 +23,7 @@ const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, n
                     <div class="transactions__month-scroll" id="month-scroll" @wheel=${handleWheel}>
                         ${monthList.map((m) => html`
                             <button 
-                                class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
+                                class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""} ${state.today.getFullYear() === m.year && state.today.getMonth() === m.month ? "transactions__month-item--current" : ""}" 
                                 @click=${() => selectMonth(m.year, m.month)}>${m.label}
                                 ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
                             </button>`)}
@@ -74,10 +74,12 @@ export const transactionsView = async (ctx) => {
         if (!state.activeAccountId) return;
 
         const transactions = await getTransactions({
-            acccountId: state.activeAccountId,
+            accountId: state.activeAccountId,
             year: state.currentDate.getFullYear(),
             month: state.currentDate.getMonth()
         })
+
+        if (!transactions) return
 
         state.monthTransactions.all = transactions;
         state.monthTransactions.expenses = transactions.filter((t) => t.type === "expenses");
