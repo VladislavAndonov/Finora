@@ -64,13 +64,29 @@ export const editTransactionView = async (ctx) => {
         state.selectedDate = event.target.value; renderForm();
     }
     function onOpenModal() {
-        state.showCategoryModal = true; renderForm();
+        state.showCategoryModal = true;
+        document.addEventListener('keydown', handleEscKey);
+
+        renderForm();
     }
+
     function onCloseModal() {
-        state.showCategoryModal = false; renderForm();
+        state.showCategoryModal = false;
+        document.removeEventListener('keydown', handleEscKey);
+
+        renderForm();
     }
+
     function onCategorySelect(name) {
-        state.selectedCategory = name; state.showCategoryModal = false; renderForm();
+        state.selectedCategory = name;
+        state.showCategoryModal = false;
+        renderForm();
+    }
+
+    function handleEscKey(e) {
+        if (e.key === 'Escape') {
+            onCloseModal();
+        }
     }
 
     async function onSubmit(event) {

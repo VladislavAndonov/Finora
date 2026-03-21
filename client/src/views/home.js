@@ -112,21 +112,31 @@ export async function homeView(ctx) {
 
     function onAddAccountClick() {
         state.ui.isAccountModalOpen = true
+        document.addEventListener('keydown', handleEscKey);
 
         update()
     }
 
-    function onClose() {
+    function onCloseModal() {
         state.ui.isAccountModalOpen = false
+        document.removeEventListener('keydown', handleEscKey);
 
         update();
     }
 
+    function handleEscKey(e) {
+        if (e.key === 'Escape') {
+            onCloseModal();
+        }
+    }
+
     const allAccounts = await getAllUserAccounts()
+
+    // Account modal
 
     const addAccountModal = () =>
         html`
-        <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onClose()}>
+        <div class="modal__backdrop" @click=${(e) => e.target === e.currentTarget && onCloseModal()}>
             <div class="modal__content">
  
                 <div class="modal__header">
@@ -134,7 +144,7 @@ export async function homeView(ctx) {
                         <p class="modal__title">Accounts</p>
                         <p class="modal__subtitle">${allAccounts.length} linked account${allAccounts.length !== 1 ? 's' : ''}</p>
                     </div>
-                    <button class="modal__close" type="button" @click=${onClose}>
+                    <button class="modal__close" type="button" @click=${onCloseModal}>
                         <i class="ph-bold ph-x"></i>
                     </button>
                 </div>

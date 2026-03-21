@@ -10,7 +10,7 @@ const uiState = {
     renderApp: null,
     activeView: null,
     logoutModalOpen: false,
-    profileDropdownOpen: false // Add this
+    profileDropdownOpen: false
 }
 
 export function withAppShell(ctx, next) {
@@ -53,6 +53,15 @@ function onToggleProfileDropdown() {
     uiState.profileDropdownOpen = !uiState.profileDropdownOpen;
     uiState.renderApp();
 }
+
+const mql = window.matchMedia('(min-width: 641px)');
+
+mql.addEventListener('change', (e) => {
+    if (e.matches && uiState.profileDropdownOpen) {
+        uiState.profileDropdownOpen = false;
+        uiState.renderApp();
+    }
+});
 
 function onLogoutClick() {
     uiState.logoutModalOpen = true;
