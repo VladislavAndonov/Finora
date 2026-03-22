@@ -22,18 +22,15 @@
 
 .home__content {
     display: grid;
+    overflow-y: auto;
     flex: 1;
 
     min-height: 0;
     padding: var(--space-4);
 
     gap: var(--space-4);
-    grid-template-columns: 8fr 5fr;
+    grid-template-columns: 7fr 4fr;
     grid-template-rows: auto 1fr;
-}
-
-.home__section {
-    min-height: 0;
 }
 
 .home__transactions {
@@ -45,9 +42,14 @@
     grid-row: 1 / 8;
 }
 
-.home__chart {
+.home__graph {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+
     min-width: 0;
 
+    gap: var(--space-3);
     grid-row: 2 / 8;
 }
 
@@ -240,13 +242,28 @@
 
     .home__accounts {
         grid-row: 1;
+
+        min-height: 100px
     }
 
-    .home__chart {
+    .home__graph {
+        align-items: stretch;
+
         grid-row: 2;
     }
 
+    .home__canvas-wrapper {
+        min-height: 200px;
+        max-height: 320px;
+    }
+
+    .home__graph-filters {
+        align-self: flex-end;
+    }
+
     .home__transactions {
+        min-height: 240px;
+
         grid-row: 3;
     }
 }
