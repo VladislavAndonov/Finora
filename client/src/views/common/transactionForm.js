@@ -135,7 +135,14 @@ export const transactionForm = ({
                 >
             </div>
  
-            ${state.errMessage ? html`<p class="transaction-form__error">${state.errMessage}</p>` : null}
+            <div class="transaction-form__error-slot">
+                ${state.errMessage ? html`
+                    <p class="transaction-form__error">
+                        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+                        ${state.errMessage}
+                    </p>
+                ` : null}
+            </div>
  
             <div class="transaction-form__actions">
                 <button

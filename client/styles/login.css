@@ -19,9 +19,11 @@
     width: 100%;
     max-width: 1080px;
     min-height: 640px;
+    padding: var(--space-3);
 
     border: 1px solid var(--border-default);
     border-radius: var(--radius-2xl);
+    background: var(--bg-dark);
     box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
 }
 
@@ -39,7 +41,7 @@
 
     padding: var(--space-5);
 
-    background-color: var(--bg-dark);
+    border-radius: calc(var( --radius-xl) + var( --lk-icon-pad-correction) );
     background-image: url(/images/login-bg.jpg);
     background-position: center;
     background-size: cover;
@@ -50,6 +52,7 @@
 
     pointer-events: none;
 
+    border-radius: inherit;
     background: linear-gradient(to bottom, rgba( 0, 0, 0, 0.05) 0%, rgba( 0, 0, 0, 0.1) 40%, rgba( 0, 0, 0, 0.75) 100%);
 
     inset: 0;

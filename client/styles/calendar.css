@@ -70,7 +70,7 @@
 
 .calendar__month-item {
     font-size: var(--text-sm);
-    font-weight: 500;
+    font-weight: 400;
 
     position: relative;
 
@@ -105,13 +105,13 @@
     left: 50%;
 
     width: 0;
-    height: 3px;
+    height: 4px;
 
     content: '';
     transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     transform: translateX(-50%);
 
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-pill) var( --radius-pill) 0 0;
     background: var(--primary);
 }
 
@@ -123,6 +123,18 @@
 
 .calendar__month-item--active::after {
     width: 100%;
+
+    background: var(--primary) !important;
+}
+
+.calendar__month-item--current {
+    font-weight: 500;
+}
+
+.calendar__month-item--current::after {
+    width: 100%;
+
+    background: var(--border-default);
 }
 
 .calendar__year-label {

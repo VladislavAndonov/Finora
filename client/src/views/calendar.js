@@ -7,7 +7,7 @@ import { getTransactions } from '../api/data.js';
 import { formatDate } from '../utils/dateUtils.js';
 import { getActiveAccountId } from "../state/sessionState.js";
 
-const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state, selectDate, selectMonth, handleWheel }) =>
+const calendarTemplate = ({ transactionsByDate, monthList, dates, typeFilters, state, selectDate, selectMonth, handleWheel }) =>
     html`
     <div class="calendar">
         <header class="calendar__header">
@@ -21,7 +21,7 @@ const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state
                     <div class="calendar__month-scroll" id="month-scroll" @wheel=${handleWheel}>
                         ${monthList.map((m) => html`
                             <button 
-                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""}" 
+                                class="calendar__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "calendar__month-item--active" : ""} ${state.today.getFullYear() === m.year && state.today.getMonth() === m.month ? "calendar__month-item--current" : ""}" 
                                 @click=${() => selectMonth(m.year, m.month)}>${m.label}
                                 ${state.today.getFullYear() !== m.year ? html`<span class="calendar__year-label">${m.year}</span>` : ""}
                             </button>`)}
@@ -46,7 +46,7 @@ const calendarTemplate = ({ transactionsByDate, monthList, dates, filters, state
             </section>
                         
             <section class="calendar__section calendar__transactions ${state.selectedDateTransactions.all.length !== 0 ? "calendar__transactions--active" : "calendar__transactions--hidden"}">
-                 ${transactionList(filters, transactionsByDate)}
+                 ${transactionList(typeFilters, transactionsByDate)}
             </section>
             
 
@@ -101,6 +101,8 @@ export async function calendarView(ctx) {
             date: state.selectedDate.getDate()
         });
 
+        if (!transactions) return;
+
         state.selectedDateTransactions.all = transactions;
         state.selectedDateTransactions.expenses = transactions.filter((t) => t.type === "expenses");
         state.selectedDateTransactions.income = transactions.filter((t) => t.type === "income");
@@ -110,29 +112,29 @@ export async function calendarView(ctx) {
 
     async function showAllTransactions() {
         state.ui.activeTab = "all"
-        setActive("All");
+        setActive("All", typeFilters);
         update();
     };
 
     async function showExpenses() {
         state.ui.activeTab = "expenses";
-        setActive("Expenses");
+        setActive("Expenses", typeFilters);
         update();
     };
 
     function showIncome() {
         state.ui.activeTab = "income";
-        setActive("Income");
+        setActive("Income", typeFilters);
         update();
     };
 
-    const filters = [
+    const typeFilters = [
         { label: "All", onClick: showAllTransactions, active: true },
         { label: "Expenses", onClick: showExpenses, active: false },
         { label: "Income", onClick: showIncome, active: false }
     ];
 
-    const setActive = (label) => {
+    const setActive = (label, filters) => {
         filters.forEach(f => {
             if (f.label === label) {
                 f.active = true;
@@ -166,7 +168,7 @@ export async function calendarView(ctx) {
 
         await loadMonthTransactions()
         state.ui.activeTab = "all"
-        setActive("All");
+        setActive("All", typeFilters);
         update()
     }
 
@@ -181,7 +183,7 @@ export async function calendarView(ctx) {
 
             await loadSelectedDateTransactions()
             state.ui.activeTab = "all"
-            setActive("All");
+            setActive("All", typeFilters);
             update()
         }
     }
@@ -296,7 +298,7 @@ export async function calendarView(ctx) {
             transactionsByDate: getDisplayedTransactions(),
             monthList: buildMonthList(),
             dates: renderDate(dates),
-            filters,
+            typeFilters,
             state,
             selectDate,
             selectMonth,

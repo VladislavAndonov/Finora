@@ -19,8 +19,9 @@ It allows users to manage multiple financial accounts, log income and expense tr
 - **Vanilla JavaScript (SPA)**
 - **page.js** - client-side routing.
 - **lit-html** - declarative and efficient rendering.
-- **HTML / CSS** - implemented with **BEM (Block Element Modifier)** naming convention for style encapsulation.
 - **Chart.js** - integrated for dynamic data representation and financial graphing.
+- **HTML / CSS** - implemented with **BEM (Block Element Modifier)** naming convention for style encapsulation.
+- **Custom Design System** – a consistent set of CSS custom properties for color, spacing (Golden Ratio–based scale), typography, and border radii, ensuring visual consistency across the UI.
 
 ### Backend
 - **Node.js & Express.js**
@@ -139,7 +140,7 @@ All protected endpoints require authentication via JWT.
 | ------ | --------------- | ----------------------------------------------------------------- |
 | GET    | `/accounts`     | Returns all active accounts for the user                          |
 | POST   | `/accounts`     | Creates a new financial account (name, currency, startingBalance) |
-| GET    | `/accounts/:Id` | Returns an account by ID                                          |
+| GET    | `/accounts/:id` | Returns an account by ID                                          |
 | PUT    | `/accounts/:id` | Updates account details                                           |
 
 **Important business rule**: Accounts cannot be deleted. They can only be archived (soft-delete) using the **`isArchived`** flag. The backend enforces archive-only deletion.
@@ -169,8 +170,8 @@ The frontend uses **page.js** for routing. Routes are protected by authenticatio
 Dynamic routes are used for transaction editing, and a fallback route handles unknown paths.
 
 ### Route Guards
-- **Auth Guard** – restricts authenticated-only views
-- **Guest Guard** – prevents logged-in users from accessing guest pages
+- **Auth Guard** – Redirects unauthenticated users away from protected views
+- **Guest Guard** – Prevents logged-in users from accessing guest views
 
 ---
 

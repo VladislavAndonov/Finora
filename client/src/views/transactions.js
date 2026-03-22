@@ -9,7 +9,7 @@ import { formatDate } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { getActiveAccountId } from "../state/sessionState.js";
 
-const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, noTransactionsMessage, selectMonth, handleWheel }) =>
+const transactionsTemplate = ({ transactionsByDate, monthList, typeFilters, state, noTransactionsMessage, selectMonth, handleWheel }) =>
     html`
     <div class="transactions">
         <header class="transactions__header">
@@ -23,14 +23,14 @@ const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, n
                     <div class="transactions__month-scroll" id="month-scroll" @wheel=${handleWheel}>
                         ${monthList.map((m) => html`
                             <button 
-                                class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""}"
+                                class="transactions__month-item ${state.currentDate.getFullYear() === m.year && state.currentDate.getMonth() === m.month ? "transactions__month-item--active" : ""} ${state.today.getFullYear() === m.year && state.today.getMonth() === m.month ? "transactions__month-item--current" : ""}" 
                                 @click=${() => selectMonth(m.year, m.month)}>${m.label}
                                 ${state.today.getFullYear() !== m.year ? html`<span class="transactions__year-label">${m.year}</span>` : ""}
                             </button>`)}
                     </div>
                 </div>
 
-                ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
+                ${transactionList(typeFilters, transactionsByDate, noTransactionsMessage)}
             </section>
 
             <section class="transactions__section transactions__charts">
@@ -74,10 +74,12 @@ export const transactionsView = async (ctx) => {
         if (!state.activeAccountId) return;
 
         const transactions = await getTransactions({
-            acccountId: state.activeAccountId,
+            accountId: state.activeAccountId,
             year: state.currentDate.getFullYear(),
             month: state.currentDate.getMonth()
         })
+
+        if (!transactions) return
 
         state.monthTransactions.all = transactions;
         state.monthTransactions.expenses = transactions.filter((t) => t.type === "expenses");
@@ -88,29 +90,29 @@ export const transactionsView = async (ctx) => {
 
     function showAllTransactions() {
         state.ui.activeTab = "all"
-        setActive("All");
+        setActive("All", typeFilters);
         update();
     };
 
     function showExpenses() {
         state.ui.activeTab = "expenses";
-        setActive("Expenses");
+        setActive("Expenses", typeFilters);
         update();
     };
 
     function showIncome() {
         state.ui.activeTab = "income";
-        setActive("Income");
+        setActive("Income", typeFilters);
         update();
     };
 
-    const filters = [
+    const typeFilters = [
         { label: "All", onClick: showAllTransactions, active: true },
         { label: "Expenses", onClick: showExpenses, active: false },
         { label: "Income", onClick: showIncome, active: false }
     ];
 
-    const setActive = (label) => {
+    const setActive = (label, filters) => {
         filters.forEach(f => {
             if (f.label === label) {
                 f.active = true;
@@ -144,7 +146,7 @@ export const transactionsView = async (ctx) => {
 
         await loadMonthTransactions();
         state.ui.activeTab = "all";
-        setActive("All");
+        setActive("All", typeFilters);
         update();
     }
 
@@ -402,7 +404,7 @@ export const transactionsView = async (ctx) => {
         ctx.render(transactionsTemplate({
             transactionsByDate: getDisplayedTransactions(),
             monthList: buildMonthList(),
-            filters,
+            typeFilters,
             state,
             noTransactionsMessage: "No transactions this month.",
             selectMonth,

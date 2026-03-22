@@ -78,7 +78,14 @@ const addAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, state }) =>
  
             </form>
  
-            ${state.errMessage ? html`<p class="add-account__error">${state.errMessage}</p>` : null}
+            <div class="add-account__error-slot">
+                ${state.errMessage ? html`
+                    <p class="add-account__error">
+                        <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+                        ${state.errMessage}
+                    </p>
+                ` : null}
+            </div>
  
             <div class="add-account__actions">
                 <button
