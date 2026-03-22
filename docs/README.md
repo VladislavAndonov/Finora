@@ -7,9 +7,12 @@ A full-stack web application with a Single-Page Application (SPA) frontend for m
 
 ---
 
-![Finora preview](/client/public/images/desktop-1.png)
-![Finora preview](/client/public/images/desktop-2.png)
-![Finora preview](/client/public/images/mobile-1.png) ![Finora preview](/client/public/images/mobile-2.png)
+<p align="center">
+  <img src="/client/public/images/desktop-1.png" width="100%" />
+  <img src="/client/public/images/desktop-2.png" width="100%" />
+  <img src="/client/public/images/mobile-1.png" width="45%" />
+  <img src="/client/public/images/mobile-2.png" width="45%" />
+</p>
 
 ---
 
