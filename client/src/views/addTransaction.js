@@ -1,7 +1,7 @@
 import { addTransaction } from '../api/data.js';
 
 import { categoriesMasterList } from "../utils/categoryList.js";
-import { utcToLocal } from "../utils/dateUtils.js";
+import { utcToDatetimeLocal } from "../utils/dateUtils.js";
 import { showToast } from '../utils/toast.js';
 import { transactionForm } from "./common/transactionForm.js";
 
@@ -13,7 +13,7 @@ export const addTransactionView = (ctx) => {
         submitLabel: "Adding...",
         selectedType: "expenses",
         selectedCategory: null,
-        selectedDate: utcToLocal(new Date()),
+        selectedDate: utcToDatetimeLocal(new Date()),
         showCategoryModal: false,
     };
 

@@ -9,7 +9,7 @@ import { formatDate } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { getActiveAccountId } from "../state/sessionState.js";
 
-const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, noTransactionsMessage, selectMonth, handleWheel }) =>
+const transactionsTemplate = ({ transactionsByDate, monthList, typeFilters, state, noTransactionsMessage, selectMonth, handleWheel }) =>
     html`
     <div class="transactions">
         <header class="transactions__header">
@@ -30,7 +30,7 @@ const transactionsTemplate = ({ transactionsByDate, monthList, filters, state, n
                     </div>
                 </div>
 
-                ${transactionList(filters, transactionsByDate, noTransactionsMessage)}
+                ${transactionList(typeFilters, transactionsByDate, noTransactionsMessage)}
             </section>
 
             <section class="transactions__section transactions__charts">
@@ -90,29 +90,29 @@ export const transactionsView = async (ctx) => {
 
     function showAllTransactions() {
         state.ui.activeTab = "all"
-        setActive("All");
+        setActive("All", typeFilters);
         update();
     };
 
     function showExpenses() {
         state.ui.activeTab = "expenses";
-        setActive("Expenses");
+        setActive("Expenses", typeFilters);
         update();
     };
 
     function showIncome() {
         state.ui.activeTab = "income";
-        setActive("Income");
+        setActive("Income", typeFilters);
         update();
     };
 
-    const filters = [
+    const typeFilters = [
         { label: "All", onClick: showAllTransactions, active: true },
         { label: "Expenses", onClick: showExpenses, active: false },
         { label: "Income", onClick: showIncome, active: false }
     ];
 
-    const setActive = (label) => {
+    const setActive = (label, filters) => {
         filters.forEach(f => {
             if (f.label === label) {
                 f.active = true;
@@ -146,7 +146,7 @@ export const transactionsView = async (ctx) => {
 
         await loadMonthTransactions();
         state.ui.activeTab = "all";
-        setActive("All");
+        setActive("All", typeFilters);
         update();
     }
 
@@ -404,7 +404,7 @@ export const transactionsView = async (ctx) => {
         ctx.render(transactionsTemplate({
             transactionsByDate: getDisplayedTransactions(),
             monthList: buildMonthList(),
-            filters,
+            typeFilters,
             state,
             noTransactionsMessage: "No transactions this month.",
             selectMonth,

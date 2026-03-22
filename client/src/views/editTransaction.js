@@ -1,5 +1,5 @@
 import { deleteTransaction, editTransaction, getTransactionById } from '../api/data.js';
-import { utcToLocal } from '../utils/dateUtils.js';
+import { utcToDatetimeLocal } from '../utils/dateUtils.js';
 import { categoriesMasterList } from "../utils/categoryList.js";
 import { transactionForm } from "./common/transactionForm.js";
 import { showToast } from '../utils/toast.js';
@@ -20,7 +20,7 @@ export const editTransactionView = async (ctx) => {
 
     try {
         const result = await getTransactionById(tId);
-        transaction = { ...result, date: utcToLocal(result.date) };
+        transaction = { ...result, date: utcToDatetimeLocal(result.date) };
 
         state.selectedType = transaction.type;
         state.selectedCategory = transaction.category

@@ -80,7 +80,14 @@ const editAccountTemplate = ({ onSubmit, selectCurrency, onNameInput, onToggleAr
                     </button>
                 </div>
  
-                ${state.errMessage ? html`<p class="edit-account__error">${state.errMessage}</p>` : null}
+                <div class="edit-account__error-slot">
+                    ${state.errMessage ? html`
+                        <p class="edit-account__error">
+                            <i class="ph-fill ph-warning-circle" aria-hidden="true"></i>
+                            ${state.errMessage}
+                        </p>
+                    ` : null}
+                </div>
  
                 <div class="edit-account__actions">
                     <button

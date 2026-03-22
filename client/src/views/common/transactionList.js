@@ -6,11 +6,11 @@ import { html } from "lit-html";
 import { navigate } from '../../utils/navigation.js';
 import { categoriesMasterList } from "../../utils/categoryList.js";
 
-export const transactionList = (filters, transactionsByDate, noTransactionsMessage) =>
+export const transactionList = (typeFilters, transactionsByDate, noTransactionsMessage) =>
     html`
         <div class="transaction-list">
             <div class="transaction-list__filters">
-                ${filters.map((f) => html`
+                ${typeFilters.map((f) => html`
                     <div class="transaction-list__filter">
                         <input class="transaction-list__radio" type="radio" .checked=${f.active} id="${f.label.toLowerCase()}" @change=${f.onClick}/>
                         <label class="transaction-list__label" for="${f.label.toLowerCase()}">
@@ -19,7 +19,7 @@ export const transactionList = (filters, transactionsByDate, noTransactionsMessa
                         </label>
                     </div>
                 `)}
-            </div >
+            </div>
 
     <div class="transaction-list__content">
         ${Object.entries(transactionsByDate).length !== 0 ? Object.entries(transactionsByDate).map(([date, transactions]) => html`
