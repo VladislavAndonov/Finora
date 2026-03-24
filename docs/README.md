@@ -2,8 +2,8 @@
 
 A full-stack web application with a Single-Page Application (SPA) frontend for managing personal finances. Track accounts, log transactions, and visualize your spending habits over time.
 
-**Live Demo:** **[finora-web.netlify.app](https://finora-web.netlify.app)**  
-**Demo login:** `demo@gmail.com` / `123456` — or use the "Try the demo" button on the login page.
+**Live Demo:** [finora-web.netlify.app](https://finora-web.netlify.app)  
+**Demo login:** `demo@gmail.com` / `123456` — or use the **"Try the demo"** button on the login page.
 
 ---
 
@@ -42,18 +42,19 @@ A full-stack web application with a Single-Page Application (SPA) frontend for m
 ## Running Locally
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/VladislavAndonov/Finora
+cd Finora
 
-# Install dependencies
-npm install
+# Install dependencies for server and client
+npm --prefix server install
+npm --prefix client install
 
 # Start the development server
-cd server/ && npm start 
+npm --prefix server start
 
 # Start the client
-cd client/ && npm run dev
-
+npm --prefix client run dev
 ```
 
 > Make sure to set up your `.env` file with your MongoDB connection string and JWT secret before running.

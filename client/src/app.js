@@ -1,4 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.min.css'
 import "../styles/reset.css";
 import "../styles/variables.css"
 import "../styles/typography.css"

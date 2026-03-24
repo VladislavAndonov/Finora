@@ -8,7 +8,7 @@ It allows users to manage multiple financial accounts, log income and expense tr
 **Live Deployment:** [https://finora-web.netlify.app](https://finora-web.netlify.app)
 
 **Demo Credentials:**
-* **Button:** Use the "Demo login" button on the login page.
+* **Button:** Use the **"Try the demo"** button on the login page.
 * **Manual:** Email: `demo@gmail.com` | Password: `123456`
 
 ---

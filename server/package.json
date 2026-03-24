@@ -1,8 +1,8 @@
 {
-  "name": "finora",
+  "name": "finora_server",
   "version": "1.0.0",
   "type": "module",
-  "description": "A personal finance tracking and management app built with vanilla JavaScript, HTML, and CSS, featuring a Node.js backend with Express.js for server-side logic, and a MongoDB database.",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
