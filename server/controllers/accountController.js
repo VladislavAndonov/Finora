@@ -31,7 +31,7 @@ accountController.post("/", async (req, res, next) => {
         const { name, currency, startingBalance } = req.body
 
         if (!name || !currency) {
-            throw new AppError("Missing required account fields", 400);
+            throw new AppError("Missing required account fields", 404);
         }
 
         const account = await accountService.create({ name, ownerId: userId, currency, startingBalanceCents: Math.round((startingBalance ?? 0) * 100) })
