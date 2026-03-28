@@ -460,7 +460,7 @@ export async function homeView(ctx) {
             typeFilters,
             dateRangeFilters,
             transactionsByDate: getDisplayedTransactions(),
-            noTransactionsMessage: "No transactions for the last 30 days.",
+            noTransactionsMessage: "No transactions for the selected period.",
             accounts: state.activeAccounts,
             activeAccountId: state.selectedAccount?._id,
             selectAccount,

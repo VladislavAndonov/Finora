@@ -406,7 +406,7 @@ export const transactionsView = async (ctx) => {
             monthList: buildMonthList(),
             typeFilters,
             state,
-            noTransactionsMessage: "No transactions this month.",
+            noTransactionsMessage: `No transactions for ${state.currentDate.toLocaleString('en-US', { month: 'long' })} ${state.currentDate.getFullYear()}.`,
             selectMonth,
             handleWheel
         }));
