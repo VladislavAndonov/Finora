@@ -65,7 +65,7 @@ const accountService = {
 
     },
     async update(accountId, accountData) {
-        const account = await Account.findByIdAndUpdate(accountId, accountData, { new: true });
+        const account = await Account.findByIdAndUpdate(accountId, accountData, { runValidators: true, new: true });
 
         if (!account) {
             return null

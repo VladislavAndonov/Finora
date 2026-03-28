@@ -67,7 +67,7 @@ const transactionService = {
             const newBalanceChange = transactionData.type === "income" ? transactionData.amountCents : -transactionData.amountCents;
             await Account.findByIdAndUpdate(transactionData.accountId, { $inc: { balanceCents: newBalanceChange } }, { session })
 
-            const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, { ...transactionData }, { new: true, session })
+            const updatedTransaction = await Transaction.findByIdAndUpdate(transactionId, { ...transactionData }, { new: true, runValidators: true, session })
 
             await session.commitTransaction();
 
